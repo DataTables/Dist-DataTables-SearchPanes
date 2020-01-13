@@ -1845,7 +1845,7 @@
         return SearchPanes;
     }());
 
-    /*! SearchPanes 0.0.3
+    /*! SearchPanes 0.0.4
      * 2019-2020 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
