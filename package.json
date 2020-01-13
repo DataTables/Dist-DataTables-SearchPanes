@@ -1,6 +1,6 @@
 {
     "name": "datatables.net-searchpanes",
-    "version": "1.0.0",
+    "version": "0.0.5",
     "description": "SearchPanes for DataTables ",
     "files": [
         "js/**/*.js"
@@ -8,7 +8,7 @@
     "main": "js/dataTables.searchPanes.js",
     "keywords": [
         "Search",
-	"Filtering",
+        "Filtering",
         "DataTables",
         "jQuery",
         "table",
@@ -23,7 +23,7 @@
     },
     "dependencies": {
         "jquery": ">=1.7",
-        "datatables.net": "^1.10.19"
+        "datatables.net": "^1.10.15"
     },
     "repository": {
         "type": "git",
