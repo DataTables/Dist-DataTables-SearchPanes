@@ -1933,11 +1933,16 @@
         $.fn.dataTable.ext.buttons.searchPanes = {
             text: 'Search Panes',
             init: function (dt, node, config) {
-                var panes = new $.fn.dataTable.SearchPanes(dt, {
+                console.log($.extend({
                     filterChanged: function (count) {
                         dt.button(node).text(dt.i18n('searchPanes.collapse', { 0: 'SearchPanes', _: 'SearchPanes (%d)' }, count));
                     }
-                });
+                }, config.config));
+                var panes = new $.fn.dataTable.SearchPanes(dt, $.extend({
+                    filterChanged: function (count) {
+                        dt.button(node).text(dt.i18n('searchPanes.collapse', { 0: 'SearchPanes', _: 'SearchPanes (%d)' }, count));
+                    }
+                }, config.config));
                 var message = dt.i18n('searchPanes.collapse', 'SearchPanes', 0);
                 dt.button(node).text(message);
                 config._panes = panes;
@@ -1947,7 +1952,8 @@
                 this.popover(config._panes.getNode(), {
                     align: 'dt-container'
                 });
-            }
+            },
+            config: {}
         };
         function _init(settings, fromPre) {
             if (fromPre === void 0) { fromPre = false; }
