@@ -205,15 +205,20 @@
         /**
          * Rebuilds the panes from the start having deleted the old ones
          */
-        SearchPane.prototype.rebuildPane = function () {
+        SearchPane.prototype.rebuildPane = function (maintainSelection) {
+            if (maintainSelection === void 0) { maintainSelection = false; }
             this.clearData();
+            var selectedRows = [];
             // When rebuilding strip all of the HTML Elements out of the container and start from scratch
             if (this.s.dtPane !== undefined) {
+                if (maintainSelection) {
+                    selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
+                }
                 this.s.dtPane.clear().destroy();
             }
             this.dom.container.removeClass(this.classes.hidden);
             this.s.displayed = false;
-            this._buildPane();
+            this._buildPane(selectedRows);
             return this;
         };
         /**
@@ -383,8 +388,9 @@
         /**
          * Method to construct the actual pane.
          */
-        SearchPane.prototype._buildPane = function () {
+        SearchPane.prototype._buildPane = function (selectedRows) {
             var _this = this;
+            if (selectedRows === void 0) { selectedRows = []; }
             // Aliases
             this.selections = [];
             var table = this.s.dt;
@@ -603,6 +609,15 @@
                 }
                 _this.s.selectPresent = false;
             });
+            for (var _i = 0, selectedRows_1 = selectedRows; _i < selectedRows_1.length; _i++) {
+                var selection = selectedRows_1[_i];
+                for (var _a = 0, _b = this.s.dtPane.rows().toArray(); _a < _b.length; _a++) {
+                    var row = _b[_a];
+                    if (selection.value === this.s.dtPane.row(row).data().value) {
+                        this.s.dtPane.row(row).select();
+                    }
+                }
+            }
             // When saving the state store all of the selected rows for preselection next time around
             this.s.dt.on('stateSaveParams.dtsp', function (e, settings, data) {
                 // If the data being passed in is empty then a state clear must have occured so clear the panes state as well
@@ -644,8 +659,8 @@
                 if (!this.c.cascadePanes) {
                     this._reloadSelect(loadedFilter);
                 }
-                for (var _i = 0, _a = loadedFilter.searchPanes.panes; _i < _a.length; _i++) {
-                    var pane = _a[_i];
+                for (var _c = 0, _d = loadedFilter.searchPanes.panes; _c < _d.length; _c++) {
+                    var pane = _d[_c];
                     if (pane.id === this.s.index) {
                         $(this.dom.searchBox).val(pane.searchTerm);
                         this.s.dt.order(pane.order);
@@ -1330,12 +1345,15 @@
         /**
          * rebuilds all of the panes
          */
-        SearchPanes.prototype.rebuild = function (targetIdx) {
+        SearchPanes.prototype.rebuild = function (targetIdx, maintainSelection) {
             if (targetIdx === void 0) { targetIdx = false; }
+            if (maintainSelection === void 0) { maintainSelection = false; }
             $(this.dom.emptyMessage).remove();
             // As a rebuild from scratch is required, empty the searchpanes container.
             var returnArray = [];
-            this.clearSelections();
+            if (!maintainSelection) {
+                this.clearSelections();
+            }
             // Rebuild each pane individually, if a specific pane has been selected then only rebuild that one
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
@@ -1343,7 +1361,7 @@
                     continue;
                 }
                 pane.clearData();
-                returnArray.push(pane.rebuildPane());
+                returnArray.push(pane.rebuildPane(maintainSelection));
             }
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
@@ -1915,9 +1933,9 @@
             ctx._searchPanes.clearSelections();
             return this;
         });
-        apiRegister('searchPanes.rebuildPane()', function (targetIdx) {
+        apiRegister('searchPanes.rebuildPane()', function (targetIdx, maintainSelections) {
             var ctx = this.context[0];
-            ctx._searchPanes.rebuild(targetIdx);
+            ctx._searchPanes.rebuild(targetIdx, maintainSelections);
             return this;
         });
         apiRegister('searchPanes.container()', function () {
@@ -1933,11 +1951,6 @@
         $.fn.dataTable.ext.buttons.searchPanes = {
             text: 'Search Panes',
             init: function (dt, node, config) {
-                console.log($.extend({
-                    filterChanged: function (count) {
-                        dt.button(node).text(dt.i18n('searchPanes.collapse', { 0: 'SearchPanes', _: 'SearchPanes (%d)' }, count));
-                    }
-                }, config.config));
                 var panes = new $.fn.dataTable.SearchPanes(dt, $.extend({
                     filterChanged: function (count) {
                         dt.button(node).text(dt.i18n('searchPanes.collapse', { 0: 'SearchPanes', _: 'SearchPanes (%d)' }, count));
