@@ -1947,7 +1947,6 @@
                 this.popover(config._panes.getNode(), {
                     align: 'dt-container'
                 });
-                config._panes.adjust();
             }
         };
         function _init(settings, fromPre) {
