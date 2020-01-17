@@ -1,6 +1,3 @@
-/*! SearchPanes 1.0.1
- * 2019-2020 SpryMedia Ltd - datatables.net/license
- */
 (function () {
     'use strict';
 
@@ -1186,7 +1183,7 @@
                 this.s.dtPane.table().node().parentNode.scrollTop = scrollTop;
             }
         };
-        SearchPane.version = '1.0.1';
+        SearchPane.version = '0.0.2';
         SearchPane.classes = {
             buttonGroup: 'dtsp-buttonGroup',
             buttonSub: 'dtsp-buttonSub',
@@ -1820,8 +1817,11 @@
             // Run the message through the internationalisation method to improve readability
             var message = this.s.dt.i18n('searchPanes.title', 'Filters Active - %d', filterCount);
             $(this.dom.title).text(message);
+            if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === "function") {
+                this.c.filterChanged(filterCount);
+            }
         };
-        SearchPanes.version = '1.0.1';
+        SearchPanes.version = '0.0.2';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -1841,6 +1841,7 @@
                 return dt.table().container();
             },
             columns: [],
+            filterChanged: undefined,
             layout: 'columns-3',
             panes: [],
             viewTotal: false
@@ -1848,8 +1849,8 @@
         return SearchPanes;
     }());
 
-    /*! SearchPanes 1.0.1
-     * 2019-2020 SpryMedia Ltd - datatables.net/license
+    /*! SearchPanes 0.0.2
+     * 2018 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
     // (with window and jQuery being allowed as parameters to the returned
@@ -1934,7 +1935,7 @@
                         dt.button(node).text(dt.i18n('searchPanes.collapse', { 0: 'SearchPanes', _: 'SearchPanes (%d)' }, count));
                     }
                 });
-                var message = dt.i18n('searchPanes.collapse', 'SearchPanes');
+                var message = dt.i18n('searchPanes.collapse', 'SearchPanes', 0);
                 dt.button(node).text(message);
                 config._panes = panes;
             },
