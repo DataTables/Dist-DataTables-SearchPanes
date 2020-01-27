@@ -50,7 +50,8 @@
                     bins: {},
                     binsOriginal: {},
                     binsTotal: {},
-                    filterMap: new Map()
+                    filterMap: new Map(),
+                    totalOptions: 0
                 },
                 searchFunction: undefined,
                 selectPresent: false,
@@ -162,7 +163,8 @@
                 bins: {},
                 binsOriginal: {},
                 binsTotal: {},
-                filterMap: new Map()
+                filterMap: new Map(),
+                totalOptions: 0
             };
         };
         /**
@@ -301,6 +303,7 @@
                         else {
                             bins[filter[i]]++;
                         }
+                        this.s.rowData.totalOptions++;
                     }
                     return;
                 }
@@ -318,9 +321,11 @@
                         sort: sort,
                         type: type
                     });
+                    this.s.rowData.totalOptions++;
                 }
                 else {
                     bins[filter]++;
+                    this.s.rowData.totalOptions++;
                     return;
                 }
             }
@@ -945,9 +950,11 @@
                 if (!bins[filter]) {
                     bins[filter] = 1;
                     this._addOption(filter, settings.oApi._fnGetCellData(settings, rowIdx, this.s.index, colOpts.orthogonal.display), settings.oApi._fnGetCellData(settings, rowIdx, this.s.index, colOpts.orthogonal.sort), settings.oApi._fnGetCellData(settings, rowIdx, this.s.index, colOpts.orthogonal.type), arrayFilter, bins);
+                    this.s.rowData.totalOptions++;
                 }
                 else {
                     bins[filter]++;
+                    this.s.rowData.totalOptions++;
                     return;
                 }
             }
@@ -1080,8 +1087,8 @@
          * @returns {number} returns the ratio
          */
         SearchPane.prototype._uniqueRatio = function (bins, rowCount) {
-            if (rowCount > 0) {
-                return bins / rowCount;
+            if (rowCount > 0 && this.s.rowData.totalOptions > 0) {
+                return bins / this.s.rowData.totalOptions;
             }
             else {
                 return 1;
