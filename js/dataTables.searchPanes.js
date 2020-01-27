@@ -489,7 +489,6 @@
             $.fn.dataTable.ext.errMode = 'none';
             var haveScroller = DataTable.Scroller;
             this.s.dtPane = $(this.dom.dtP).DataTable($.extend(true, {
-                dom: 't',
                 columnDefs: [
                     {
                         className: 'dtsp-nameColumn',
@@ -548,6 +547,7 @@
                     }
                 ],
                 deferRender: true,
+                dom: 't',
                 info: false,
                 paging: haveScroller ? true : false,
                 scrollY: '200px',
@@ -601,7 +601,7 @@
             DataTable.select.init(this.s.dtPane);
             // Display the pane
             this.s.dtPane.draw();
-            if (this.s.listSet === false) {
+            if (!this.s.listSet) {
                 this._setListeners();
                 this.s.listSet = true;
             }
@@ -1855,7 +1855,7 @@
             // Run the message through the internationalisation method to improve readability
             var message = this.s.dt.i18n('searchPanes.title', 'Filters Active - %d', filterCount);
             $(this.dom.title).text(message);
-            if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === "function") {
+            if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
                 this.c.filterChanged(filterCount);
             }
         };
@@ -1966,7 +1966,13 @@
             }
         };
         $.fn.dataTable.ext.buttons.searchPanes = {
-            text: 'Search Panes',
+            action: function (e, dt, node, config) {
+                e.stopPropagation();
+                this.popover(config._panes.getNode(), {
+                    align: 'dt-container'
+                });
+            },
+            config: {},
             init: function (dt, node, config) {
                 var panes = new $.fn.dataTable.SearchPanes(dt, $.extend({
                     filterChanged: function (count) {
@@ -1977,13 +1983,7 @@
                 dt.button(node).text(message);
                 config._panes = panes;
             },
-            action: function (e, dt, node, config) {
-                e.stopPropagation();
-                this.popover(config._panes.getNode(), {
-                    align: 'dt-container'
-                });
-            },
-            config: {}
+            text: 'Search Panes'
         };
         function _init(settings, fromPre) {
             if (fromPre === void 0) { fromPre = false; }
