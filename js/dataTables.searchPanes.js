@@ -807,27 +807,6 @@
             $(container).show();
         };
         /**
-         * Find the unique filter values in an array
-         * @param data empty array to populate with data which has not yet been found
-         * @param arrayFilter the array of all of the display and filter values for the table
-         */
-        SearchPane.prototype._findUnique = function (data, arrayFilter) {
-            var prev = [];
-            for (var _i = 0, arrayFilter_1 = arrayFilter; _i < arrayFilter_1.length; _i++) {
-                var filterEl = arrayFilter_1[_i];
-                // If the data has not already been processed then add it to the unique array and the previously processed array.
-                if (prev.indexOf(filterEl.filter) === -1) {
-                    data.push({
-                        display: filterEl.display,
-                        filter: filterEl.filter,
-                        sort: filterEl.sort,
-                        type: filterEl.type
-                    });
-                    prev.push(filterEl.filter);
-                }
-            }
-        };
-        /**
          * Gets the options for the row for the customPanes
          * @returns {object} The options for the row extended to include the options from the user.
          */
