@@ -41,6 +41,7 @@
                 index: idx,
                 indexes: [],
                 lastSelect: false,
+                listSet: false,
                 redraw: false,
                 rowData: {
                     arrayFilter: [],
@@ -472,15 +473,17 @@
             }
             // If the variance is accceptable then display the search pane
             this._displayPane();
-            // Here, when the state is loaded if the data object on the original table is empty,
-            //  then a state.clear() must have occurred, so delete all of the panes tables state objects too.
-            this.dom.dtP.on('stateLoadParams.dt', function (e, settings, data) {
-                if ($.isEmptyObject(table.state.loaded())) {
-                    $.each(data, function (index, value) {
-                        delete data[index];
-                    });
-                }
-            });
+            if (!this.s.listSet) {
+                // Here, when the state is loaded if the data object on the original table is empty,
+                //  then a state.clear() must have occurred, so delete all of the panes tables state objects too.
+                this.dom.dtP.on('stateLoadParams.dt', function (e, settings, data) {
+                    if ($.isEmptyObject(table.state.loaded())) {
+                        $.each(data, function (index, value) {
+                            delete data[index];
+                        });
+                    }
+                });
+            }
             // Declare the datatable for the pane
             var errMode = $.fn.dataTable.ext.errMode;
             $.fn.dataTable.ext.errMode = 'none';
@@ -598,6 +601,44 @@
             DataTable.select.init(this.s.dtPane);
             // Display the pane
             this.s.dtPane.draw();
+            if (this.s.listSet === false) {
+                this._setListeners();
+                this.s.listSet = true;
+            }
+            for (var _i = 0, selectedRows_1 = selectedRows; _i < selectedRows_1.length; _i++) {
+                var selection = selectedRows_1[_i];
+                for (var _a = 0, _b = this.s.dtPane.rows().toArray(); _a < _b.length; _a++) {
+                    var row = _b[_a];
+                    if (selection.value === this.s.dtPane.row(row).data().value) {
+                        this.s.dtPane.row(row).select();
+                    }
+                }
+            }
+            // Reload the selection, searchbox entry and ordering from the previous state
+            if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
+                if (!this.c.cascadePanes) {
+                    this._reloadSelect(loadedFilter);
+                }
+                for (var _c = 0, _d = loadedFilter.searchPanes.panes; _c < _d.length; _c++) {
+                    var pane = _d[_c];
+                    if (pane.id === this.s.index) {
+                        $(this.dom.searchBox).val(pane.searchTerm);
+                        this.s.dt.order(pane.order);
+                    }
+                }
+            }
+            // Make sure to save the state once the pane has been built
+            this.s.dt.state.save();
+            return true;
+        };
+        /**
+         * Sets the listeners for the pane.
+         *
+         * Having it in it's own function makes it easier to only set them once
+         */
+        SearchPane.prototype._setListeners = function () {
+            var _this = this;
+            var rowData = this.s.rowData;
             // When an item is selected on the pane, add these to the array which holds selected items.
             // Custom search will perform.
             this.s.dtPane.on('select.dtsp', function () {
@@ -609,15 +650,6 @@
                 }
                 _this.s.selectPresent = false;
             });
-            for (var _i = 0, selectedRows_1 = selectedRows; _i < selectedRows_1.length; _i++) {
-                var selection = selectedRows_1[_i];
-                for (var _a = 0, _b = this.s.dtPane.rows().toArray(); _a < _b.length; _a++) {
-                    var row = _b[_a];
-                    if (selection.value === this.s.dtPane.row(row).data().value) {
-                        this.s.dtPane.row(row).select();
-                    }
-                }
-            }
             // When saving the state store all of the selected rows for preselection next time around
             this.s.dt.on('stateSaveParams.dtsp', function (e, settings, data) {
                 // If the data being passed in is empty then a state clear must have occured so clear the panes state as well
@@ -654,19 +686,6 @@
                     selected: selected
                 });
             });
-            // Reload the selection, searchbox entry and ordering from the previous state
-            if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
-                if (!this.c.cascadePanes) {
-                    this._reloadSelect(loadedFilter);
-                }
-                for (var _c = 0, _d = loadedFilter.searchPanes.panes; _c < _d.length; _c++) {
-                    var pane = _d[_c];
-                    if (pane.id === this.s.index) {
-                        $(this.dom.searchBox).val(pane.searchTerm);
-                        this.s.dt.order(pane.order);
-                    }
-                }
-            }
             this.s.dtPane.on('user-select.dtsp', function (e, _dt, type, cell, originalEvent) {
                 originalEvent.stopPropagation();
             });
@@ -717,9 +736,6 @@
                     _this.s.dt.state.save();
                 }, 50);
             });
-            // Make sure to save the state once the pane has been built
-            this.s.dt.state.save();
-            return true;
         };
         /**
          * Update the array which holds the display and filter values for the table
