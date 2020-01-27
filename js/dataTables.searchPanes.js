@@ -1515,6 +1515,7 @@
          * Attach the panes, buttons and title to the document
          */
         SearchPanes.prototype._attach = function () {
+            var _this = this;
             $(this.dom.container).removeClass(this.classes.hide);
             $(this.dom.titleRow).removeClass(this.classes.hide);
             $(this.dom.titleRow).remove();
@@ -1522,6 +1523,9 @@
             // If the clear button is permitted attach it
             if (this.c.clear) {
                 $(this.dom.clearAll).appendTo(this.dom.titleRow);
+                $(this.dom.clearAll).on('click.dtsps', function () {
+                    _this.clearSelections();
+                });
             }
             $(this.dom.titleRow).appendTo(this.dom.container);
             // Attach the container for each individual pane to the overall container
