@@ -218,6 +218,7 @@
                     selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
                 }
                 this.s.dtPane.clear().destroy();
+                this.s.dtPane = undefined;
             }
             this.dom.container.removeClass(this.classes.hidden);
             this.s.displayed = false;
