@@ -1301,6 +1301,9 @@
                 selectionList: [],
                 updating: false
             };
+            if (table.settings()[0]._searchPanes !== undefined) {
+                return;
+            }
             table.settings()[0]._searchPanes = this;
             this.dom.clearAll.text(table.i18n('searchPanes.clearMessage', 'Clear All'));
             this._getState();
@@ -1308,7 +1311,7 @@
                 this._paneDeclare(table, paneSettings, opts);
             }
             else {
-                table.on('preInit.dt', function () {
+                table.one('preInit.dt', function (settings) {
                     _this._paneDeclare(table, paneSettings, opts);
                 });
             }
