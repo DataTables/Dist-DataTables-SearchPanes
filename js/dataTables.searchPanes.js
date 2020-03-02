@@ -69,7 +69,7 @@
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.clearButton),
                 container: $('<div/>').addClass(this.classes.container).addClass(this.classes.layout +
-                    (layVal < 7 ? layout : layout.split('-')[0] + '-6')),
+                    (layVal < 10 ? layout : layout.split('-')[0] + '-9')),
                 countButton: $('<button type="button"></button>')
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.countButton),
