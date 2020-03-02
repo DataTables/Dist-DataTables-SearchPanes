@@ -1360,7 +1360,6 @@
                 if (targetIdx !== false && pane.s.index !== targetIdx) {
                     continue;
                 }
-                pane.clearData();
                 returnArray.push(pane.rebuildPane(maintainSelection));
             }
             // Attach panes, clear buttons, and title bar to the document
@@ -1784,6 +1783,20 @@
                     data.searchPanes = {};
                 }
                 data.searchPanes.selectionList = _this.s.selectionList;
+            });
+            // If the data is reloaded from the server then it is possible that it has changed completely,
+            // so we need to rebuild the panes
+            this.s.dt.on('xhr', function () {
+                if (!_this.s.dt.page.info().serverSide) {
+                    _this.s.dt.one('draw', function () {
+                        for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
+                            var pane = _a[_i];
+                            pane.clearData(); // Clears all of the bins and will mean that the data has to be re-read
+                            pane.rebuildPane();
+                        }
+                        _this._checkMessage();
+                    });
+                }
             });
             // If cascadePanes is active then make the previous selections in the order they were previously
             if (this.s.selectionList.length > 0 && this.c.cascadePanes) {
