@@ -207,22 +207,22 @@
         };
         /**
          * Rebuilds the panes from the start having deleted the old ones
+         * @param? last boolean to indicate if this is the last pane a selection was made in
          */
-        SearchPane.prototype.rebuildPane = function (maintainSelection) {
-            if (maintainSelection === void 0) { maintainSelection = false; }
+        SearchPane.prototype.rebuildPane = function (last) {
+            if (last === void 0) { last = false; }
+            this.s.lastSelect = last;
             this.clearData();
             var selectedRows = [];
             // When rebuilding strip all of the HTML Elements out of the container and start from scratch
             if (this.s.dtPane !== undefined) {
-                if (maintainSelection) {
-                    selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
-                }
+                selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
                 this.s.dtPane.clear().destroy();
                 this.s.dtPane = undefined;
             }
             this.dom.container.removeClass(this.classes.hidden);
             this.s.displayed = false;
-            this._buildPane(selectedRows);
+            this._buildPane(selectedRows, last);
             return this;
         };
         /**
@@ -394,10 +394,13 @@
         };
         /**
          * Method to construct the actual pane.
+         * @param selectedRows previously selected Rows to be reselected
+         * @last boolean to indicate whether this pane was the last one to have a selection made
          */
-        SearchPane.prototype._buildPane = function (selectedRows) {
+        SearchPane.prototype._buildPane = function (selectedRows, last) {
             var _this = this;
             if (selectedRows === void 0) { selectedRows = []; }
+            if (last === void 0) { last = false; }
             // Aliases
             this.selections = [];
             var table = this.s.dt;
@@ -432,7 +435,7 @@
                 }
                 // Only run populatePane if the data has not been collected yet
                 if (rowData.arrayFilter.length === 0) {
-                    this._populatePane();
+                    this._populatePane(last);
                     if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
                         // If the index is not found then no data has been added to the state for this pane,
                         //  which will only occur if it has previously failed to meet the criteria to be
@@ -615,7 +618,7 @@
                 var selection = selectedRows_1[_i];
                 for (var _a = 0, _b = this.s.dtPane.rows().toArray(); _a < _b.length; _a++) {
                     var row = _b[_a];
-                    if (selection.value === this.s.dtPane.row(row).data().value) {
+                    if (selection.filter === this.s.dtPane.row(row).data().filter) {
                         this.s.dtPane.row(row).select();
                     }
                 }
@@ -913,15 +916,17 @@
         };
         /**
          * Fill the array with the values that are currently being displayed in the table
+         * @param last boolean to indicate whether this was the last pane a selection was made in
          */
-        SearchPane.prototype._populatePane = function () {
+        SearchPane.prototype._populatePane = function (last) {
+            if (last === void 0) { last = false; }
             var table = this.s.dt;
             this.s.rowData.arrayFilter = [];
             this.s.rowData.bins = {};
             var settings = this.s.dt.settings()[0];
             // If cascadePanes or viewTotal are active it is necessary to get the data which is currently
-            //  being displayed for their functionality.
-            var indexArray = (this.c.cascadePanes || this.c.viewTotal) && !this.s.clearing ?
+            //  being displayed for their functionality. Also make sure that this was not the last pane to have a selection made
+            var indexArray = (this.c.cascadePanes || this.c.viewTotal) && (!this.s.clearing && !last) ?
                 table.rows({ search: 'applied' }).indexes() :
                 table.rows().indexes();
             for (var _i = 0, indexArray_1 = indexArray; _i < indexArray_1.length; _i++) {
@@ -1350,20 +1355,20 @@
          */
         SearchPanes.prototype.rebuild = function (targetIdx, maintainSelection) {
             if (targetIdx === void 0) { targetIdx = false; }
-            if (maintainSelection === void 0) { maintainSelection = false; }
             $(this.dom.emptyMessage).remove();
             // As a rebuild from scratch is required, empty the searchpanes container.
             var returnArray = [];
-            if (!maintainSelection) {
-                this.clearSelections();
-            }
             // Rebuild each pane individually, if a specific pane has been selected then only rebuild that one
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 if (targetIdx !== false && pane.s.index !== targetIdx) {
                     continue;
                 }
-                returnArray.push(pane.rebuildPane(maintainSelection));
+                returnArray.push(
+                // Pass a boolean to say whether this is the last choice made for maintaining selections when rebuilding
+                pane.rebuildPane(this.s.selectionList[this.s.selectionList.length - 1] !== undefined ?
+                    pane.s.index === this.s.selectionList[this.s.selectionList.length - 1].index :
+                    false));
             }
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
@@ -1679,7 +1684,9 @@
                         }
                         var _loop_2 = function (row) {
                             pane.s.dtPane.rows().every(function (rowIdx) {
-                                if (pane.s.dtPane.row(rowIdx).data().filter === row.filter) {
+                                if (pane.s.dtPane.row(rowIdx).data() !== undefined &&
+                                    row !== undefined &&
+                                    pane.s.dtPane.row(rowIdx).data().filter === row.filter) {
                                     pane.s.dtPane.row(rowIdx).select();
                                 }
                             });
@@ -1795,7 +1802,10 @@
                         for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                             var pane = _a[_i];
                             pane.clearData(); // Clears all of the bins and will mean that the data has to be re-read
-                            pane.rebuildPane();
+                            // Pass a boolean to say whether this is the last choice made for maintaining selections when rebuilding
+                            pane.rebuildPane(_this.s.selectionList[_this.s.selectionList.length - 1] !== undefined ?
+                                pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
+                                false);
                         }
                         _this._checkMessage();
                     });
