@@ -616,10 +616,12 @@
             }
             for (var _i = 0, selectedRows_1 = selectedRows; _i < selectedRows_1.length; _i++) {
                 var selection = selectedRows_1[_i];
-                for (var _a = 0, _b = this.s.dtPane.rows().indexes().toArray(); _a < _b.length; _a++) {
-                    var row = _b[_a];
-                    if (selection.filter === this.s.dtPane.row(row).data().filter) {
-                        this.s.dtPane.row(row).select();
+                if (selection !== undefined) {
+                    for (var _a = 0, _b = this.s.dtPane.rows().indexes().toArray(); _a < _b.length; _a++) {
+                        var row = _b[_a];
+                        if (this.s.dtPane.row(row).data() !== undefined && selection.filter === this.s.dtPane.row(row).data().filter) {
+                            this.s.dtPane.row(row).select();
+                        }
                     }
                 }
             }
@@ -1370,6 +1372,7 @@
                     pane.s.index === this.s.selectionList[this.s.selectionList.length - 1].index :
                     false));
             }
+            this.redrawPanes();
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
             this._attachPaneContainer();
@@ -1797,8 +1800,13 @@
             // If the data is reloaded from the server then it is possible that it has changed completely,
             // so we need to rebuild the panes
             this.s.dt.on('xhr', function () {
+                var processing = false;
                 if (!_this.s.dt.page.info().serverSide) {
                     _this.s.dt.one('draw', function () {
+                        if (processing) {
+                            return;
+                        }
+                        processing = true;
                         for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                             var pane = _a[_i];
                             pane.clearData(); // Clears all of the bins and will mean that the data has to be re-read
@@ -1807,6 +1815,7 @@
                                 pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
                                 false);
                         }
+                        _this.redrawPanes();
                         _this._checkMessage();
                     });
                 }
