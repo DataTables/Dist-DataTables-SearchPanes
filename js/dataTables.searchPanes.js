@@ -616,7 +616,7 @@
             }
             for (var _i = 0, selectedRows_1 = selectedRows; _i < selectedRows_1.length; _i++) {
                 var selection = selectedRows_1[_i];
-                for (var _a = 0, _b = this.s.dtPane.rows().toArray(); _a < _b.length; _a++) {
+                for (var _a = 0, _b = this.s.dtPane.rows().indexes().toArray(); _a < _b.length; _a++) {
                     var row = _b[_a];
                     if (selection.filter === this.s.dtPane.row(row).data().filter) {
                         this.s.dtPane.row(row).select();
