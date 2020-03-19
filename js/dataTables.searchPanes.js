@@ -211,7 +211,6 @@
          */
         SearchPane.prototype.rebuildPane = function (last) {
             if (last === void 0) { last = false; }
-            //this.s.lastSelect = last;
             this.clearData();
             var selectedRows = [];
             // When rebuilding strip all of the HTML Elements out of the container and start from scratch
@@ -411,6 +410,10 @@
             var countMessage = table.i18n('searchPanes.count', '{total}');
             var filteredMessage = table.i18n('searchPanes.countFiltered', '{shown} ({total})');
             var loadedFilter = table.state.loaded();
+            // If the listeners have not been set yet then using the latest state may result in funny errors
+            if (this.s.listSet) {
+                loadedFilter = table.state();
+            }
             // If it is not a custom pane in place
             if (this.colExists) {
                 var idx = -1;
@@ -1375,6 +1378,9 @@
             if (this.c.cascadePanes || this.c.viewTotal) {
                 this.redrawPanes(true);
             }
+            else {
+                this._updateSelection();
+            }
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
             this._attachPaneContainer();
@@ -1791,6 +1797,9 @@
                 if (_this.c.cascadePanes || _this.c.viewTotal) {
                     _this.redrawPanes();
                 }
+                else {
+                    _this._updateSelection();
+                }
                 _this.s.filterPane = -1;
             });
             // Whenever a state save occurs store the selection list in the state object
@@ -1818,7 +1827,12 @@
                                 pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
                                 false);
                         }
-                        _this.redrawPanes();
+                        if (_this.c.cascadePanes || _this.c.viewTotal) {
+                            _this.redrawPanes();
+                        }
+                        else {
+                            _this._updateSelection();
+                        }
                         _this._checkMessage();
                     });
                 }
@@ -1890,6 +1904,19 @@
             if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
                 this.c.filterChanged(filterCount);
             }
+        };
+        /**
+         * Updates the selectionList when cascade is not in place
+         */
+        SearchPanes.prototype._updateSelection = function () {
+            this.s.selectionList = [];
+            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                var pane = _a[_i];
+                if (pane.s.dtPane !== undefined) {
+                    this.s.selectionList.push({ index: pane.s.index, rows: pane.s.dtPane.rows({ selected: true }).data().toArray(), protect: false });
+                }
+            }
+            this.s.dt.state.save();
         };
         SearchPanes.version = '1.0.1';
         SearchPanes.classes = {
