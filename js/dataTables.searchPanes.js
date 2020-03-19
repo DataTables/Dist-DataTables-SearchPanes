@@ -211,7 +211,7 @@
          */
         SearchPane.prototype.rebuildPane = function (last) {
             if (last === void 0) { last = false; }
-            this.s.lastSelect = last;
+            //this.s.lastSelect = last;
             this.clearData();
             var selectedRows = [];
             // When rebuilding strip all of the HTML Elements out of the container and start from scratch
@@ -1372,7 +1372,7 @@
                     pane.s.index === this.s.selectionList[this.s.selectionList.length - 1].index :
                     false));
             }
-            this.redrawPanes();
+            this.redrawPanes(true);
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
             this._attachPaneContainer();
@@ -1388,7 +1388,8 @@
         /**
          * Redraws all of the panes
          */
-        SearchPanes.prototype.redrawPanes = function () {
+        SearchPanes.prototype.redrawPanes = function (rebuild) {
+            if (rebuild === void 0) { rebuild = false; }
             var table = this.s.dt;
             // Only do this if the redraw isn't being triggered by the panes updating themselves
             if (!this.s.updating) {
@@ -1479,7 +1480,8 @@
                     // Update the label that shows how many filters are in place
                     this._updateFilterCount();
                     // If the length of the selections are different then some of them have been removed and a deselect has occured
-                    if (newSelectionList.length > 0 && newSelectionList.length < this.s.selectionList.length) {
+                    if (newSelectionList.length > 0 && (newSelectionList.length < this.s.selectionList.length || rebuild)) {
+                        console.log(newSelectionList);
                         this._cascadeRegen(newSelectionList);
                         var last = newSelectionList[newSelectionList.length - 1].index;
                         for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
@@ -1488,6 +1490,7 @@
                         }
                     }
                     else if (newSelectionList.length > 0) {
+                        console.log(newSelectionList);
                         // Update all of the other panes as you would just making a normal selection
                         for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
                             var paneUpdate = _l[_k];
@@ -1820,8 +1823,16 @@
                     });
                 }
             });
+            if (this.s.selectionList !== undefined && this.s.selectionList.length > 0) {
+                var last = this.s.selectionList[this.s.selectionList.length - 1].index;
+                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                    var pane = _c[_b];
+                    pane.s.lastSelect = (pane.s.index === last && this.s.selectionList.length === 1);
+                }
+            }
             // If cascadePanes is active then make the previous selections in the order they were previously
             if (this.s.selectionList.length > 0 && this.c.cascadePanes) {
+                console.log(this.s.selectionList);
                 this._cascadeRegen(this.s.selectionList);
             }
             // PreSelect any selections which have been defined using the preSelect option
