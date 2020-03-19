@@ -1452,7 +1452,7 @@
                         var last = this.s.selectionList[this.s.selectionList.length - 1].index;
                         for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
                             var pane = _e[_d];
-                            pane.s.lastSelect = (pane.s.index === last && this.s.selectionList.length === 1);
+                            pane.s.lastSelect = (pane.s.index === last);
                         }
                     }
                     // Remove selections from the list from the pane where a deselect has taken place
@@ -1493,7 +1493,7 @@
                         var last = newSelectionList[newSelectionList.length - 1].index;
                         for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
                             var pane = _j[_h];
-                            pane.s.lastSelect = (pane.s.index === last && this.s.selectionList.length === 1);
+                            pane.s.lastSelect = (pane.s.index === last);
                         }
                     }
                     else if (newSelectionList.length > 0) {
@@ -1841,7 +1841,7 @@
                 var last = this.s.selectionList[this.s.selectionList.length - 1].index;
                 for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
                     var pane = _c[_b];
-                    pane.s.lastSelect = (pane.s.index === last && this.s.selectionList.length === 1);
+                    pane.s.lastSelect = (pane.s.index === last);
                 }
             }
             // If cascadePanes is active then make the previous selections in the order they were previously
