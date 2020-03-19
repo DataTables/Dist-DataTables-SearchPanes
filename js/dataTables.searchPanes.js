@@ -1372,7 +1372,9 @@
                     pane.s.index === this.s.selectionList[this.s.selectionList.length - 1].index :
                     false));
             }
-            this.redrawPanes(true);
+            if (this.c.cascadePanes || this.c.viewTotal) {
+                this.redrawPanes(true);
+            }
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
             this._attachPaneContainer();
