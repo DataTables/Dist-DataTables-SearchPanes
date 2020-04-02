@@ -42,6 +42,7 @@
                 indexes: [],
                 lastSelect: false,
                 listSet: false,
+                name: undefined,
                 redraw: false,
                 rowData: {
                     arrayFilter: [],
@@ -98,6 +99,12 @@
             this.dom.container.addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
                 ? this.customPaneSettings.className
                 : '');
+            if (this.s.colOpts.name === undefined) {
+                this.s.name = $(table.column(this.s.index).header()).text();
+            }
+            else {
+                this.s.name = this.s.colOpts.name;
+            }
             $(panesContainer).append(this.dom.container);
             var tableNode = table.table(0).node();
             // Custom search function for table
@@ -1257,6 +1264,7 @@
             emptyMessage: '<i>No Data</i>',
             hideCount: false,
             layout: 'columns-3',
+            name: undefined,
             orderable: true,
             orthogonal: {
                 display: 'display',
@@ -1747,6 +1755,26 @@
                 var id = rowLength + i;
                 this.s.panes.push(new SearchPane(paneSettings, opts, id, this.c.layout, this.dom.panes, this.c.panes[i]));
             }
+            if (this.c.order.length > 0) {
+                var newPanes = [];
+                for (var _i = 0, _a = this.c.order; _i < _a.length; _i++) {
+                    var paneName = _a[_i];
+                    for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                        var pane = _c[_b];
+                        if (paneName === pane.s.name) {
+                            newPanes.push(pane);
+                            break;
+                        }
+                    }
+                }
+                this.dom.panes.empty();
+                console.log(newPanes);
+                this.s.panes = newPanes;
+                for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                    var pane = _e[_d];
+                    this.dom.panes.append(pane.dom.container);
+                }
+            }
             // If this internal property is true then the DataTable has been initialised already
             if (this.s.dt.settings()[0]._bInitComplete) {
                 this._paneStartup(table);
@@ -1940,6 +1968,7 @@
             columns: [],
             filterChanged: undefined,
             layout: 'columns-3',
+            order: [],
             panes: [],
             viewTotal: false
         };
