@@ -100,7 +100,9 @@
                 ? this.customPaneSettings.className
                 : '');
             if (this.s.colOpts.name === undefined) {
-                this.s.name = $(table.column(this.s.index).header()).text();
+                this.s.name = this.colExists ?
+                    $(table.column(this.s.index).header()).text() :
+                    this.customPaneSettings.header || 'Custom Pane';
             }
             else {
                 this.s.name = this.s.colOpts.name;
