@@ -99,13 +99,17 @@
             this.dom.container.addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
                 ? this.customPaneSettings.className
                 : '');
-            if (this.s.colOpts.name === undefined) {
+            // Set the value of name incase ordering is desired
+            if (this.s.colOpts.name !== undefined) {
+                this.s.name = this.s.colOpts.name;
+            }
+            else if (this.customPaneSettings !== null && this.customPaneSettings.name !== undefined) {
+                this.s.name = this.customPaneSettings.name;
+            }
+            else {
                 this.s.name = this.colExists ?
                     $(table.column(this.s.index).header()).text() :
                     this.customPaneSettings.header || 'Custom Pane';
-            }
-            else {
-                this.s.name = this.s.colOpts.name;
             }
             $(panesContainer).append(this.dom.container);
             var tableNode = table.table(0).node();
@@ -1757,23 +1761,18 @@
                 var id = rowLength + i;
                 this.s.panes.push(new SearchPane(paneSettings, opts, id, this.c.layout, this.dom.panes, this.c.panes[i]));
             }
+            // If a custom ordering is being used
             if (this.c.order.length > 0) {
-                var newPanes = [];
-                for (var _i = 0, _a = this.c.order; _i < _a.length; _i++) {
-                    var paneName = _a[_i];
-                    for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                        var pane = _c[_b];
-                        if (paneName === pane.s.name) {
-                            newPanes.push(pane);
-                            break;
-                        }
-                    }
-                }
+                // Make a new Array of panes based upon the order
+                var newPanes = this.c.order.map(function (name, index, values) {
+                    return _this._findPane(name);
+                });
+                // Remove the old panes from the dom
                 this.dom.panes.empty();
-                console.log(newPanes);
                 this.s.panes = newPanes;
-                for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
-                    var pane = _e[_d];
+                // Append the panes in the correct order
+                for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                    var pane = _a[_i];
                     this.dom.panes.append(pane.dom.container);
                 }
             }
@@ -1787,6 +1786,20 @@
                 this.s.dt.settings()[0].aoInitComplete.push({ fn: function () {
                         _this._paneStartup(table);
                     } });
+            }
+        };
+        /**
+         * Finds a pane based upon the name of that pane
+         * @param name string representing the name of the pane
+         * @returns SearchPane The pane which has that name
+         */
+        SearchPanes.prototype._findPane = function (name) {
+            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                var pane = _a[_i];
+                console.log(name, pane.s.name);
+                if (name === pane.s.name) {
+                    return pane;
+                }
             }
         };
         /**
