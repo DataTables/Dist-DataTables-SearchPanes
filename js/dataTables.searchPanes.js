@@ -1796,7 +1796,6 @@
         SearchPanes.prototype._findPane = function (name) {
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
-                console.log(name, pane.s.name);
                 if (name === pane.s.name) {
                     return pane;
                 }
