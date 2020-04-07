@@ -4,7 +4,12 @@
 (function () {
     'use strict';
 
-    var DataTable = $.fn.dataTable;
+    var $;
+    var DataTable;
+    function setJQuery(jq) {
+        $ = jq;
+        DataTable = jq.fn.dataTable;
+    }
     var SearchPane = /** @class */ (function () {
         /**
          * Creates the panes, sets up the search function
@@ -1288,7 +1293,12 @@
         return SearchPane;
     }());
 
-    var DataTable$1 = $.fn.dataTable;
+    var $$1;
+    var DataTable$1;
+    function setJQuery$1(jq) {
+        $$1 = jq;
+        DataTable$1 = jq.fn.dataTable;
+    }
     var SearchPanes = /** @class */ (function () {
         function SearchPanes(paneSettings, opts, fromInit) {
             var _this = this;
@@ -1303,19 +1313,19 @@
                 throw new Error('SearchPane requires Select');
             }
             var table = new DataTable$1.Api(paneSettings);
-            this.classes = $.extend(true, {}, SearchPanes.classes);
+            this.classes = $$1.extend(true, {}, SearchPanes.classes);
             // Get options from user
-            this.c = $.extend(true, {}, SearchPanes.defaults, opts);
+            this.c = $$1.extend(true, {}, SearchPanes.defaults, opts);
             // Add extra elements to DOM object including clear
             this.dom = {
-                clearAll: $('<button type="button">Clear All</button>').addClass(this.classes.clearAll),
-                container: $('<div/>').addClass(this.classes.panes).text(table.i18n('searchPanes.loadMessage', 'Loading Search Panes...')),
-                emptyMessage: $('<div/>').addClass(this.classes.emptyMessage),
-                options: $('<div/>').addClass(this.classes.container),
-                panes: $('<div/>').addClass(this.classes.container),
-                title: $('<div/>').addClass(this.classes.title),
-                titleRow: $('<div/>').addClass(this.classes.titleRow),
-                wrapper: $('<div/>')
+                clearAll: $$1('<button type="button">Clear All</button>').addClass(this.classes.clearAll),
+                container: $$1('<div/>').addClass(this.classes.panes).text(table.i18n('searchPanes.loadMessage', 'Loading Search Panes...')),
+                emptyMessage: $$1('<div/>').addClass(this.classes.emptyMessage),
+                options: $$1('<div/>').addClass(this.classes.container),
+                panes: $$1('<div/>').addClass(this.classes.container),
+                title: $$1('<div/>').addClass(this.classes.title),
+                titleRow: $$1('<div/>').addClass(this.classes.titleRow),
+                wrapper: $$1('<div/>')
             };
             this.s = {
                 colOpts: [],
@@ -1349,8 +1359,8 @@
             // For each searchBox set the input text to be empty and then trigger
             //  an input on them so that they no longer filter the panes
             searches.each(function () {
-                $(this).val('');
-                $(this).trigger('input');
+                $$1(this).val('');
+                $$1(this).trigger('input');
             });
             var returnArray = [];
             // For every pane, clear the selections in the pane
@@ -1374,7 +1384,7 @@
          */
         SearchPanes.prototype.rebuild = function (targetIdx, maintainSelection) {
             if (targetIdx === void 0) { targetIdx = false; }
-            $(this.dom.emptyMessage).remove();
+            $$1(this.dom.emptyMessage).remove();
             // As a rebuild from scratch is required, empty the searchpanes container.
             var returnArray = [];
             // Rebuild each pane individually, if a specific pane has been selected then only rebuild that one
@@ -1552,27 +1562,27 @@
          */
         SearchPanes.prototype._attach = function () {
             var _this = this;
-            $(this.dom.container).removeClass(this.classes.hide);
-            $(this.dom.titleRow).removeClass(this.classes.hide);
-            $(this.dom.titleRow).remove();
-            $(this.dom.title).appendTo(this.dom.titleRow);
+            $$1(this.dom.container).removeClass(this.classes.hide);
+            $$1(this.dom.titleRow).removeClass(this.classes.hide);
+            $$1(this.dom.titleRow).remove();
+            $$1(this.dom.title).appendTo(this.dom.titleRow);
             // If the clear button is permitted attach it
             if (this.c.clear) {
-                $(this.dom.clearAll).appendTo(this.dom.titleRow);
-                $(this.dom.clearAll).on('click.dtsps', function () {
+                $$1(this.dom.clearAll).appendTo(this.dom.titleRow);
+                $$1(this.dom.clearAll).on('click.dtsps', function () {
                     _this.clearSelections();
                 });
             }
-            $(this.dom.titleRow).appendTo(this.dom.container);
+            $$1(this.dom.titleRow).appendTo(this.dom.container);
             // Attach the container for each individual pane to the overall container
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
-                $(pane.dom.container).appendTo(this.dom.panes);
+                $$1(pane.dom.container).appendTo(this.dom.panes);
             }
             // Attach everything to the document
-            $(this.dom.panes).appendTo(this.dom.container);
-            if ($('div.' + this.classes.container).length === 0) {
-                $(this.dom.container).prependTo(this.s.dt);
+            $$1(this.dom.panes).appendTo(this.dom.container);
+            if ($$1('div.' + this.classes.container).length === 0) {
+                $$1(this.dom.container).prependTo(this.s.dt);
             }
             return this.dom.container;
         };
@@ -1580,15 +1590,15 @@
          * Attach the top row containing the filter count and clear all button
          */
         SearchPanes.prototype._attachExtras = function () {
-            $(this.dom.container).removeClass(this.classes.hide);
-            $(this.dom.titleRow).removeClass(this.classes.hide);
-            $(this.dom.titleRow).remove();
-            $(this.dom.title).appendTo(this.dom.titleRow);
+            $$1(this.dom.container).removeClass(this.classes.hide);
+            $$1(this.dom.titleRow).removeClass(this.classes.hide);
+            $$1(this.dom.titleRow).remove();
+            $$1(this.dom.title).appendTo(this.dom.titleRow);
             // If the clear button is permitted attach it
             if (this.c.clear) {
-                $(this.dom.clearAll).appendTo(this.dom.titleRow);
+                $$1(this.dom.clearAll).appendTo(this.dom.titleRow);
             }
-            $(this.dom.titleRow).appendTo(this.dom.container);
+            $$1(this.dom.titleRow).appendTo(this.dom.container);
             return this.dom.container;
         };
         /**
@@ -1607,16 +1617,16 @@
             // If the message is an empty string then searchPanes.emptyPanes is undefined,
             //  therefore the pane container should be removed from the display
             if (message === null) {
-                $(this.dom.container).addClass(this.classes.hide);
-                $(this.dom.titleRow).removeClass(this.classes.hide);
+                $$1(this.dom.container).addClass(this.classes.hide);
+                $$1(this.dom.titleRow).removeClass(this.classes.hide);
                 return;
             }
             else {
-                $(this.dom.container).removeClass(this.classes.hide);
-                $(this.dom.titleRow).addClass(this.classes.hide);
+                $$1(this.dom.container).removeClass(this.classes.hide);
+                $$1(this.dom.titleRow).addClass(this.classes.hide);
             }
             // Otherwise display the message
-            $(this.dom.emptyMessage).text(message);
+            $$1(this.dom.emptyMessage).text(message);
             this.dom.emptyMessage.appendTo(this.dom.container);
             return this.dom.container;
         };
@@ -1823,10 +1833,10 @@
          */
         SearchPanes.prototype._startup = function (table) {
             var _this = this;
-            $(this.dom.container).text('');
+            $$1(this.dom.container).text('');
             // Attach clear button and title bar to the document
             this._attachExtras();
-            $(this.dom.container).append(this.dom.panes);
+            $$1(this.dom.container).append(this.dom.panes);
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 pane.rebuildPane();
@@ -1916,13 +1926,13 @@
                     pane.destroy();
                 }
                 table.off('.dtsps');
-                $(_this.dom.clearAll).off('.dtsps');
-                $(_this.dom.container).remove();
+                $$1(_this.dom.clearAll).off('.dtsps');
+                $$1(_this.dom.container).remove();
                 _this.clearSelections();
             });
             // When the clear All button has been pressed clear all of the selections in the panes
             if (this.c.clear) {
-                $(this.dom.clearAll).on('click.dtsps', function () {
+                $$1(this.dom.clearAll).on('click.dtsps', function () {
                     _this.clearSelections();
                 });
             }
@@ -1942,7 +1952,7 @@
             }
             // Run the message through the internationalisation method to improve readability
             var message = this.s.dt.i18n('searchPanes.title', 'Filters Active - %d', filterCount);
-            $(this.dom.title).text(message);
+            $$1(this.dom.title).text(message);
             if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
                 this.c.filterChanged(filterCount);
             }
@@ -2019,6 +2029,8 @@
             factory(window.jQuery, window, document);
         }
     }(function ($, window, document) {
+        setJQuery($);
+        setJQuery$1($);
         var DataTable = $.fn.dataTable;
         $.fn.dataTable.SearchPanes = SearchPanes;
         $.fn.DataTable.SearchPanes = SearchPanes;
