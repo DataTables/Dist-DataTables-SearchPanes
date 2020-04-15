@@ -475,16 +475,18 @@
                         this.s.tableLength = table.rows()[0].length;
                     }
                     var colTitle = table.column(this.s.index).dataSrc();
-                    for (var _i = 0, _a = dataIn[colTitle]; _i < _a.length; _i++) {
-                        var dataPoint = _a[_i];
-                        this.s.rowData.arrayFilter.push({
-                            display: dataPoint.label,
-                            filter: dataPoint.value,
-                            sort: dataPoint.label,
-                            type: dataPoint.label
-                        });
-                        this.s.rowData.bins[dataPoint.value] = dataPoint.count;
-                        this.s.rowData.binsTotal[dataPoint.value] = dataPoint.total;
+                    if (dataIn[colTitle] !== undefined) {
+                        for (var _i = 0, _a = dataIn[colTitle]; _i < _a.length; _i++) {
+                            var dataPoint = _a[_i];
+                            this.s.rowData.arrayFilter.push({
+                                display: dataPoint.label,
+                                filter: dataPoint.value,
+                                sort: dataPoint.label,
+                                type: dataPoint.label
+                            });
+                            this.s.rowData.bins[dataPoint.value] = dataPoint.count;
+                            this.s.rowData.binsTotal[dataPoint.value] = dataPoint.total;
+                        }
                     }
                     var binLength = Object.keys(rowData.binsTotal).length;
                     var uniqueRatio = this._uniqueRatio(binLength, this.s.tableLength);
