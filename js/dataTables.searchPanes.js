@@ -468,7 +468,10 @@
                     this.s.displayed = true;
                 }
                 else if (dataIn !== null) {
-                    if (this.s.tableLength === null || table.rows()[0].length > this.s.tableLength) {
+                    if (dataIn.tableLength !== undefined) {
+                        this.s.tableLength = dataIn.tableLength;
+                    }
+                    else if (this.s.tableLength === null || table.rows()[0].length > this.s.tableLength) {
                         this.s.tableLength = table.rows()[0].length;
                     }
                     var colTitle = table.column(this.s.index).dataSrc();
@@ -1376,6 +1379,7 @@
             table.on('xhr', function (e, settings, json, xhr) {
                 if (json.searchPanes && json.searchPanes.options) {
                     _this.s.serverData = json.searchPanes.options;
+                    _this.s.serverData.tableLength = json.recordsTotal;
                     if (_this.c.viewTotal || _this.c.cascadePanes) {
                         _this._serverTotals();
                     }
