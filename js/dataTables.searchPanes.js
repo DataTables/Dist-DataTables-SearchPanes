@@ -52,9 +52,6 @@
                 selectPresent: false,
                 updating: false
             };
-            if (this.s.dt.page.info().serverSide) {
-                this.c.hideCount = true;
-            }
             var rowLength = table.columns().eq(0).toArray().length;
             this.colExists = this.s.index < rowLength;
             // Add extra elements to DOM object including clear and hide buttons
@@ -470,10 +467,22 @@
                         var dataPoint = _a[_i];
                         this.s.rowData.arrayFilter.push({
                             display: dataPoint.label,
-                            filter: dataPoint.label,
+                            filter: dataPoint.value,
                             sort: dataPoint.label,
                             type: dataPoint.label
                         });
+                        this.s.rowData.bins[dataPoint.value] = dataPoint.count;
+                    }
+                    var binLength = Object.keys(rowData.bins).length;
+                    var uniqueRatio = this._uniqueRatio(binLength, table.rows()[0].length);
+                    // Don't show the pane if there isn't enough variance in the data, or there is only 1 entry for that pane
+                    if (this.s.displayed === false && ((colOpts.show === undefined && colOpts.threshold === null ?
+                        uniqueRatio > this.c.threshold :
+                        uniqueRatio > colOpts.threshold)
+                        || (colOpts.show !== true && binLength <= 1))) {
+                        this.dom.container.addClass(this.classes.hidden);
+                        this.s.displayed = false;
+                        return;
                     }
                     this.s.displayed = true;
                 }
@@ -590,7 +599,7 @@
                 // Add all of the search options to the pane
                 for (var i = 0, ien = rowData.arrayFilter.length; i < ien; i++) {
                     if (this.s.dt.page.info().serverSide) {
-                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, 1, 1, rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
+                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], rowData.bins[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
                         if (colOpts.preSelect !== undefined && colOpts.preSelect.indexOf(rowData.arrayFilter[i].filter) !== -1) {
                             row.select();
                         }
