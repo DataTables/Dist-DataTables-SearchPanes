@@ -206,8 +206,9 @@
         /**
          * Rebuilds the panes from the start having deleted the old ones
          */
-        SearchPane.prototype.rebuildPane = function (dataIn) {
+        SearchPane.prototype.rebuildPane = function (dataIn, init) {
             if (dataIn === void 0) { dataIn = null; }
+            if (init === void 0) { init = null; }
             this.clearData();
             // When rebuilding strip all of the HTML Elements out of the container and start from scratch
             if (this.s.dtPane !== undefined) {
@@ -215,7 +216,7 @@
             }
             this.dom.container.removeClass(this.classes.hidden);
             this.s.displayed = false;
-            this._buildPane(dataIn);
+            this._buildPane(dataIn, init);
             return this;
         };
         /**
@@ -385,9 +386,10 @@
         /**
          * Method to construct the actual pane.
          */
-        SearchPane.prototype._buildPane = function (dataIn) {
+        SearchPane.prototype._buildPane = function (dataIn, init) {
             var _this = this;
             if (dataIn === void 0) { dataIn = null; }
+            if (init === void 0) { init = null; }
             // Aliases
             this.selections = [];
             var table = this.s.dt;
@@ -609,8 +611,13 @@
                 });
                 // Add all of the search options to the pane
                 for (var i = 0, ien = rowData.arrayFilter.length; i < ien; i++) {
-                    if (this.s.dt.page.info().serverSide) {
-                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], rowData.binsTotal[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
+                    if (this.s.dt.page.info().serverSide &&
+                        (!this.c.cascadePanes ||
+                            (this.c.cascadePanes && rowData.bins[rowData.arrayFilter[i].filter] !== 0) ||
+                            (this.c.cascadePanes && init !== null))) {
+                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], this.c.viewTotal
+                            ? String(rowData.binsTotal[rowData.arrayFilter[i].filter])
+                            : rowData.bins[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
                         if (colOpts.preSelect !== undefined && colOpts.preSelect.indexOf(rowData.arrayFilter[i].filter) !== -1) {
                             row.select();
                         }
@@ -623,14 +630,15 @@
                             }
                         }
                     }
-                    else if (rowData.arrayFilter[i] &&
+                    else if (!this.s.dt.page.info().serverSide &&
+                        rowData.arrayFilter[i] &&
                         (rowData.bins[rowData.arrayFilter[i].filter] !== undefined || !this.c.cascadePanes)) {
                         var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], rowData.binsTotal[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
                         if (colOpts.preSelect !== undefined && colOpts.preSelect.indexOf(rowData.arrayFilter[i].filter) !== -1) {
                             row.select();
                         }
                     }
-                    else {
+                    else if (!this.s.dt.page.info().serverSide) {
                         this._addRow(this.c.emptyMessage, count_1, count_1, this.c.emptyMessage, this.c.emptyMessage, this.c.emptyMessage);
                     }
                 }
@@ -1368,7 +1376,7 @@
             table.on('xhr', function (e, settings, json, xhr) {
                 if (json.searchPanes && json.searchPanes.options) {
                     _this.s.serverData = json.searchPanes.options;
-                    if (_this.c.viewTotal) {
+                    if (_this.c.viewTotal || _this.c.cascadePanes) {
                         _this._serverTotals();
                     }
                 }
@@ -1867,12 +1875,16 @@
                 }
                 this.s.selectionList = newSelectionList;
             }
+            var initIdx = -1;
             // If there has been a deselect and only one pane has a selection then update everything
             if (deselectPresent && this.s.selectionList.length === 1) {
                 for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
                     var pane = _c[_b];
                     pane.s.lastSelect = false;
                     pane.s.deselect = false;
+                    if (pane.s.dtPane !== undefined && pane.s.dtPane.rows({ selected: true }).data().toArray().length > 0) {
+                        initIdx = pane.s.index;
+                    }
                 }
             }
             // Otherwise if there are more 1 selections then find the last one and set it to not update that pane
@@ -1896,7 +1908,7 @@
             for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
                 var pane = _j[_h];
                 if (!pane.s.lastSelect) {
-                    pane.rebuildPane(this.s.dt.page.info().serverSide ? this.s.serverData : undefined);
+                    pane.rebuildPane(this.s.dt.page.info().serverSide ? this.s.serverData : undefined, pane.s.index === initIdx ? true : null);
                 }
             }
         };
