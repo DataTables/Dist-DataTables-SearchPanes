@@ -2062,6 +2062,7 @@
                             return;
                         }
                         processing = true;
+                        $$1(_this.dom.panes).empty();
                         for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                             var pane = _a[_i];
                             pane.clearData(); // Clears all of the bins and will mean that the data has to be re-read
@@ -2069,6 +2070,7 @@
                             pane.rebuildPane(_this.s.selectionList[_this.s.selectionList.length - 1] !== undefined ?
                                 pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
                                 false);
+                            $$1(_this.dom.panes).append(pane.dom.container);
                         }
                         if (_this.c.cascadePanes || _this.c.viewTotal) {
                             _this.redrawPanes();
