@@ -217,6 +217,7 @@
             if (this.s.dtPane !== undefined) {
                 this.s.dtPane.destroy();
             }
+            this.s.listSet = false;
         };
         /**
          * Updates the number of filters that have been applied in the title
@@ -240,7 +241,9 @@
             if (this.s.dtPane !== undefined) {
                 selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
                 this.s.dtPane.clear().destroy();
+                this.destroy();
                 this.s.dtPane = undefined;
+                $.fn.dataTable.ext.search.push(this.s.searchFunction);
             }
             this.dom.container.removeClass(this.classes.hidden);
             this.s.displayed = false;
