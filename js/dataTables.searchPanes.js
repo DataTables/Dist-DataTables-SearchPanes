@@ -201,6 +201,7 @@
          * Strips all of the SearchPanes elements from the document and turns all of the listeners for the buttons off
          */
         SearchPane.prototype.destroy = function () {
+            console.log("destroy", this.s.index);
             $(this.s.dtPane).off('.dtsp');
             $(this.s.dt).off('.dtsp');
             $(this.dom.nameButton).off('.dtsp');
@@ -215,6 +216,7 @@
             }
             // If the datatables have been defined for the panes then also destroy these
             if (this.s.dtPane !== undefined) {
+                console.log("destroy datatable", this.s.index);
                 this.s.dtPane.destroy();
             }
             this.s.listSet = false;
@@ -428,6 +430,7 @@
             if (last === void 0) { last = false; }
             if (dataIn === void 0) { dataIn = null; }
             if (init === void 0) { init = null; }
+            console.log(this.s.index, "build");
             // Aliases
             this.selections = [];
             var table = this.s.dt;
@@ -564,6 +567,7 @@
             var errMode = $.fn.dataTable.ext.errMode;
             $.fn.dataTable.ext.errMode = 'none';
             var haveScroller = DataTable.Scroller;
+            console.log("initialise datatable", this.s.index);
             this.s.dtPane = $(this.dom.dtP).DataTable($.extend(true, {
                 columnDefs: [
                     {
@@ -759,9 +763,11 @@
                     _this.s.selectPresent = false;
                 }
             });
+            console.log("set deselect", this.s.index);
             // When an item is deselected on the pane, re add the currently selected items to the array
             // which holds selected items. Custom search will be performed.
             this.s.dtPane.on('deselect.dtsp', function () {
+                console.log("deselect");
                 t0 = setTimeout(function () {
                     if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
                         if (!_this.s.serverSelecting) {
@@ -923,6 +929,7 @@
             }
             $(this.dom.topRow).prependTo(this.dom.container);
             $(container).append(this.dom.dtP);
+            console.log("append dtP", this.s.index);
             $(container).show();
         };
         /**
@@ -1491,9 +1498,11 @@
             // As a rebuild from scratch is required, empty the searchpanes container.
             var returnArray = [];
             // Rebuild each pane individually, if a specific pane has been selected then only rebuild that one
+            $$1(this.dom.panes).empty();
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 if (targetIdx !== false && pane.s.index !== targetIdx) {
+                    $$1(this.dom.panes).append(pane.dom.container);
                     continue;
                 }
                 pane.clearData();
@@ -1504,6 +1513,7 @@
                     false, this.s.dt.page.info().serverSide ?
                     this.s.serverData :
                     undefined));
+                $$1(this.dom.panes).append(pane.dom.container);
             }
             if (this.c.cascadePanes || this.c.viewTotal) {
                 this.redrawPanes(true);
@@ -2010,12 +2020,16 @@
                     pane.s.deselect = false;
                 }
             }
+            $$1(this.dom.panes).empty();
             // Rebuild the desired panes
             for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
                 var pane = _j[_h];
                 if (!pane.s.lastSelect) {
                     pane.rebuildPane(undefined, this.s.dt.page.info().serverSide ? this.s.serverData : undefined, pane.s.index === initIdx ? true : null);
                 }
+                console.log("append", pane.s.index);
+                console.log($$1(pane.s.dtPane));
+                $$1(this.dom.panes).append(pane.dom.container);
             }
         };
         /**
@@ -2028,9 +2042,11 @@
             // Attach clear button and title bar to the document
             this._attachExtras();
             $$1(this.dom.container).append(this.dom.panes);
+            $$1(this.dom.panes).empty();
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 pane.rebuildPane(undefined, this.s.dt.page.info().serverSide ? this.s.serverData : undefined);
+                $$1(this.dom.panes).append(pane.dom.container);
             }
             this._updateFilterCount();
             this._checkMessage();
@@ -2114,6 +2130,7 @@
             this._updateFilterCount();
             // If the table is destroyed and restarted then clear the selections so that they do not persist.
             table.on('destroy.dtsps', function () {
+                console.log("panes destroy");
                 for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                     var pane = _a[_i];
                     pane.destroy();
