@@ -597,7 +597,7 @@
                             if (!_this.c.dataLength) {
                                 displayMessage = '<span class="' + _this.classes.name + '">' + data + '</span>' + pill;
                             }
-                            else if (data.length > _this.c.dataLength) {
+                            else if (data !== null && data.length > _this.c.dataLength) {
                                 displayMessage = '<span class="' + _this.classes.name + '">'
                                     + data.substr(0, _this.c.dataLength) + '...'
                                     + '</span>'
