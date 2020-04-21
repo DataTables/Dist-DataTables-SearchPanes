@@ -2028,7 +2028,8 @@
             else if (this.s.selectionList.length === 0) {
                 for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
                     var pane = _g[_f];
-                    pane.s.lastSelect = (pane.s.deselect === true);
+                    // pane.s.lastSelect = (pane.s.deselect === true);
+                    pane.s.lastSelect = false;
                     pane.s.deselect = false;
                 }
             }
