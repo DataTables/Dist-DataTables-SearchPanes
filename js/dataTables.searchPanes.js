@@ -88,6 +88,7 @@
                         : this.customPaneSettings.header || 'Custom Pane') + '</th><th/></tr></thead></table>'),
                 lower: $('<div/>').addClass(this.classes.subRow2).addClass(this.classes.narrowButton),
                 nameButton: $('<button type="button"></button>').addClass(this.classes.paneButton).addClass(this.classes.nameButton),
+                panesContainer: panesContainer,
                 searchBox: $('<input/>').addClass(this.classes.paneInputButton).addClass(this.classes.search),
                 searchButton: $('<button type = "button" class="' + this.classes.searchIcon + '"></button>')
                     .addClass(this.classes.paneButton),
@@ -201,7 +202,6 @@
          * Strips all of the SearchPanes elements from the document and turns all of the listeners for the buttons off
          */
         SearchPane.prototype.destroy = function () {
-            console.log("destroy", this.s.index);
             $(this.s.dtPane).off('.dtsp');
             $(this.s.dt).off('.dtsp');
             $(this.dom.nameButton).off('.dtsp');
@@ -216,7 +216,6 @@
             }
             // If the datatables have been defined for the panes then also destroy these
             if (this.s.dtPane !== undefined) {
-                console.log("destroy datatable", this.s.index);
                 this.s.dtPane.destroy();
             }
             this.s.listSet = false;
@@ -239,17 +238,19 @@
             if (init === void 0) { init = null; }
             this.clearData();
             var selectedRows = [];
+            var prevEl = null;
             // When rebuilding strip all of the HTML Elements out of the container and start from scratch
             if (this.s.dtPane !== undefined) {
                 selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
                 this.s.dtPane.clear().destroy();
+                prevEl = $(this.dom.container).prev();
                 this.destroy();
                 this.s.dtPane = undefined;
                 $.fn.dataTable.ext.search.push(this.s.searchFunction);
             }
             this.dom.container.removeClass(this.classes.hidden);
             this.s.displayed = false;
-            this._buildPane(selectedRows, last, dataIn, init);
+            this._buildPane(selectedRows, last, dataIn, init, prevEl);
             return this;
         };
         /**
@@ -297,6 +298,132 @@
             if (this.c.cascadePanes || this.c.viewTotal) {
                 this.updatePane();
             }
+        };
+        /**
+         * Sets the listeners for the pane.
+         *
+         * Having it in it's own function makes it easier to only set them once
+         */
+        SearchPane.prototype._setListeners = function () {
+            var _this = this;
+            var rowData = this.s.rowData;
+            var t0;
+            // When an item is selected on the pane, add these to the array which holds selected items.
+            // Custom search will perform.
+            this.s.dtPane.on('select.dtsp', function () {
+                if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
+                    if (!_this.s.serverSelecting) {
+                        _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
+                        _this.s.selectPresent = true;
+                        _this.s.dt.draw(false);
+                    }
+                }
+                else {
+                    clearTimeout(t0);
+                    $(_this.dom.clear).removeClass(_this.classes.dull);
+                    _this.s.selectPresent = true;
+                    if (!_this.s.updating) {
+                        _this._makeSelection();
+                    }
+                    _this.s.selectPresent = false;
+                }
+            });
+            // When an item is deselected on the pane, re add the currently selected items to the array
+            // which holds selected items. Custom search will be performed.
+            this.s.dtPane.on('deselect.dtsp', function () {
+                t0 = setTimeout(function () {
+                    if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
+                        if (!_this.s.serverSelecting) {
+                            _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
+                            _this.s.deselect = true;
+                            _this.s.dt.draw(false);
+                        }
+                    }
+                    else {
+                        _this.s.deselect = true;
+                        if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
+                            $(_this.dom.clear).addClass(_this.classes.dull);
+                        }
+                        _this._makeSelection();
+                        _this.s.deselect = false;
+                        _this.s.dt.state.save();
+                    }
+                }, 50);
+            });
+            // When saving the state store all of the selected rows for preselection next time around
+            this.s.dt.on('stateSaveParams.dtsp', function (e, settings, data) {
+                // If the data being passed in is empty then a state clear must have occured so clear the panes state as well
+                if ($.isEmptyObject(data)) {
+                    _this.s.dtPane.state.clear();
+                    return;
+                }
+                var selected = [];
+                var searchTerm;
+                var order;
+                var bins;
+                var arrayFilter;
+                // Get all of the data needed for the state save from the pane
+                if (_this.s.dtPane !== undefined) {
+                    selected = _this.s.dtPane.rows({ selected: true }).data().map(function (item) { return item.filter.toString(); }).toArray();
+                    searchTerm = $(_this.dom.searchBox).val();
+                    order = _this.s.dtPane.order();
+                    bins = rowData.binsOriginal;
+                    arrayFilter = rowData.arrayOriginal;
+                }
+                if (data.searchPanes === undefined) {
+                    data.searchPanes = {};
+                }
+                if (data.searchPanes.panes === undefined) {
+                    data.searchPanes.panes = [];
+                }
+                // Add the panes data to the state object
+                data.searchPanes.panes.push({
+                    arrayFilter: arrayFilter,
+                    bins: bins,
+                    id: _this.s.index,
+                    order: order,
+                    searchTerm: searchTerm,
+                    selected: selected
+                });
+            });
+            this.s.dtPane.on('user-select.dtsp', function (e, _dt, type, cell, originalEvent) {
+                originalEvent.stopPropagation();
+            });
+            // When the button to order by the name of the options is clicked then
+            //  change the ordering to whatever it isn't currently
+            $(this.dom.nameButton).on('click.dtsp', function () {
+                var currentOrder = _this.s.dtPane.order()[0][1];
+                _this.s.dtPane.order([0, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+            });
+            // When the button to order by the number of entries in the column is clicked then
+            //  change the ordering to whatever it isn't currently
+            $(this.dom.countButton).on('click.dtsp', function () {
+                var currentOrder = _this.s.dtPane.order()[0][1];
+                _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+            });
+            // When the clear button is clicked reset the pane
+            $(this.dom.clear).on('click.dtsp', function () {
+                var searches = _this.dom.container.find('.' + _this.classes.search);
+                searches.each(function () {
+                    // set the value of the search box to be an empty string and then search on that, effectively reseting
+                    $(this).val('');
+                    $(this).trigger('input');
+                });
+                _this.clearPane();
+            });
+            // When the search button is clicked then draw focus to the search box
+            $(this.dom.searchButton).on('click.dtsp', function () {
+                $(_this.dom.searchBox).focus();
+            });
+            // When a character is inputted into the searchbox search the pane for matching values.
+            // Doing it this way means that no button has to be clicked to trigger a search, it is done asynchronously
+            $(this.dom.searchBox).on('input.dtsp', function () {
+                _this.s.dtPane.search($(_this.dom.searchBox).val()).draw();
+                _this.s.dt.state.save();
+            });
+            // Make sure to save the state once the pane has been built
+            this.s.dt.state.save();
+            return true;
         };
         /**
          * Takes in potentially undetected rows and adds them to the array if they are not yet featured
@@ -424,13 +551,13 @@
          * @param selectedRows previously selected Rows to be reselected
          * @last boolean to indicate whether this pane was the last one to have a selection made
          */
-        SearchPane.prototype._buildPane = function (selectedRows, last, dataIn, init) {
+        SearchPane.prototype._buildPane = function (selectedRows, last, dataIn, init, prevEl) {
             var _this = this;
             if (selectedRows === void 0) { selectedRows = []; }
             if (last === void 0) { last = false; }
             if (dataIn === void 0) { dataIn = null; }
             if (init === void 0) { init = null; }
-            console.log(this.s.index, "build");
+            if (prevEl === void 0) { prevEl = null; }
             // Aliases
             this.selections = [];
             var table = this.s.dt;
@@ -563,11 +690,17 @@
                     }
                 });
             }
+            // Add the container to the document in its original location
+            if (prevEl !== null && $(this.dom.panesContainer).has(prevEl).length > 0) {
+                $(this.dom.panesContainer).insertAfter(prevEl);
+            }
+            else {
+                $(this.dom.panesContainer).prepend(this.dom.container);
+            }
             // Declare the datatable for the pane
             var errMode = $.fn.dataTable.ext.errMode;
             $.fn.dataTable.ext.errMode = 'none';
             var haveScroller = DataTable.Scroller;
-            console.log("initialise datatable", this.s.index);
             this.s.dtPane = $(this.dom.dtP).DataTable($.extend(true, {
                 columnDefs: [
                     {
@@ -712,7 +845,15 @@
                     for (var _e = 0, _f = this.s.dtPane.rows().indexes().toArray(); _e < _f.length; _e++) {
                         var row = _f[_e];
                         if (this.s.dtPane.row(row).data() !== undefined && selection.filter === this.s.dtPane.row(row).data().filter) {
-                            this.s.dtPane.row(row).select();
+                            // If this is happening when serverSide processing is happening then different behaviour is needed
+                            if (this.s.dt.page.info().serverSide) {
+                                this.s.serverSelecting = true;
+                                this.s.dtPane.row(row).select();
+                                this.s.serverSelecting = false;
+                            }
+                            else {
+                                this.s.dtPane.row(row).select();
+                            }
                         }
                     }
                 }
@@ -730,134 +871,6 @@
                     }
                 }
             }
-            // Make sure to save the state once the pane has been built
-            this.s.dt.state.save();
-            return true;
-        };
-        /**
-         * Sets the listeners for the pane.
-         *
-         * Having it in it's own function makes it easier to only set them once
-         */
-        SearchPane.prototype._setListeners = function () {
-            var _this = this;
-            var rowData = this.s.rowData;
-            var t0;
-            // When an item is selected on the pane, add these to the array which holds selected items.
-            // Custom search will perform.
-            this.s.dtPane.on('select.dtsp', function () {
-                if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
-                    if (!_this.s.serverSelecting) {
-                        _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
-                        _this.s.selectPresent = true;
-                        _this.s.dt.draw(false);
-                    }
-                }
-                else {
-                    clearTimeout(t0);
-                    $(_this.dom.clear).removeClass(_this.classes.dull);
-                    _this.s.selectPresent = true;
-                    if (!_this.s.updating) {
-                        _this._makeSelection();
-                    }
-                    _this.s.selectPresent = false;
-                }
-            });
-            console.log("set deselect", this.s.index);
-            // When an item is deselected on the pane, re add the currently selected items to the array
-            // which holds selected items. Custom search will be performed.
-            this.s.dtPane.on('deselect.dtsp', function () {
-                console.log("deselect");
-                t0 = setTimeout(function () {
-                    if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
-                        if (!_this.s.serverSelecting) {
-                            _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
-                            _this.s.deselect = true;
-                            _this.s.dt.draw(false);
-                        }
-                    }
-                    else {
-                        _this.s.deselect = true;
-                        if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
-                            $(_this.dom.clear).addClass(_this.classes.dull);
-                        }
-                        _this._makeSelection();
-                        _this.s.deselect = false;
-                        _this.s.dt.state.save();
-                    }
-                }, 50);
-            });
-            // When saving the state store all of the selected rows for preselection next time around
-            this.s.dt.on('stateSaveParams.dtsp', function (e, settings, data) {
-                // If the data being passed in is empty then a state clear must have occured so clear the panes state as well
-                if ($.isEmptyObject(data)) {
-                    _this.s.dtPane.state.clear();
-                    return;
-                }
-                var selected = [];
-                var searchTerm;
-                var order;
-                var bins;
-                var arrayFilter;
-                // Get all of the data needed for the state save from the pane
-                if (_this.s.dtPane !== undefined) {
-                    selected = _this.s.dtPane.rows({ selected: true }).data().map(function (item) { return item.filter.toString(); }).toArray();
-                    searchTerm = $(_this.dom.searchBox).val();
-                    order = _this.s.dtPane.order();
-                    bins = rowData.binsOriginal;
-                    arrayFilter = rowData.arrayOriginal;
-                }
-                if (data.searchPanes === undefined) {
-                    data.searchPanes = {};
-                }
-                if (data.searchPanes.panes === undefined) {
-                    data.searchPanes.panes = [];
-                }
-                // Add the panes data to the state object
-                data.searchPanes.panes.push({
-                    arrayFilter: arrayFilter,
-                    bins: bins,
-                    id: _this.s.index,
-                    order: order,
-                    searchTerm: searchTerm,
-                    selected: selected
-                });
-            });
-            this.s.dtPane.on('user-select.dtsp', function (e, _dt, type, cell, originalEvent) {
-                originalEvent.stopPropagation();
-            });
-            // When the button to order by the name of the options is clicked then
-            //  change the ordering to whatever it isn't currently
-            $(this.dom.nameButton).on('click.dtsp', function () {
-                var currentOrder = _this.s.dtPane.order()[0][1];
-                _this.s.dtPane.order([0, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
-            });
-            // When the button to order by the number of entries in the column is clicked then
-            //  change the ordering to whatever it isn't currently
-            $(this.dom.countButton).on('click.dtsp', function () {
-                var currentOrder = _this.s.dtPane.order()[0][1];
-                _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
-            });
-            // When the clear button is clicked reset the pane
-            $(this.dom.clear).on('click.dtsp', function () {
-                var searches = _this.dom.container.find('.' + _this.classes.search);
-                searches.each(function () {
-                    // set the value of the search box to be an empty string and then search on that, effectively reseting
-                    $(this).val('');
-                    $(this).trigger('input');
-                });
-                _this.clearPane();
-            });
-            // When the search button is clicked then draw focus to the search box
-            $(this.dom.searchButton).on('click.dtsp', function () {
-                $(_this.dom.searchBox).focus();
-            });
-            // When a character is inputted into the searchbox search the pane for matching values.
-            // Doing it this way means that no button has to be clicked to trigger a search, it is done asynchronously
-            $(this.dom.searchBox).on('input.dtsp', function () {
-                _this.s.dtPane.search($(_this.dom.searchBox).val()).draw();
-                _this.s.dt.state.save();
-            });
             // Make sure to save the state once the pane has been built
             this.s.dt.state.save();
             return true;
@@ -929,7 +942,6 @@
             }
             $(this.dom.topRow).prependTo(this.dom.container);
             $(container).append(this.dom.dtP);
-            console.log("append dtP", this.s.index);
             $(container).show();
         };
         /**
@@ -2027,9 +2039,12 @@
                 if (!pane.s.lastSelect) {
                     pane.rebuildPane(undefined, this.s.dt.page.info().serverSide ? this.s.serverData : undefined, pane.s.index === initIdx ? true : null);
                 }
-                console.log("append", pane.s.index);
-                console.log($$1(pane.s.dtPane));
+                else {
+                    pane._setListeners();
+                }
+                // append all of the panes and enable select
                 $$1(this.dom.panes).append(pane.dom.container);
+                $$1.fn.dataTable.select.init(pane.s.dtPane);
             }
         };
         /**
@@ -2130,7 +2145,6 @@
             this._updateFilterCount();
             // If the table is destroyed and restarted then clear the selections so that they do not persist.
             table.on('destroy.dtsps', function () {
-                console.log("panes destroy");
                 for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                     var pane = _a[_i];
                     pane.destroy();
