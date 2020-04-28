@@ -45,6 +45,7 @@
                 filteringActive: false,
                 index: idx,
                 indexes: [],
+                lastCascade: false,
                 lastSelect: false,
                 listSet: false,
                 name: undefined,
@@ -63,6 +64,7 @@
                 selectPresent: false,
                 serverSelect: [],
                 serverSelecting: false,
+                showFiltered: false,
                 tableLength: null,
                 updating: false
             };
@@ -720,7 +722,7 @@
                                 return row.type;
                             }
                             var message;
-                            _this.s.filteringActive && _this.c.viewTotal
+                            (_this.s.filteringActive || _this.s.showFiltered) && _this.c.viewTotal
                                 ? message = filteredMessage.replace(/{total}/, row.total)
                                 : message = countMessage.replace(/{total}/, row.total);
                             message = message.replace(/{shown}/, row.shown);
@@ -1246,8 +1248,8 @@
             // Update the panes if doing a deselect. if doing a select then
             // update all of the panes except for the one causing the change
             if (this.s.dtPane !== undefined &&
-                ((!this.s.filteringActive || this.c.cascadePanes) || draw === true) &&
-                (this.c.cascadePanes !== true || this.s.selectPresent !== true) && !this.s.lastSelect) {
+                (!this.s.filteringActive || this.c.cascadePanes || draw === true) &&
+                (this.c.cascadePanes !== true || this.s.selectPresent !== true) && (!this.s.lastSelect || !this.s.lastCascade)) {
                 var colOpts = this.s.colOpts;
                 var selected = this.s.dtPane.rows({ selected: true }).data().toArray();
                 var scrollTop = $(this.s.dtPane.table().node()).parent()[0].scrollTop;
@@ -1843,10 +1845,14 @@
          */
         SearchPanes.prototype._makeCascadeSelections = function (newSelectionList) {
             // make selections in the order they were made previously, excluding those from the pane where a deselect was made
-            for (var _i = 0, newSelectionList_1 = newSelectionList; _i < newSelectionList_1.length; _i++) {
-                var selection = newSelectionList_1[_i];
+            for (var i = 0; i < newSelectionList.length; i++) {
                 var _loop_1 = function (pane) {
-                    if (pane.s.index === selection.index && pane.s.dtPane !== undefined) {
+                    if (pane.s.index === newSelectionList[i].index && pane.s.dtPane !== undefined) {
+                        // When regenerating the cascade selections we need this flag so that the panes are only ignored if it
+                        //  is the last selection and the pane for that selection
+                        if (i === newSelectionList.length - 1) {
+                            pane.s.lastCascade = true;
+                        }
                         // if there are any selections currently in the pane then deselect them as we are about to make our new selections
                         if (pane.s.dtPane.rows({ selected: true }).data().toArray().length > 0 && pane.s.dtPane !== undefined) {
                             pane.setClear(true);
@@ -1863,19 +1869,20 @@
                             });
                         };
                         // select every row in the pane that was selected previously
-                        for (var _i = 0, _a = selection.rows; _i < _a.length; _i++) {
+                        for (var _i = 0, _a = newSelectionList[i].rows; _i < _a.length; _i++) {
                             var row = _a[_i];
                             _loop_2(row);
                         }
                         // Update the label that shows how many filters are in place
                         this_1._updateFilterCount();
+                        pane.s.lastCascade = false;
                     }
                 };
                 var this_1 = this;
                 // As the selections may have been made across the panes in a different order to the pane index we must identify
                 //  which pane has the index of the selection. This is also important for colreorder etc
-                for (var _a = 0, _b = this.s.panes; _a < _b.length; _a++) {
-                    var pane = _b[_a];
+                for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                    var pane = _a[_i];
                     _loop_1(pane);
                 }
             }
@@ -2066,10 +2073,38 @@
             this._attachExtras();
             $$1(this.dom.container).append(this.dom.panes);
             $$1(this.dom.panes).empty();
-            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
-                var pane = _a[_i];
+            if (this.c.viewTotal && !this.c.cascadePanes) {
+                var loadedFilter = this.s.dt.state.loaded();
+                if (loadedFilter !== null &&
+                    loadedFilter !== undefined &&
+                    loadedFilter.searchPanes !== undefined &&
+                    loadedFilter.searchPanes.panes !== undefined) {
+                    var filterActive = false;
+                    for (var _i = 0, _a = loadedFilter.searchPanes.panes; _i < _a.length; _i++) {
+                        var pane = _a[_i];
+                        if (pane.selected.length > 0) {
+                            filterActive = true;
+                            break;
+                        }
+                    }
+                    if (filterActive) {
+                        for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                            var pane = _c[_b];
+                            pane.s.showFiltered = true;
+                        }
+                    }
+                }
+            }
+            for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                var pane = _e[_d];
                 pane.rebuildPane(undefined, this.s.dt.page.info().serverSide ? this.s.serverData : undefined);
                 $$1(this.dom.panes).append(pane.dom.container);
+            }
+            if (this.c.viewTotal && !this.c.cascadePanes) {
+                for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
+                    var pane = _g[_f];
+                    pane.updatePane();
+                }
             }
             this._updateFilterCount();
             this._checkMessage();
@@ -2123,8 +2158,8 @@
             });
             if (this.s.selectionList !== undefined && this.s.selectionList.length > 0) {
                 var last = this.s.selectionList[this.s.selectionList.length - 1].index;
-                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                    var pane = _c[_b];
+                for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
+                    var pane = _j[_h];
                     pane.s.lastSelect = (pane.s.index === last);
                 }
             }
