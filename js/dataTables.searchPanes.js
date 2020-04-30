@@ -402,12 +402,14 @@
             $(this.dom.nameButton).on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([0, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+                _this.s.dt.state.save();
             });
             // When the button to order by the number of entries in the column is clicked then
             //  change the ordering to whatever it isn't currently
             $(this.dom.countButton).on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+                _this.s.dt.state.save();
             });
             // When the clear button is clicked reset the pane
             $(this.dom.clear).on('click.dtsp', function () {
@@ -875,7 +877,8 @@
                     var pane = _h[_g];
                     if (pane.id === this.s.index) {
                         $(this.dom.searchBox).val(pane.searchTerm);
-                        this.s.dt.order(pane.order);
+                        $(this.dom.searchBox).trigger('input');
+                        this.s.dtPane.order(pane.order).draw();
                     }
                 }
             }
