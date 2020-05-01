@@ -165,9 +165,6 @@
             table.on('draw.dtsp', function () {
                 _this._adjustTopRow();
             });
-            table.on('buttons-action', function () {
-                _this._adjustTopRow();
-            });
             $(window).on('resize.dtsp', DataTable.util.throttle(function () {
                 _this._adjustTopRow();
             }));
@@ -399,9 +396,6 @@
             });
             this.s.dtPane.on('user-select.dtsp', function (e, _dt, type, cell, originalEvent) {
                 originalEvent.stopPropagation();
-            });
-            this.s.dtPane.on('draw.dtsp', function () {
-                _this._adjustTopRow();
             });
             // When the button to order by the name of the options is clicked then
             //  change the ordering to whatever it isn't currently
@@ -851,7 +845,6 @@
             DataTable.select.init(this.s.dtPane);
             // Display the pane
             this.s.dtPane.draw();
-            this._adjustTopRow();
             if (!this.s.listSet) {
                 this._setListeners();
                 this.s.listSet = true;
