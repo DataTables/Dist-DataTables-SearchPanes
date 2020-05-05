@@ -247,11 +247,17 @@
             if (maintainSelection === void 0) { maintainSelection = false; }
             this.clearData();
             var selectedRows = [];
+            this.s.serverSelect = [];
             var prevEl = null;
             // When rebuilding strip all of the HTML Elements out of the container and start from scratch
             if (this.s.dtPane !== undefined) {
                 if (maintainSelection) {
-                    selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
+                    if (!this.s.dt.page.info().serverSide) {
+                        selectedRows = this.s.dtPane.rows({ selected: true }).data().toArray();
+                    }
+                    else {
+                        this.s.serverSelect = this.s.dtPane.rows({ selected: true }).data().toArray();
+                    }
                 }
                 this.s.dtPane.clear().destroy();
                 prevEl = $(this.dom.container).prev();
@@ -672,7 +678,9 @@
                                 sort: dataPoint.label,
                                 type: dataPoint.label
                             });
-                            this.s.rowData.bins[dataPoint.value] = this.c.viewTotal ? dataPoint.count : dataPoint.total;
+                            this.s.rowData.bins[dataPoint.value] = this.c.viewTotal || this.c.cascadePanes ?
+                                dataPoint.count :
+                                dataPoint.total;
                             this.s.rowData.binsTotal[dataPoint.value] = dataPoint.total;
                         }
                     }
@@ -856,6 +864,7 @@
                 this._setListeners();
                 this.s.listSet = true;
             }
+            console.log(selectedRows);
             for (var _d = 0, selectedRows_1 = selectedRows; _d < selectedRows_1.length; _d++) {
                 var selection = selectedRows_1[_d];
                 if (selection !== undefined) {
