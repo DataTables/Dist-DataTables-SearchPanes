@@ -664,9 +664,11 @@
                 else if (dataIn !== null) {
                     if (dataIn.tableLength !== undefined) {
                         this.s.tableLength = dataIn.tableLength;
+                        this.s.rowData.totalOptions = this.s.tableLength;
                     }
                     else if (this.s.tableLength === null || table.rows()[0].length > this.s.tableLength) {
                         this.s.tableLength = table.rows()[0].length;
+                        this.s.rowData.totalOptions = this.s.tableLength;
                     }
                     var colTitle = table.column(this.s.index).dataSrc();
                     if (dataIn[colTitle] !== undefined) {
@@ -1250,7 +1252,9 @@
          * @returns {number} returns the ratio
          */
         SearchPane.prototype._uniqueRatio = function (bins, rowCount) {
-            if (rowCount > 0 && this.s.rowData.totalOptions > 0) {
+            if (rowCount > 0 &&
+                ((this.s.rowData.totalOptions > 0 && !this.s.dt.page.info().serverSide) ||
+                    (this.s.dt.page.info().serverSide && this.s.tableLength > 0))) {
                 return bins / this.s.rowData.totalOptions;
             }
             else {
