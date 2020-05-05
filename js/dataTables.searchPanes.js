@@ -672,7 +672,7 @@
                                 sort: dataPoint.label,
                                 type: dataPoint.label
                             });
-                            this.s.rowData.bins[dataPoint.value] = dataPoint.count;
+                            this.s.rowData.bins[dataPoint.value] = this.c.viewTotal ? dataPoint.count : dataPoint.total;
                             this.s.rowData.binsTotal[dataPoint.value] = dataPoint.total;
                         }
                     }
@@ -1257,7 +1257,8 @@
             if (draw === void 0) { draw = false; }
             // Update the panes if doing a deselect. if doing a select then
             // update all of the panes except for the one causing the change
-            if (this.s.dtPane !== undefined &&
+            if (!this.s.dt.page.info().serverSide &&
+                this.s.dtPane !== undefined &&
                 (!this.s.filteringActive || this.c.cascadePanes || draw === true) &&
                 (this.c.cascadePanes !== true || this.s.selectPresent !== true) && (!this.s.lastSelect || !this.s.lastCascade)) {
                 var colOpts = this.s.colOpts;
