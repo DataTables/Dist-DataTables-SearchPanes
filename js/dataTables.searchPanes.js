@@ -864,7 +864,6 @@
                 this._setListeners();
                 this.s.listSet = true;
             }
-            console.log(selectedRows);
             for (var _d = 0, selectedRows_1 = selectedRows; _d < selectedRows_1.length; _d++) {
                 var selection = selectedRows_1[_d];
                 if (selection !== undefined) {
