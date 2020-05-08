@@ -2236,13 +2236,12 @@
                         var pane = _a[_i];
                         var src = _this.s.dt.column(pane.s.index).dataSrc();
                         if (data.searchPanes[src] === undefined) {
-                            data.searchPanes[src] = [];
+                            data.searchPanes[src] = {};
                         }
                         if (pane.s.dtPane !== undefined) {
                             var rowData = pane.s.dtPane.rows({ selected: true }).data().toArray();
-                            for (var _b = 0, rowData_1 = rowData; _b < rowData_1.length; _b++) {
-                                var dataPoint = rowData_1[_b];
-                                data.searchPanes[src].push(dataPoint.display);
+                            for (var i = 0; i < rowData.length; i++) {
+                                data.searchPanes[src][i] = rowData[i].display;
                             }
                         }
                     }
