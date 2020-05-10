@@ -472,8 +472,8 @@
                             arrayFilter.push({
                                 display: display[i],
                                 filter: filter[i],
-                                sort: sort,
-                                type: type
+                                sort: sort[i],
+                                type: type[i]
                             });
                         }
                         // Otherwise just increment the count
