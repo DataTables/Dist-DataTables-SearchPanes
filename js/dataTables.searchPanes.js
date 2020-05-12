@@ -825,7 +825,9 @@
                         (!this.c.cascadePanes ||
                             (this.c.cascadePanes && rowData.bins[rowData.arrayFilter[i].filter] !== 0) ||
                             (this.c.cascadePanes && init !== null))) {
-                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], this.c.viewTotal
+                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, init ?
+                            rowData.binsTotal[rowData.arrayFilter[i].filter] :
+                            rowData.bins[rowData.arrayFilter[i].filter], this.c.viewTotal || init
                             ? String(rowData.binsTotal[rowData.arrayFilter[i].filter])
                             : rowData.bins[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
                         if (colOpts.preSelect !== undefined && colOpts.preSelect.indexOf(rowData.arrayFilter[i].filter) !== -1) {
