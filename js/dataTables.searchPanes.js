@@ -60,6 +60,7 @@
                     filterMap: new Map(),
                     totalOptions: 0
                 },
+                scrollTop: 0,
                 searchFunction: undefined,
                 selectPresent: false,
                 serverSelect: [],
@@ -267,7 +268,9 @@
             }
             this.dom.container.removeClass(this.classes.hidden);
             this.s.displayed = false;
-            this._buildPane(selectedRows, last, dataIn, init, prevEl);
+            this._buildPane(!this.s.dt.page.info().serverSide ?
+                selectedRows :
+                this.s.serverSelect, last, dataIn, init, prevEl);
             return this;
         };
         /**
@@ -331,6 +334,7 @@
                 if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
                     if (!_this.s.serverSelecting) {
                         _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
+                        _this.s.scrollTop = $(_this.s.dtPane.table().node()).parent()[0].scrollTop;
                         _this.s.selectPresent = true;
                         _this.s.dt.draw(false);
                     }
@@ -821,10 +825,18 @@
                 });
                 // Add all of the search options to the pane
                 for (var i = 0, ien = rowData.arrayFilter.length; i < ien; i++) {
+                    var selected = false;
+                    for (var _b = 0, _c = this.s.serverSelect; _b < _c.length; _b++) {
+                        var option = _c[_b];
+                        if (option.filter === rowData.arrayFilter[i].filter) {
+                            selected = true;
+                        }
+                    }
                     if (this.s.dt.page.info().serverSide &&
                         (!this.c.cascadePanes ||
                             (this.c.cascadePanes && rowData.bins[rowData.arrayFilter[i].filter] !== 0) ||
-                            (this.c.cascadePanes && init !== null))) {
+                            (this.c.cascadePanes && init !== null) ||
+                            selected)) {
                         var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, init ?
                             rowData.binsTotal[rowData.arrayFilter[i].filter] :
                             rowData.bins[rowData.arrayFilter[i].filter], this.c.viewTotal || init
@@ -833,8 +845,8 @@
                         if (colOpts.preSelect !== undefined && colOpts.preSelect.indexOf(rowData.arrayFilter[i].filter) !== -1) {
                             row.select();
                         }
-                        for (var _b = 0, _c = this.s.serverSelect; _b < _c.length; _b++) {
-                            var option = _c[_b];
+                        for (var _d = 0, _e = this.s.serverSelect; _d < _e.length; _d++) {
+                            var option = _e[_d];
                             if (option.filter === rowData.arrayFilter[i].filter) {
                                 this.s.serverSelecting = true;
                                 row.select();
@@ -868,11 +880,11 @@
                 this._setListeners();
                 this.s.listSet = true;
             }
-            for (var _d = 0, selectedRows_1 = selectedRows; _d < selectedRows_1.length; _d++) {
-                var selection = selectedRows_1[_d];
+            for (var _f = 0, selectedRows_1 = selectedRows; _f < selectedRows_1.length; _f++) {
+                var selection = selectedRows_1[_f];
                 if (selection !== undefined) {
-                    for (var _e = 0, _f = this.s.dtPane.rows().indexes().toArray(); _e < _f.length; _e++) {
-                        var row = _f[_e];
+                    for (var _g = 0, _h = this.s.dtPane.rows().indexes().toArray(); _g < _h.length; _g++) {
+                        var row = _h[_g];
                         if (this.s.dtPane.row(row).data() !== undefined && selection.filter === this.s.dtPane.row(row).data().filter) {
                             // If this is happening when serverSide processing is happening then different behaviour is needed
                             if (this.s.dt.page.info().serverSide) {
@@ -892,8 +904,8 @@
                 if (!this.c.cascadePanes) {
                     this._reloadSelect(loadedFilter);
                 }
-                for (var _g = 0, _h = loadedFilter.searchPanes.panes; _g < _h.length; _g++) {
-                    var pane = _h[_g];
+                for (var _j = 0, _k = loadedFilter.searchPanes.panes; _j < _k.length; _j++) {
+                    var pane = _k[_j];
                     if (pane.id === this.s.index) {
                         $(this.dom.searchBox).val(pane.searchTerm);
                         $(this.dom.searchBox).trigger('input');
@@ -2085,6 +2097,9 @@
                 }
                 // append all of the panes and enable select
                 $$1(this.dom.panes).append(pane.dom.container);
+                if (pane.s.dtPane !== undefined) {
+                    $$1(pane.s.dtPane.table().node()).parent()[0].scrollTop = pane.s.scrollTop;
+                }
                 $$1.fn.dataTable.select.init(pane.s.dtPane);
             }
         };
