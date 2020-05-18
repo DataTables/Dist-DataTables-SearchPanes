@@ -2099,8 +2099,8 @@
                 $$1(this.dom.panes).append(pane.dom.container);
                 if (pane.s.dtPane !== undefined) {
                     $$1(pane.s.dtPane.table().node()).parent()[0].scrollTop = pane.s.scrollTop;
+                    $$1.fn.dataTable.select.init(pane.s.dtPane);
                 }
-                $$1.fn.dataTable.select.init(pane.s.dtPane);
             }
         };
         /**
