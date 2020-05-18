@@ -1615,6 +1615,14 @@
                         var pane = _a[_i];
                         if (pane.s.dtPane !== undefined) {
                             var selectLength = pane.s.dtPane.rows({ selected: true }).data().toArray().length;
+                            if (selectLength === 0) {
+                                for (var _b = 0, _c = this.s.selectionList; _b < _c.length; _b++) {
+                                    var selection = _c[_b];
+                                    if (selection.index === pane.s.index && selection.rows.length !== 0) {
+                                        selectLength = selection.rows.length;
+                                    }
+                                }
+                            }
                             // If filterPane === -1 then a pane with a selection has not been found yet, so set filterPane to that panes index
                             if (selectLength > 0 && filterPane === -1) {
                                 filterPane = pane.s.index;
@@ -1631,8 +1639,8 @@
                 var newSelectionList = [];
                 // Don't run this if it is due to the panes regenerating
                 if (!this.regenerating) {
-                    for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                        var pane = _c[_b];
+                    for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                        var pane = _e[_d];
                         // Identify the pane where a selection or deselection has been made and add it to the list.
                         if (pane.s.selectPresent) {
                             this.s.selectionList.push({ index: pane.s.index, rows: pane.s.dtPane.rows({ selected: true }).data().toArray(), protect: false });
@@ -1649,8 +1657,8 @@
                     }
                     if (this.s.selectionList.length > 0) {
                         var last = this.s.selectionList[this.s.selectionList.length - 1].index;
-                        for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
-                            var pane = _e[_d];
+                        for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
+                            var pane = _g[_f];
                             pane.s.lastSelect = (pane.s.index === last);
                         }
                     }
@@ -1671,13 +1679,19 @@
                             }
                         }
                     }
+                    var solePane = -1;
+                    if (newSelectionList.length === 1) {
+                        solePane = newSelectionList[0].index;
+                    }
                     // Update all of the panes to reflect the current state of the filters
-                    for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
-                        var pane = _g[_f];
+                    for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
+                        var pane = _j[_h];
                         if (pane.s.dtPane !== undefined) {
                             var tempFilter = true;
                             pane.s.filteringActive = true;
-                            if ((filterPane !== -1 && filterPane !== null && filterPane === pane.s.index) || filterActive === false) {
+                            if ((filterPane !== -1 && filterPane !== null && filterPane === pane.s.index) ||
+                                filterActive === false ||
+                                pane.s.index === solePane) {
                                 tempFilter = false;
                                 pane.s.filteringActive = false;
                             }
@@ -1690,15 +1704,15 @@
                     if (newSelectionList.length > 0 && (newSelectionList.length < this.s.selectionList.length || rebuild)) {
                         this._cascadeRegen(newSelectionList);
                         var last = newSelectionList[newSelectionList.length - 1].index;
-                        for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
-                            var pane = _j[_h];
+                        for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
+                            var pane = _l[_k];
                             pane.s.lastSelect = (pane.s.index === last);
                         }
                     }
                     else if (newSelectionList.length > 0) {
                         // Update all of the other panes as you would just making a normal selection
-                        for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
-                            var paneUpdate = _l[_k];
+                        for (var _m = 0, _o = this.s.panes; _m < _o.length; _m++) {
+                            var paneUpdate = _o[_m];
                             if (paneUpdate.s.dtPane !== undefined) {
                                 var tempFilter = true;
                                 paneUpdate.s.filteringActive = true;
@@ -1712,12 +1726,18 @@
                     }
                 }
                 else {
-                    for (var _m = 0, _o = this.s.panes; _m < _o.length; _m++) {
-                        var pane = _o[_m];
+                    var solePane = -1;
+                    if (newSelectionList.length === 1) {
+                        solePane = newSelectionList[0].index;
+                    }
+                    for (var _p = 0, _q = this.s.panes; _p < _q.length; _p++) {
+                        var pane = _q[_p];
                         if (pane.s.dtPane !== undefined) {
                             var tempFilter = true;
                             pane.s.filteringActive = true;
-                            if ((filterPane !== -1 && filterPane !== null && filterPane === pane.s.index) || filterActive === false) {
+                            if ((filterPane !== -1 && filterPane !== null && filterPane === pane.s.index) ||
+                                filterActive === false ||
+                                pane.s.index === solePane) {
                                 tempFilter = false;
                                 pane.s.filteringActive = false;
                             }
@@ -2188,7 +2208,7 @@
                             $$1(_this.dom.panes).append(pane.dom.container);
                         }
                         if (_this.c.cascadePanes || _this.c.viewTotal) {
-                            _this.redrawPanes();
+                            _this.redrawPanes(_this.c.cascadePanes);
                         }
                         else {
                             _this._updateSelection();
