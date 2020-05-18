@@ -624,6 +624,8 @@
                     // Only run populatePane if the data has not been collected yet
                     if (rowData.arrayFilter.length === 0) {
                         this._populatePane(last);
+                        this.s.rowData.totalOptions = 0;
+                        this._detailsPane();
                         if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
                             // If the index is not found then no data has been added to the state for this pane,
                             //  which will only occur if it has previously failed to meet the criteria to be
@@ -639,8 +641,8 @@
                             }
                         }
                         else {
-                            rowData.arrayOriginal = rowData.arrayFilter;
-                            rowData.binsOriginal = rowData.bins;
+                            rowData.arrayOriginal = rowData.arrayTotals;
+                            rowData.binsOriginal = rowData.binsTotal;
                         }
                     }
                     var binLength = Object.keys(rowData.binsOriginal).length;
@@ -657,6 +659,7 @@
                     // If the option viewTotal is true then find
                     // the total count for the whole table to display alongside the displayed count
                     if (this.c.viewTotal && rowData.arrayTotals.length === 0) {
+                        this.s.rowData.totalOptions = 0;
                         this._detailsPane();
                     }
                     else {
@@ -2284,6 +2287,14 @@
                     }
                     if (_this.c.viewTotal) {
                         _this._prepViewTotal();
+                    }
+                });
+            }
+            else {
+                table.on('preXhr.dt', function (e, settings, data) {
+                    for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
+                        var pane = _a[_i];
+                        pane.clearData();
                     }
                 });
             }
