@@ -902,6 +902,7 @@
                     }
                 }
             }
+            this.s.dt.draw();
             // Reload the selection, searchbox entry and ordering from the previous state
             if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
                 if (!this.c.cascadePanes) {
@@ -2207,7 +2208,7 @@
                             // Pass a boolean to say whether this is the last choice made for maintaining selections when rebuilding
                             pane.rebuildPane(_this.s.selectionList[_this.s.selectionList.length - 1] !== undefined ?
                                 pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
-                                false);
+                                false, undefined, undefined, true);
                             $$1(_this.dom.panes).append(pane.dom.container);
                         }
                         if (_this.c.cascadePanes || _this.c.viewTotal) {
