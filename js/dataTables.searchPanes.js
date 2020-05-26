@@ -902,7 +902,10 @@
                     }
                 }
             }
-            this.s.dt.draw();
+            // Only need to trigger a search if it is not server side processing
+            if (!this.s.dt.page.info().serverSide) {
+                this.s.dt.draw();
+            }
             // Reload the selection, searchbox entry and ordering from the previous state
             if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
                 if (!this.c.cascadePanes) {
@@ -1520,6 +1523,7 @@
                     _this._paneDeclare(table, paneSettings, opts);
                 });
             }
+            return this;
         }
         /**
          * Clear the selections of all of the panes
