@@ -542,11 +542,19 @@
                 this.s.indexes.push({ filter: filter, index: index });
             }
             return this.s.dtPane.row.add({
-                display: display !== '' ? display : this.c.emptyMessage,
+                display: display !== '' ?
+                    display :
+                    this.s.colOpts.emptyMessage !== false ?
+                        this.s.colOpts.emptyMessage :
+                        this.c.emptyMessage,
                 filter: filter,
                 index: index,
                 shown: shown,
-                sort: sort !== '' ? sort : this.c.emptyMessage,
+                sort: sort !== '' ?
+                    sort :
+                    this.s.colOpts.emptyMessage !== false ?
+                        this.s.colOpts.emptyMessage :
+                        this.c.emptyMessage,
                 total: total,
                 type: type
             });
@@ -866,7 +874,8 @@
                         }
                     }
                     else if (!this.s.dt.page.info().serverSide) {
-                        this._addRow(this.c.emptyMessage, count_1, count_1, this.c.emptyMessage, this.c.emptyMessage, this.c.emptyMessage);
+                        // Just pass an empty string as the message will be calculated based on that in _addRow()
+                        this._addRow('', count_1, count_1, '', '', '');
                     }
                 }
             }
@@ -1075,6 +1084,7 @@
             var table = this.s.dt;
             // We need to reset the thresholds as if they have a value in colOpts then that value will be used
             var defaultMutator = {
+                emptyMessage: false,
                 orthogonal: {
                     threshold: null
                 },
@@ -1251,7 +1261,9 @@
             var updating = this.s.updating;
             this.s.updating = true;
             var filters = this.s.dtPane.rows({ selected: true }).data().pluck('filter').toArray();
-            var nullIndex = filters.indexOf(this.c.emptyMessage);
+            var nullIndex = filters.indexOf(this.s.colOpts.emptyMessage !== false ?
+                this.s.colOpts.emptyMessage :
+                this.c.emptyMessage);
             var container = $(this.s.dtPane.table().container());
             // If null index is found then search for empty cells as a filter.
             if (nullIndex > -1) {
