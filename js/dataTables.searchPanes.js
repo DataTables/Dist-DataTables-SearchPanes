@@ -937,14 +937,17 @@
          * Update the array which holds the display and filter values for the table
          */
         SearchPane.prototype._detailsPane = function () {
-            var _this = this;
             var table = this.s.dt;
             this.s.rowData.arrayTotals = [];
             this.s.rowData.binsTotal = {};
             var settings = this.s.dt.settings()[0];
-            table.rows().every(function (rowIdx) {
-                _this._populatePaneArray(rowIdx, _this.s.rowData.arrayTotals, settings, _this.s.rowData.binsTotal);
-            });
+            var indexArray = table.rows().indexes();
+            if (!this.s.dt.page.info().serverSide) {
+                for (var _i = 0, indexArray_1 = indexArray; _i < indexArray_1.length; _i++) {
+                    var rowIdx = indexArray_1[_i];
+                    this._populatePaneArray(rowIdx, this.s.rowData.arrayTotals, settings, this.s.rowData.binsTotal);
+                }
+            }
         };
         /**
          * Appends all of the HTML elements to their relevant parent Elements
