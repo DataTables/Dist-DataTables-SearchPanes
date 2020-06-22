@@ -1522,9 +1522,7 @@
                 if (json.searchPanes && json.searchPanes.options) {
                     _this.s.serverData = json.searchPanes.options;
                     _this.s.serverData.tableLength = json.recordsTotal;
-                    if (_this.c.viewTotal || _this.c.cascadePanes) {
-                        _this._serverTotals();
-                    }
+                    _this._serverTotals();
                 }
             });
             table.settings()[0]._searchPanes = this;
