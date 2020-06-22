@@ -733,7 +733,7 @@
             }
             // Add the container to the document in its original location
             if (prevEl !== null && $(this.dom.panesContainer).has(prevEl).length > 0) {
-                $(this.dom.panesContainer).insertAfter(prevEl);
+                $(this.dom.container).insertAfter(prevEl);
             }
             else {
                 $(this.dom.panesContainer).prepend(this.dom.container);
@@ -1577,11 +1577,12 @@
             // As a rebuild from scratch is required, empty the searchpanes container.
             var returnArray = [];
             // Rebuild each pane individually, if a specific pane has been selected then only rebuild that one
-            $$1(this.dom.panes).empty();
+            if (targetIdx === false) {
+                $$1(this.dom.panes).empty();
+            }
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 if (targetIdx !== false && pane.s.index !== targetIdx) {
-                    $$1(this.dom.panes).append(pane.dom.container);
                     continue;
                 }
                 pane.clearData();
