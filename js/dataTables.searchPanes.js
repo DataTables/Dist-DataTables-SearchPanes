@@ -879,12 +879,12 @@
                     }
                 }
             }
+            DataTable.select.init(this.s.dtPane);
             // If there are custom options set or it is a custom pane then get them
             if (colOpts.options !== undefined ||
                 (this.customPaneSettings !== null && this.customPaneSettings.options !== undefined)) {
                 this._getComparisonRows();
             }
-            DataTable.select.init(this.s.dtPane);
             // Display the pane
             this.s.dtPane.draw();
             this._adjustTopRow();
@@ -1075,6 +1075,11 @@
                 // If cascadePanes is not active or if it is and the comparisonObj should be shown then add it to the pane
                 if (!this.c.cascadePanes || (this.c.cascadePanes && comparisonObj.shown !== 0)) {
                     rows.push(this._addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.shown, comparisonObj.total, comparisonObj.sort, comparisonObj.type));
+                    if (this.customPaneSettings !== null &&
+                        this.customPaneSettings.preSelect !== undefined &&
+                        this.customPaneSettings.preSelect.indexOf(comparisonObj.display) !== -1) {
+                        rows[rows.length - 1].select();
+                    }
                 }
             }
             return rows;
@@ -2235,22 +2240,23 @@
                 this._cascadeRegen(this.s.selectionList);
             }
             // PreSelect any selections which have been defined using the preSelect option
-            table
-                .columns(this.c.columns.length > 0 ? this.c.columns : undefined)
-                .eq(0)
-                .each(function (idx) {
-                if (_this.s.panes[idx] !== undefined &&
-                    _this.s.panes[idx].s.dtPane !== undefined &&
-                    _this.s.panes[idx].s.colOpts.preSelect !== undefined) {
-                    var tableLength = _this.s.panes[idx].s.dtPane.rows().data().toArray().length;
+            for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
+                var pane = _l[_k];
+                if (pane !== undefined &&
+                    pane.s.dtPane !== undefined &&
+                    (pane.s.colOpts.preSelect !== undefined || pane.customPaneSettings.preSelect !== undefined)) {
+                    var tableLength = pane.s.dtPane.rows().data().toArray().length;
                     for (var i = 0; i < tableLength; i++) {
-                        if (_this.s.panes[idx].s.colOpts.preSelect.indexOf(_this.s.panes[idx].s.dtPane.cell(i, 0).data()) !== -1) {
-                            _this.s.panes[idx].s.dtPane.row(i).select();
-                            _this.s.panes[idx].updateTable();
+                        if (pane.s.colOpts.preSelect.indexOf(pane.s.dtPane.cell(i, 0).data()) !== -1 ||
+                            (pane.customPaneSettings !== null &&
+                                pane.customPaneSettings.preSelect !== undefined &&
+                                pane.customPaneSettings.preSelect.indexOf(pane.s.dtPane.cell(i, 0).data()) !== -1)) {
+                            pane.s.dtPane.row(i).select();
+                            pane.updateTable();
                         }
                     }
                 }
-            });
+            }
             // Update the title bar to show how many filters have been selected
             this._updateFilterCount();
             // If the table is destroyed and restarted then clear the selections so that they do not persist.
