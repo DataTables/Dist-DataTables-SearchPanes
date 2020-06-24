@@ -2486,6 +2486,7 @@
                 this.popover(config._panes.getNode(), {
                     align: 'dt-container'
                 });
+                config._panes.rebuild(undefined, true);
             },
             config: {},
             init: function (dt, node, config) {
