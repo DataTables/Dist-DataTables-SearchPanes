@@ -331,6 +331,7 @@
             // When an item is selected on the pane, add these to the array which holds selected items.
             // Custom search will perform.
             this.s.dtPane.on('select.dtsp', function () {
+                clearTimeout(t0);
                 if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
                     if (!_this.s.serverSelecting) {
                         _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
@@ -340,7 +341,6 @@
                     }
                 }
                 else {
-                    clearTimeout(t0);
                     $(_this.dom.clear).removeClass(_this.classes.dull);
                     _this.s.selectPresent = true;
                     if (!_this.s.updating) {
