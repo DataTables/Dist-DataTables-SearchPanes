@@ -2181,7 +2181,7 @@
             this._updateFilterCount();
             this._checkMessage();
             // When a draw is called on the DataTable, update all of the panes incase the data in the DataTable has changed
-            table.on('draw.dtsps', function () {
+            table.on('preDraw.dtsps', function () {
                 _this._updateFilterCount();
                 if ((_this.c.cascadePanes || _this.c.viewTotal) && !_this.s.dt.page.info().serverSide) {
                     _this.redrawPanes();
@@ -2203,7 +2203,7 @@
             this.s.dt.on('xhr', function () {
                 var processing = false;
                 if (!_this.s.dt.page.info().serverSide) {
-                    _this.s.dt.one('draw', function () {
+                    _this.s.dt.one('preDraw', function () {
                         if (processing) {
                             return;
                         }
