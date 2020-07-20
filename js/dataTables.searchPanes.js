@@ -1084,11 +1084,6 @@
                 // If cascadePanes is not active or if it is and the comparisonObj should be shown then add it to the pane
                 if (!this.c.cascadePanes || (this.c.cascadePanes && comparisonObj.shown !== 0)) {
                     rows.push(this._addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.shown, comparisonObj.total, comparisonObj.sort, comparisonObj.type, comparisonObj.className));
-                    if (this.customPaneSettings !== null &&
-                        this.customPaneSettings.preSelect !== undefined &&
-                        this.customPaneSettings.preSelect.indexOf(comparisonObj.display) !== -1) {
-                        rows[rows.length - 1].select();
-                    }
                 }
             }
             return rows;
