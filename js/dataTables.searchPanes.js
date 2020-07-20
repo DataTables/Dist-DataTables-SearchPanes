@@ -529,7 +529,7 @@
          * @param sort the value to be sorted in the pane table
          * @param type the value of which the type is to be derived from
          */
-        SearchPane.prototype._addRow = function (display, filter, shown, total, sort, type) {
+        SearchPane.prototype._addRow = function (display, filter, shown, total, sort, type, className) {
             var index;
             for (var _i = 0, _a = this.s.indexes; _i < _a.length; _i++) {
                 var entry = _a[_i];
@@ -542,6 +542,7 @@
                 this.s.indexes.push({ filter: filter, index: index });
             }
             return this.s.dtPane.row.add({
+                className: className,
                 display: display !== '' ?
                     display :
                     this.s.colOpts.emptyMessage !== false ?
@@ -809,7 +810,13 @@
                 scroller: haveScroller ? true : false,
                 select: true,
                 stateSave: table.settings()[0].oFeatures.bStateSave ? true : false
-            }, this.c.dtOpts, colOpts !== undefined ? colOpts.dtOpts : {}, (this.customPaneSettings !== null && this.customPaneSettings.dtOpts !== undefined)
+            }, this.c.dtOpts, colOpts !== undefined ? colOpts.dtOpts : {}, this.s.colOpts.options !== undefined
+                ? {
+                    createdRow: function (row, data, dataIndex) {
+                        $(row).addClass(data.className);
+                    }
+                }
+                : undefined, (this.customPaneSettings !== null && this.customPaneSettings.dtOpts !== undefined)
                 ? this.customPaneSettings.dtOpts
                 : {}));
             $(this.dom.dtP).addClass(this.classes.table);
@@ -1047,6 +1054,7 @@
                 // Initialise the object which is to be placed in the row
                 var insert = comp.label !== '' ? comp.label : this.c.emptyMessage;
                 var comparisonObj = {
+                    className: comp.className,
                     display: insert,
                     filter: typeof comp.value === 'function' ? comp.value : [],
                     shown: 0,
@@ -1075,7 +1083,7 @@
                 }
                 // If cascadePanes is not active or if it is and the comparisonObj should be shown then add it to the pane
                 if (!this.c.cascadePanes || (this.c.cascadePanes && comparisonObj.shown !== 0)) {
-                    rows.push(this._addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.shown, comparisonObj.total, comparisonObj.sort, comparisonObj.type));
+                    rows.push(this._addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.shown, comparisonObj.total, comparisonObj.sort, comparisonObj.type, comparisonObj.className));
                     if (this.customPaneSettings !== null &&
                         this.customPaneSettings.preSelect !== undefined &&
                         this.customPaneSettings.preSelect.indexOf(comparisonObj.display) !== -1) {
