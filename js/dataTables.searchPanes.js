@@ -803,6 +803,7 @@
                 deferRender: true,
                 dom: 't',
                 info: false,
+                language: this.s.dt.settings()[0].oLanguage,
                 paging: haveScroller ? true : false,
                 scrollY: '200px',
                 scroller: haveScroller ? true : false,
