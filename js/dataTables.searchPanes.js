@@ -1406,7 +1406,7 @@
                     var selectedEl = selected_1[_c];
                     var row = this._addRow(selectedEl.display, selectedEl.filter, 0, this.c.viewTotal
                         ? selectedEl.total
-                        : 0, selectedEl.filter, selectedEl.filter);
+                        : 0, selectedEl.display, selectedEl.display);
                     this.s.updating = true;
                     row.select();
                     this.s.updating = false;
