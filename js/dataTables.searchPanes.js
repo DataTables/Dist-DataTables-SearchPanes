@@ -853,9 +853,6 @@
                             rowData.bins[rowData.arrayFilter[i].filter], this.c.viewTotal || init
                             ? String(rowData.binsTotal[rowData.arrayFilter[i].filter])
                             : rowData.bins[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
-                        // if (colOpts.preSelect !== undefined && colOpts.preSelect.indexOf(rowData.arrayFilter[i].filter) !== -1) {
-                        // 	row.select();
-                        // }
                         for (var _d = 0, _e = this.s.serverSelect; _d < _e.length; _d++) {
                             var option = _e[_d];
                             if (option.filter === rowData.arrayFilter[i].filter) {
@@ -868,7 +865,7 @@
                     else if (!this.s.dt.page.info().serverSide &&
                         rowData.arrayFilter[i] &&
                         (rowData.bins[rowData.arrayFilter[i].filter] !== undefined || !this.c.cascadePanes)) {
-                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], rowData.binsTotal[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
+                        this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], rowData.binsTotal[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
                     }
                     else if (!this.s.dt.page.info().serverSide) {
                         // Just pass an empty string as the message will be calculated based on that in _addRow()
