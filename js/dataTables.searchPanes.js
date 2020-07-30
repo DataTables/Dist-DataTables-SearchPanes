@@ -774,16 +774,16 @@
                                 pill = '';
                             }
                             if (!_this.c.dataLength) {
-                                displayMessage = '<span class="' + _this.classes.name + '">' + data + '</span>' + pill;
+                                displayMessage = '<div class="' + _this.classes.nameCont + '"><span class="' + _this.classes.name + '">' + data + '</span>' + pill + '</div>';
                             }
                             else if (data !== null && data.length > _this.c.dataLength) {
-                                displayMessage = '<span title="' + data + '" class="' + _this.classes.name + '">'
+                                displayMessage = '<div class="' + _this.classes.nameCont + '"><span title="' + data + '" class="' + _this.classes.name + '">'
                                     + data.substr(0, _this.c.dataLength) + '...'
                                     + '</span>'
-                                    + pill;
+                                    + pill + '</div>';
                             }
                             else {
-                                displayMessage = '<span class="' + _this.classes.name + '">' + data + '</span>' + pill;
+                                displayMessage = '<div class="' + _this.classes.nameCont + '"><span class="' + _this.classes.name + '">' + data + '</span>' + pill + '</div>';
                             }
                             return displayMessage;
                         },
@@ -806,6 +806,7 @@
                 info: false,
                 language: this.s.dt.settings()[0].oLanguage,
                 paging: haveScroller ? true : false,
+                scrollX: false,
                 scrollY: '200px',
                 scroller: haveScroller ? true : false,
                 select: true,
@@ -1431,6 +1432,7 @@
             layout: 'dtsp-',
             name: 'dtsp-name',
             nameButton: 'dtsp-nameButton',
+            nameCont: 'dtsp-nameCont',
             narrow: 'dtsp-narrow',
             paneButton: 'dtsp-paneButton',
             paneInputButton: 'dtsp-paneInputButton',
