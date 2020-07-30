@@ -768,24 +768,15 @@
                             }
                             // We are displaying the count in the same columne as the name of the search option.
                             // This is so that there is not need to call columns.adjust(), which in turn speeds up the code
-                            var displayMessage = '';
                             var pill = '<span class="' + _this.classes.pill + '">' + message + '</span>';
                             if (_this.c.hideCount || colOpts.hideCount) {
                                 pill = '';
                             }
-                            if (!_this.c.dataLength) {
-                                displayMessage = '<div class="' + _this.classes.nameCont + '"><span class="' + _this.classes.name + '">' + data + '</span>' + pill + '</div>';
-                            }
-                            else if (data !== null && data.length > _this.c.dataLength) {
-                                displayMessage = '<div class="' + _this.classes.nameCont + '"><span title="' + data + '" class="' + _this.classes.name + '">'
-                                    + data.substr(0, _this.c.dataLength) + '...'
-                                    + '</span>'
-                                    + pill + '</div>';
-                            }
-                            else {
-                                displayMessage = '<div class="' + _this.classes.nameCont + '"><span class="' + _this.classes.name + '">' + data + '</span>' + pill + '</div>';
-                            }
-                            return displayMessage;
+                            return '<div class="' + _this.classes.nameCont + '"><span title="' +
+                                data +
+                                '" class="' + _this.classes.name + '">' +
+                                data + '</span>' +
+                                pill + '</div>';
                         },
                         targets: 0,
                         // Accessing the private datatables property to set type based on the original table.
@@ -1458,7 +1449,6 @@
             container: function (dt) {
                 return dt.table().container();
             },
-            dataLength: 30,
             dtOpts: {},
             emptyMessage: '<i>No Data</i>',
             hideCount: false,
