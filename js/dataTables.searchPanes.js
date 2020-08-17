@@ -772,6 +772,9 @@
                             if (_this.c.hideCount || colOpts.hideCount) {
                                 pill = '';
                             }
+                            if ($.fn.dataTable.render.ellipsis !== undefined && data.indexOf('&#8230')) {
+                                data = data.replace(/<span class="ellipsis"[^>]*>/g, '');
+                            }
                             return '<div class="' + _this.classes.nameCont + '"><span title="' +
                                 data +
                                 '" class="' + _this.classes.name + '">' +
