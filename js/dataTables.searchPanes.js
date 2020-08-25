@@ -629,7 +629,7 @@
                 else if (colOpts.show === true || idx !== -1) {
                     this.s.displayed = true;
                 }
-                if (!this.s.dt.page.info().serverSide) {
+                if (!this.s.dt.page.info().serverSide && dataIn === null) {
                     // Only run populatePane if the data has not been collected yet
                     if (rowData.arrayFilter.length === 0) {
                         this._populatePane(last);
@@ -713,6 +713,8 @@
                         this.s.displayed = false;
                         return;
                     }
+                    this.s.rowData.arrayOriginal = this.s.rowData.arrayFilter;
+                    this.s.rowData.binsOriginal = this.s.rowData.bins;
                     this.s.displayed = true;
                 }
             }
@@ -1451,6 +1453,7 @@
             orderable: true,
             orthogonal: {
                 display: 'display',
+                filter: 'filter',
                 hideCount: false,
                 search: 'filter',
                 show: undefined,
@@ -2159,7 +2162,7 @@
             }
             for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
                 var pane = _e[_d];
-                pane.rebuildPane(undefined, this.s.dt.page.info().serverSide ? this.s.serverData : undefined);
+                pane.rebuildPane(undefined, Object.keys(this.s.serverData).length > 0 ? this.s.serverData : undefined);
                 $$1(this.dom.panes).append(pane.dom.container);
             }
             if (this.c.viewTotal && !this.c.cascadePanes) {
