@@ -2348,7 +2348,7 @@
             var message = this.s.dt.i18n('searchPanes.title', 'Filters Active - %d', filterCount);
             $$1(this.dom.title).text(message);
             if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
-                this.c.filterChanged(filterCount);
+                this.c.filterChanged.call(this.s.dt, filterCount);
             }
         };
         /**
