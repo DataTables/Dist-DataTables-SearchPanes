@@ -790,7 +790,13 @@
                     {
                         className: 'dtsp-countColumn ' + this.classes.badgePill,
                         data: 'total',
+                        orderData: [1, 2],
                         targets: 1,
+                        visible: false
+                    },
+                    {
+                        data: 'shown',
+                        targets: 2,
                         visible: false
                     }
                 ],
