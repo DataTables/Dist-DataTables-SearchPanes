@@ -789,13 +789,13 @@
                     },
                     {
                         className: 'dtsp-countColumn ' + this.classes.badgePill,
-                        data: 'total',
+                        data: 'shown',
                         orderData: [1, 2],
                         targets: 1,
                         visible: false
                     },
                     {
-                        data: 'shown',
+                        data: 'total',
                         targets: 2,
                         visible: false
                     }
