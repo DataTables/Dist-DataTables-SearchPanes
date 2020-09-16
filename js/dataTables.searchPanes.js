@@ -913,12 +913,9 @@
                     }
                 }
             }
-            // Only need to trigger a search if it is not server side processing
-            if (!this.s.dt.page.info().serverSide) {
-                this.s.dt.draw();
-            }
-            // Otherwise if SSP and the table is ready, apply the search for the pane
-            else {
+            //  If SSP and the table is ready, apply the search for the pane
+            if (this.s.dt.page.info().serverSide) {
+                //else {
                 this.s.dtPane.search($(this.dom.searchBox).val()).draw();
             }
             // Reload the selection, searchbox entry and ordering from the previous state
@@ -1603,6 +1600,10 @@
                     undefined, null, maintainSelection));
                 $$1(this.dom.panes).append(pane.dom.container);
             }
+            // Only need to trigger a search if it is not server side processing
+            if (!this.s.dt.page.info().serverSide) {
+                this.s.dt.draw();
+            }
             if (this.c.cascadePanes || this.c.viewTotal) {
                 this.redrawPanes(true);
             }
@@ -2136,6 +2137,10 @@
                     $$1.fn.dataTable.select.init(pane.s.dtPane);
                 }
             }
+            // Only need to trigger a search if it is not server side processing
+            if (!this.s.dt.page.info().serverSide) {
+                this.s.dt.draw();
+            }
         };
         /**
          * Initialises the tables previous/preset selections and initialises callbacks for events
@@ -2174,6 +2179,10 @@
                 var pane = _e[_d];
                 pane.rebuildPane(undefined, Object.keys(this.s.serverData).length > 0 ? this.s.serverData : undefined);
                 $$1(this.dom.panes).append(pane.dom.container);
+            }
+            // Only need to trigger a search if it is not server side processing
+            if (!this.s.dt.page.info().serverSide) {
+                this.s.dt.draw();
             }
             if (this.c.viewTotal && !this.c.cascadePanes) {
                 for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
@@ -2220,6 +2229,9 @@
                                 pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
                                 false, undefined, undefined, true);
                             $$1(_this.dom.panes).append(pane.dom.container);
+                        }
+                        if (!_this.s.dt.page.info().serverSide) {
+                            _this.s.dt.draw();
                         }
                         if (_this.c.cascadePanes || _this.c.viewTotal) {
                             _this.redrawPanes(_this.c.cascadePanes);
