@@ -1,4 +1,4 @@
-/*! SearchPanes 1.1.1
+/*! SearchPanes 1.2.0
  * 2019-2020 SpryMedia Ltd - datatables.net/license
  */
 (function () {
@@ -2385,7 +2385,7 @@
             }
             this.s.dt.state.save();
         };
-        SearchPanes.version = '1.1.1';
+        SearchPanes.version = '1.2.0';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -2414,7 +2414,7 @@
         return SearchPanes;
     }());
 
-    /*! SearchPanes 1.1.1
+    /*! SearchPanes 1.2.0
      * 2019-2020 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
