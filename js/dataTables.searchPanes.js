@@ -2451,25 +2451,6 @@
         $.fn.DataTable.SearchPanes = SearchPanes;
         $.fn.dataTable.SearchPane = SearchPane;
         $.fn.DataTable.SearchPane = SearchPane;
-        DataTable.Api.register('searchPanes.rebuild()', function () {
-            return this.iterator('table', function (ctx) {
-                if (ctx._searchPanes) {
-                    ctx._searchPanes.rebuild();
-                }
-            });
-        });
-        DataTable.Api.register('column().paneOptions()', function (options) {
-            return this.iterator('column', function (ctx, colIdx) {
-                var col = ctx.aoColumns[colIdx];
-                if (!col.searchPanes) {
-                    col.searchPanes = {};
-                }
-                col.searchPanes.values = options;
-                if (ctx._searchPanes) {
-                    ctx._searchPanes.rebuild();
-                }
-            });
-        });
         var apiRegister = $.fn.dataTable.Api.register;
         apiRegister('searchPanes()', function () {
             return this;
