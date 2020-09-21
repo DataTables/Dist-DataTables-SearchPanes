@@ -1,4 +1,4 @@
-/*! SearchPanes 1.2.0
+/*! SearchPanes 1.2.1-dev
  * 2019-2020 SpryMedia Ltd - datatables.net/license
  */
 (function () {
@@ -2385,7 +2385,7 @@
             }
             this.s.dt.state.save();
         };
-        SearchPanes.version = '1.2.0';
+        SearchPanes.version = '1.2.1';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -2414,7 +2414,7 @@
         return SearchPanes;
     }());
 
-    /*! SearchPanes 1.2.0
+    /*! SearchPanes 1.2.1-dev
      * 2019-2020 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
@@ -2452,21 +2452,21 @@
         $.fn.dataTable.SearchPane = SearchPane;
         $.fn.DataTable.SearchPane = SearchPane;
         DataTable.Api.register('searchPanes.rebuild()', function () {
-            return this.iterator('table', function () {
-                if (this.searchPanes) {
-                    this.searchPanes.rebuild();
+            return this.iterator('table', function (ctx) {
+                if (ctx._searchPanes) {
+                    ctx._searchPanes.rebuild();
                 }
             });
         });
         DataTable.Api.register('column().paneOptions()', function (options) {
-            return this.iterator('column', function (idx) {
-                var col = this.aoColumns[idx];
+            return this.iterator('column', function (ctx, colIdx) {
+                var col = ctx.aoColumns[colIdx];
                 if (!col.searchPanes) {
                     col.searchPanes = {};
                 }
                 col.searchPanes.values = options;
-                if (this.searchPanes) {
-                    this.searchPanes.rebuild();
+                if (ctx._searchPanes) {
+                    ctx._searchPanes.rebuild();
                 }
             });
         });
@@ -2475,18 +2475,24 @@
             return this;
         });
         apiRegister('searchPanes.clearSelections()', function () {
-            var ctx = this.context[0];
-            ctx._searchPanes.clearSelections();
-            return this;
+            return this.iterator('table', function (ctx) {
+                if (ctx._searchPanes) {
+                    ctx._searchPanes.clearSelections();
+                }
+            });
         });
         apiRegister('searchPanes.rebuildPane()', function (targetIdx, maintainSelections) {
-            var ctx = this.context[0];
-            ctx._searchPanes.rebuild(targetIdx, maintainSelections);
-            return this;
+            return this.iterator('table', function (ctx) {
+                if (ctx._searchPanes) {
+                    ctx._searchPanes.rebuild(targetIdx, maintainSelections);
+                }
+            });
         });
         apiRegister('searchPanes.container()', function () {
             var ctx = this.context[0];
-            return ctx._searchPanes.getNode();
+            return ctx._searchPanes
+                ? ctx._searchPanes.getNode()
+                : null;
         });
         $.fn.dataTable.ext.buttons.searchPanesClear = {
             text: 'Clear Panes',
