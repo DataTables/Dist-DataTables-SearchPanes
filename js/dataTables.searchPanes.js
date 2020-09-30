@@ -775,7 +775,7 @@
                                 pill = '';
                             }
                             return '<div class="' + _this.classes.nameCont + '"><span title="' +
-                                (typeof data === "string" && data.match(/<[^>]*>/) !== null ? data.replace(/<[^>]*>/g, "") : data) +
+                                (typeof data === 'string' && data.match(/<[^>]*>/) !== null ? data.replace(/<[^>]*>/g, '') : data) +
                                 '" class="' + _this.classes.name + '">' +
                                 data + '</span>' +
                                 pill + '</div>';
@@ -1148,8 +1148,8 @@
             }
             else {
                 var filter = settings.oApi._fnGetCellData(settings, rowIdx, this.s.index, colOpts.orthogonal.search);
-                if (typeof filter === "string") {
-                    filter = filter.replace(/<[^>]*>/g, "");
+                if (typeof filter === 'string') {
+                    filter = filter.replace(/<[^>]*>/g, '');
                 }
                 this.s.rowData.filterMap.set(rowIdx, filter);
                 if (!bins[filter]) {
