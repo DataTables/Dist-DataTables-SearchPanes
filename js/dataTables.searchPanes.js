@@ -775,7 +775,7 @@
                                 pill = '';
                             }
                             return '<div class="' + _this.classes.nameCont + '"><span title="' +
-                                data.replace(/<[^>]*>/g, "") +
+                                (typeof data === "string" && data.match(/<[^>]*>/) !== null ? data.replace(/<[^>]*>/g, "") : data) +
                                 '" class="' + _this.classes.name + '">' +
                                 data + '</span>' +
                                 pill + '</div>';
