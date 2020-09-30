@@ -1518,6 +1518,7 @@
                 panes: [],
                 selectionList: [],
                 serverData: {},
+                stateRead: false,
                 updating: false
             };
             if (table.settings()[0]._searchPanes !== undefined) {
@@ -2155,8 +2156,8 @@
             this._attachExtras();
             $$1(this.dom.container).append(this.dom.panes);
             $$1(this.dom.panes).empty();
+            var loadedFilter = this.s.dt.state.loaded();
             if (this.c.viewTotal && !this.c.cascadePanes) {
-                var loadedFilter = this.s.dt.state.loaded();
                 if (loadedFilter !== null &&
                     loadedFilter !== undefined &&
                     loadedFilter.searchPanes !== undefined &&
@@ -2186,6 +2187,12 @@
             if (!this.s.dt.page.info().serverSide) {
                 this.s.dt.draw();
             }
+            // Reset the paging if that has been saved in the state
+            if (!this.s.stateRead && loadedFilter !== null && loadedFilter !== undefined) {
+                this.s.dt.page((loadedFilter.start / this.s.dt.page.len()));
+                this.s.dt.draw('page');
+            }
+            this.s.stateRead = true;
             if (this.c.viewTotal && !this.c.cascadePanes) {
                 for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
                     var pane = _g[_f];
