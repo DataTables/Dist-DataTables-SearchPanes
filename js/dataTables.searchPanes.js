@@ -1148,6 +1148,9 @@
             }
             else {
                 var filter = settings.oApi._fnGetCellData(settings, rowIdx, this.s.index, colOpts.orthogonal.search);
+                if (typeof filter === "string") {
+                    filter = filter.replace(/<[^>]*>/g, "");
+                }
                 this.s.rowData.filterMap.set(rowIdx, filter);
                 if (!bins[filter]) {
                     bins[filter] = 1;
