@@ -134,7 +134,7 @@
                 if (settings.nTable !== tableNode) {
                     return true;
                 }
-                var filter = '';
+                var filter = null;
                 if (_this.colExists) {
                     // Get the current filtered data
                     filter = searchData[_this.s.index];
@@ -1232,7 +1232,9 @@
                 }
                 // otherwise if the two filter values are equal then return true
                 // Loose type checking incase number type in column comparing to a string
-                else if (filter == colSelect.filter) {
+                else if ((filter === colSelect.filter) ||
+                    (!(typeof filter === 'string' && filter.length === 0) && filter == colSelect.filter) ||
+                    (colSelect.filter === null && typeof filter === 'string' && filter === '')) {
                     return true;
                 }
             }
