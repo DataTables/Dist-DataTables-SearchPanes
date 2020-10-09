@@ -1,4 +1,4 @@
-/*! SearchPanes 1.2.1-dev
+/*! SearchPanes 1.2.1
  * 2019-2020 SpryMedia Ltd - datatables.net/license
  */
 (function () {
@@ -2427,7 +2427,7 @@
         return SearchPanes;
     }());
 
-    /*! SearchPanes 1.2.1-dev
+    /*! SearchPanes 1.2.1
      * 2019-2020 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
