@@ -2295,6 +2295,7 @@
                         if (processing) {
                             return;
                         }
+                        var page = _this.s.dt.page();
                         processing = true;
                         $$1(_this.dom.panes).empty();
                         for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
@@ -2316,6 +2317,9 @@
                             _this._updateSelection();
                         }
                         _this._checkMessage();
+                        _this.s.dt.one('draw', function () {
+                            _this.s.dt.page(page).draw(false);
+                        });
                     });
                 }
             });
