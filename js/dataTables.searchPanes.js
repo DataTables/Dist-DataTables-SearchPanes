@@ -635,7 +635,10 @@
                 else if (colOpts.show === true || idx !== -1) {
                     this.s.displayed = true;
                 }
-                if (!this.s.dt.page.info().serverSide && dataIn === null) {
+                if (!this.s.dt.page.info().serverSide &&
+                    (dataIn === null ||
+                        dataIn.searchPanes === null ||
+                        dataIn.searchPanes.options === null)) {
                     // Only run populatePane if the data has not been collected yet
                     if (rowData.arrayFilter.length === 0) {
                         this._populatePane(last);
@@ -683,7 +686,7 @@
                     this.dom.container.addClass(this.classes.show);
                     this.s.displayed = true;
                 }
-                else if (dataIn !== null) {
+                else if (dataIn !== null && dataIn.searchPanes !== null && dataIn.searchPanes.options !== null) {
                     if (dataIn.tableLength !== undefined) {
                         this.s.tableLength = dataIn.tableLength;
                         this.s.rowData.totalOptions = this.s.tableLength;
@@ -693,8 +696,8 @@
                         this.s.rowData.totalOptions = this.s.tableLength;
                     }
                     var colTitle = table.column(this.s.index).dataSrc();
-                    if (dataIn[colTitle] !== undefined) {
-                        for (var _i = 0, _a = dataIn[colTitle]; _i < _a.length; _i++) {
+                    if (dataIn.searchPanes.options[colTitle] !== undefined) {
+                        for (var _i = 0, _a = dataIn.searchPanes.options[colTitle]; _i < _a.length; _i++) {
                             var dataPoint = _a[_i];
                             this.s.rowData.arrayFilter.push({
                                 display: dataPoint.label,
@@ -924,7 +927,12 @@
                 this.s.dtPane.search($(this.dom.searchBox).val()).draw();
             }
             // Reload the selection, searchbox entry and ordering from the previous state
-            if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
+            // Need to check here if SSP that this is the first draw, otherwise it will infinite loop
+            if (loadedFilter &&
+                loadedFilter.searchPanes &&
+                loadedFilter.searchPanes.panes &&
+                (dataIn === null ||
+                    dataIn.draw === 1)) {
                 if (!this.c.cascadePanes) {
                     this._reloadSelect(loadedFilter);
                 }
@@ -1200,8 +1208,9 @@
                         id = rows.indexOf(filter.toString());
                     }
                     if (id > -1) {
+                        this.s.serverSelecting = true;
                         table.row(id).select();
-                        this.s.dt.state.save();
+                        this.s.serverSelecting = false;
                     }
                 }
             }
@@ -1533,18 +1542,35 @@
             if (table.settings()[0]._searchPanes !== undefined) {
                 return;
             }
+            this._getState();
+            if (this.s.dt.page.info().serverSide) {
+                table.on('preXhr.dt', function (e, settings, data) {
+                    if (data.searchPanes === undefined) {
+                        data.searchPanes = {};
+                    }
+                    for (var _i = 0, _a = _this.s.selectionList; _i < _a.length; _i++) {
+                        var selection = _a[_i];
+                        var src = _this.s.dt.column(selection.index).dataSrc();
+                        if (data.searchPanes[src] === undefined) {
+                            data.searchPanes[src] = {};
+                        }
+                        for (var i = 0; i < selection.rows.length; i++) {
+                            data.searchPanes[src][i] = selection.rows[i].filter;
+                        }
+                    }
+                });
+            }
             // We are using the xhr event to rebuild the panes if required due to viewTotal being enabled
             // If viewTotal is not enabled then we simply update the data from the server
             table.on('xhr', function (e, settings, json, xhr) {
                 if (json.searchPanes && json.searchPanes.options) {
-                    _this.s.serverData = json.searchPanes.options;
+                    _this.s.serverData = json;
                     _this.s.serverData.tableLength = json.recordsTotal;
                     _this._serverTotals();
                 }
             });
             table.settings()[0]._searchPanes = this;
             this.dom.clearAll.text(table.i18n('searchPanes.clearMessage', 'Clear All'));
-            this._getState();
             if (this.s.dt.settings()[0]._bInitComplete || fromInit) {
                 this._paneDeclare(table, paneSettings, opts);
             }
@@ -2228,9 +2254,41 @@
                 }
                 data.searchPanes.selectionList = _this.s.selectionList;
             });
+            if (this.s.dt.page.info().serverSide) {
+                table.off('preXhr.dt');
+                table.on('preXhr.dt', function (e, settings, data) {
+                    if (data.searchPanes === undefined) {
+                        data.searchPanes = {};
+                    }
+                    for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
+                        var pane = _a[_i];
+                        var src = _this.s.dt.column(pane.s.index).dataSrc();
+                        if (data.searchPanes[src] === undefined) {
+                            data.searchPanes[src] = {};
+                        }
+                        if (pane.s.dtPane !== undefined) {
+                            var rowData = pane.s.dtPane.rows({ selected: true }).data().toArray();
+                            for (var i = 0; i < rowData.length; i++) {
+                                data.searchPanes[src][i] = rowData[i].filter;
+                            }
+                        }
+                    }
+                    if (_this.c.viewTotal) {
+                        _this._prepViewTotal();
+                    }
+                });
+            }
+            else {
+                table.on('preXhr.dt', function (e, settings, data) {
+                    for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
+                        var pane = _a[_i];
+                        pane.clearData();
+                    }
+                });
+            }
             // If the data is reloaded from the server then it is possible that it has changed completely,
             // so we need to rebuild the panes
-            this.s.dt.on('xhr', function () {
+            this.s.dt.on('xhr', function (e, settings, json, xhr) {
                 var processing = false;
                 if (!_this.s.dt.page.info().serverSide) {
                     _this.s.dt.one('preDraw', function () {
@@ -2307,37 +2365,6 @@
             if (this.c.clear) {
                 $$1(this.dom.clearAll).on('click.dtsps', function () {
                     _this.clearSelections();
-                });
-            }
-            if (this.s.dt.page.info().serverSide) {
-                table.on('preXhr.dt', function (e, settings, data) {
-                    if (data.searchPanes === undefined) {
-                        data.searchPanes = {};
-                    }
-                    for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
-                        var pane = _a[_i];
-                        var src = _this.s.dt.column(pane.s.index).dataSrc();
-                        if (data.searchPanes[src] === undefined) {
-                            data.searchPanes[src] = {};
-                        }
-                        if (pane.s.dtPane !== undefined) {
-                            var rowData = pane.s.dtPane.rows({ selected: true }).data().toArray();
-                            for (var i = 0; i < rowData.length; i++) {
-                                data.searchPanes[src][i] = rowData[i].filter;
-                            }
-                        }
-                    }
-                    if (_this.c.viewTotal) {
-                        _this._prepViewTotal();
-                    }
-                });
-            }
-            else {
-                table.on('preXhr.dt', function (e, settings, data) {
-                    for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
-                        var pane = _a[_i];
-                        pane.clearData();
-                    }
                 });
             }
             table.settings()[0]._searchPanes = this;
