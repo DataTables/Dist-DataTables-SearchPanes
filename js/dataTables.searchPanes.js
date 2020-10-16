@@ -1,4 +1,4 @@
-/*! SearchPanes 1.2.1
+/*! SearchPanes 1.2.1-dev
  * 2019-2020 SpryMedia Ltd - datatables.net/license
  */
 (function () {
@@ -396,6 +396,12 @@
                 }
                 if (data.searchPanes.panes === undefined) {
                     data.searchPanes.panes = [];
+                }
+                for (var i = 0; i < data.searchPanes.panes.length; i++) {
+                    if (data.searchPanes.panes[i].id === _this.s.index) {
+                        data.searchPanes.panes.splice(i, 1);
+                        i--;
+                    }
                 }
                 // Add the panes data to the state object
                 data.searchPanes.panes.push({
@@ -2427,7 +2433,7 @@
         return SearchPanes;
     }());
 
-    /*! SearchPanes 1.2.1
+    /*! SearchPanes 1.2.1-dev
      * 2019-2020 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
