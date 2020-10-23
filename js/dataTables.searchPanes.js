@@ -2328,7 +2328,10 @@
                 var pane = _j[_h];
                 if (pane !== undefined &&
                     pane.s.dtPane !== undefined &&
-                    (pane.s.colOpts.preSelect !== undefined || pane.customPaneSettings.preSelect !== undefined)) {
+                    ((pane.s.colOpts.preSelect !== undefined && pane.s.colOpts.preSelect.length > 0) ||
+                        (pane.customPaneSettings !== null &&
+                            pane.customPaneSettings.preSelect !== undefined &&
+                            pane.customPaneSettings.preSelect.length > 0))) {
                     var tableLength = pane.s.dtPane.rows().data().toArray().length;
                     for (var i = 0; i < tableLength; i++) {
                         if (pane.s.colOpts.preSelect.indexOf(pane.s.dtPane.cell(i, 0).data()) !== -1 ||
