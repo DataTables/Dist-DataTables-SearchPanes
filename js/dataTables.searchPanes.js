@@ -1563,7 +1563,7 @@
             // We are using the xhr event to rebuild the panes if required due to viewTotal being enabled
             // If viewTotal is not enabled then we simply update the data from the server
             table.on('xhr', function (e, settings, json, xhr) {
-                if (json.searchPanes && json.searchPanes.options) {
+                if (json && json.searchPanes && json.searchPanes.options) {
                     _this.s.serverData = json;
                     _this.s.serverData.tableLength = json.recordsTotal;
                     _this._serverTotals();
