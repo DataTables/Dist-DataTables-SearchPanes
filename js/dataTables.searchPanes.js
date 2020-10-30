@@ -2121,9 +2121,18 @@
                         }
                     }
                     // If there are no selections for this pane in the list then just push this one
-                    if (!further &&
-                        this.s.panes[this.s.selectionList[i].index].s.dtPane.rows({ selected: true }).data().toArray().length > 0) {
-                        newSelectionList.push(this.s.selectionList[i]);
+                    if (!further) {
+                        var push = false;
+                        for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                            var pane = _c[_b];
+                            if (pane.s.index === this.s.selectionList[i].index &&
+                                pane.s.dtPane.rows({ selected: true }).data().toArray().length > 0) {
+                                push = true;
+                            }
+                        }
+                        if (push) {
+                            newSelectionList.push(this.s.selectionList[i]);
+                        }
                     }
                 }
                 this.s.selectionList = newSelectionList;
@@ -2131,8 +2140,8 @@
             var initIdx = -1;
             // If there has been a deselect and only one pane has a selection then update everything
             if (deselectPresent && this.s.selectionList.length === 1) {
-                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                    var pane = _c[_b];
+                for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                    var pane = _e[_d];
                     pane.s.lastSelect = false;
                     pane.s.deselect = false;
                     if (pane.s.dtPane !== undefined && pane.s.dtPane.rows({ selected: true }).data().toArray().length > 0) {
@@ -2143,16 +2152,16 @@
             // Otherwise if there are more 1 selections then find the last one and set it to not update that pane
             else if (this.s.selectionList.length > 0) {
                 var last = this.s.selectionList[this.s.selectionList.length - 1].index;
-                for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
-                    var pane = _e[_d];
+                for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
+                    var pane = _g[_f];
                     pane.s.lastSelect = (pane.s.index === last);
                     pane.s.deselect = false;
                 }
             }
             // Otherwise if there are no selections then find where that took place and do not update to maintain scrolling
             else if (this.s.selectionList.length === 0) {
-                for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
-                    var pane = _g[_f];
+                for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
+                    var pane = _j[_h];
                     // pane.s.lastSelect = (pane.s.deselect === true);
                     pane.s.lastSelect = false;
                     pane.s.deselect = false;
@@ -2160,8 +2169,8 @@
             }
             $$1(this.dom.panes).empty();
             // Rebuild the desired panes
-            for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
-                var pane = _j[_h];
+            for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
+                var pane = _l[_k];
                 if (!pane.s.lastSelect) {
                     pane.rebuildPane(undefined, this.s.dt.page.info().serverSide ? this.s.serverData : undefined, pane.s.index === initIdx ? true : null, true);
                 }
