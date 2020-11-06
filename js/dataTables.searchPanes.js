@@ -1162,6 +1162,10 @@
             }
             else {
                 var filter = settings.oApi._fnGetCellData(settings, rowIdx, this.s.index, colOpts.orthogonal.search);
+                // Null and empty string are to be considered the same value
+                if (filter === null) {
+                    filter = '';
+                }
                 if (typeof filter === 'string') {
                     filter = filter.replace(/<[^>]*>/g, '');
                 }
