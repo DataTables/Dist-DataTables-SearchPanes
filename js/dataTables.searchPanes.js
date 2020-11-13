@@ -2278,6 +2278,8 @@
                     if (data.searchPanes === undefined) {
                         data.searchPanes = {};
                     }
+                    // Count how many filters are being applied
+                    var filterCount = 0;
                     for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                         var pane = _a[_i];
                         var src = _this.s.dt.column(pane.s.index).dataSrc();
@@ -2288,11 +2290,18 @@
                             var rowData = pane.s.dtPane.rows({ selected: true }).data().toArray();
                             for (var i = 0; i < rowData.length; i++) {
                                 data.searchPanes[src][i] = rowData[i].filter;
+                                filterCount++;
                             }
                         }
                     }
                     if (_this.c.viewTotal) {
                         _this._prepViewTotal();
+                    }
+                    // If there is a filter to be applied, then we need to read from the start of the result set
+                    //  and set the paging to 0. This matches the behaviour of client side processing
+                    if (filterCount > 0) {
+                        data.start = 0;
+                        _this.s.dt.page(0);
                     }
                 });
             }
