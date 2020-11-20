@@ -644,24 +644,16 @@
                         this._populatePane(last);
                         this.s.rowData.totalOptions = 0;
                         this._detailsPane();
-                        if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes) {
-                            // If the index is not found then no data has been added to the state for this pane,
-                            //  which will only occur if it has previously failed to meet the criteria to be
-                            //  displayed, therefore we can just hide it again here
-                            if (idx !== -1) {
-                                rowData.binsOriginal = loadedFilter.searchPanes.panes[idx].bins;
-                                rowData.arrayOriginal = loadedFilter.searchPanes.panes[idx].arrayFilter;
-                            }
-                            else {
-                                this.dom.container.addClass(this.classes.hidden);
-                                this.s.displayed = false;
-                                return;
-                            }
+                        // If the index is not found then no data has been added to the state for this pane,
+                        //  which will only occur if it has previously failed to meet the criteria to be
+                        //  displayed, therefore we can just hide it again here
+                        if (loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.panes && idx === -1) {
+                            this.dom.container.addClass(this.classes.hidden);
+                            this.s.displayed = false;
+                            return;
                         }
-                        else {
-                            rowData.arrayOriginal = rowData.arrayTotals;
-                            rowData.binsOriginal = rowData.binsTotal;
-                        }
+                        rowData.arrayOriginal = rowData.arrayTotals;
+                        rowData.binsOriginal = rowData.binsTotal;
                     }
                     var binLength = Object.keys(rowData.binsOriginal).length;
                     var uniqueRatio = this._uniqueRatio(binLength, table.rows()[0].length);
