@@ -1533,7 +1533,9 @@
             this.s = {
                 colOpts: [],
                 dt: table,
+                filterCount: 0,
                 filterPane: -1,
+                page: 0,
                 panes: [],
                 selectionList: [],
                 serverData: {},
@@ -2265,6 +2267,10 @@
                 data.searchPanes.selectionList = _this.s.selectionList;
             });
             if (this.s.dt.page.info().serverSide) {
+                table.off('page');
+                table.on('page', function () {
+                    _this.s.page = _this.s.dt.page();
+                });
                 table.off('preXhr.dt');
                 table.on('preXhr.dt', function (e, settings, data) {
                     if (data.searchPanes === undefined) {
@@ -2292,8 +2298,18 @@
                     // If there is a filter to be applied, then we need to read from the start of the result set
                     //  and set the paging to 0. This matches the behaviour of client side processing
                     if (filterCount > 0) {
-                        data.start = 0;
-                        _this.s.dt.page(0);
+                        // If the number of filters has changed we need to read from the start of the result set and reset the paging
+                        if (filterCount !== _this.s.filterCount) {
+                            data.start = 0;
+                            _this.s.page = 0;
+                        }
+                        // Otherwise it is a paging request and we need to read from whatever the paging has been set to
+                        else {
+                            data.start = _this.s.page * _this.s.dt.page.len();
+                        }
+                        _this.s.dt.page(_this.s.page);
+                        _this.s.page = 0;
+                        _this.s.filterCount = filterCount;
                     }
                 });
             }
