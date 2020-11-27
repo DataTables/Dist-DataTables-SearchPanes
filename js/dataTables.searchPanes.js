@@ -2308,7 +2308,6 @@
                             data.start = _this.s.page * _this.s.dt.page.len();
                         }
                         _this.s.dt.page(_this.s.page);
-                        _this.s.page = 0;
                         _this.s.filterCount = filterCount;
                     }
                 });
