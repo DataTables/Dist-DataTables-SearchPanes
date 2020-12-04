@@ -819,6 +819,15 @@
                 }
                 : undefined, (this.customPaneSettings !== null && this.customPaneSettings.dtOpts !== undefined)
                 ? this.customPaneSettings.dtOpts
+                : {}, $.fn.dataTable.versionCheck('2')
+                ? {
+                    layout: {
+                        topLeft: null,
+                        topRight: null,
+                        bottomLeft: null,
+                        bottomRight: null
+                    }
+                }
                 : {}));
             $(this.dom.dtP).addClass(this.classes.table);
             // This is hacky but necessary for when datatables is generating the column titles automatically
