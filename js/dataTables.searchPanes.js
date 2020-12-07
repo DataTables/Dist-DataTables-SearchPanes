@@ -106,7 +106,7 @@
             this.s.colOpts = this.colExists ? this._getOptions() : this._getBonusOptions();
             var colOpts = this.s.colOpts;
             var clear = $('<button type="button">X</button>').addClass(this.classes.paneButton);
-            $(clear).text(table.i18n('searchPanes.clearPane', 'X'));
+            $(clear).text(table.i18n('searchPanes.clearPane', this.c.i18n.clearPane));
             this.dom.container.addClass(colOpts.className);
             this.dom.container.addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
                 ? this.customPaneSettings.className
@@ -606,8 +606,8 @@
             var colOpts = this.s.colOpts;
             var rowData = this.s.rowData;
             // Other Variables
-            var countMessage = table.i18n('searchPanes.count', '{total}');
-            var filteredMessage = table.i18n('searchPanes.countFiltered', '{shown} ({total})');
+            var countMessage = table.i18n('searchPanes.count', this.c.i18n.count);
+            var filteredMessage = table.i18n('searchPanes.countFiltered', this.c.i18n.countFiltered);
             var loadedFilter = table.state.loaded();
             // If the listeners have not been set yet then using the latest state may result in funny errors
             if (this.s.listSet) {
@@ -1493,6 +1493,11 @@
             dtOpts: {},
             emptyMessage: '<i>No Data</i>',
             hideCount: false,
+            i18n: {
+                clearPane: '&times;',
+                count: '{total}',
+                countFiltered: '{shown} ({total})'
+            },
             layout: 'columns-3',
             name: undefined,
             orderable: true,
@@ -1539,7 +1544,7 @@
             // Add extra elements to DOM object including clear
             this.dom = {
                 clearAll: $$1('<button type="button">Clear All</button>').addClass(this.classes.clearAll),
-                container: $$1('<div/>').addClass(this.classes.panes).text(table.i18n('searchPanes.loadMessage', 'Loading Search Panes...')),
+                container: $$1('<div/>').addClass(this.classes.panes).text(table.i18n('searchPanes.loadMessage', this.c.i18n.loadMessage)),
                 emptyMessage: $$1('<div/>').addClass(this.classes.emptyMessage),
                 options: $$1('<div/>').addClass(this.classes.container),
                 panes: $$1('<div/>').addClass(this.classes.container),
@@ -1590,7 +1595,7 @@
                 }
             });
             table.settings()[0]._searchPanes = this;
-            this.dom.clearAll.text(table.i18n('searchPanes.clearMessage', 'Clear All'));
+            this.dom.clearAll.text(table.i18n('searchPanes.clearMessage', this.c.i18n.clearMessage));
             if (this.s.dt.settings()[0]._bInitComplete || fromInit) {
                 this._paneDeclare(table, paneSettings, opts);
             }
@@ -1893,7 +1898,7 @@
             // Create a message to display on the screen
             var message;
             try {
-                message = this.s.dt.i18n('searchPanes.emptyPanes', 'No SearchPanes');
+                message = this.s.dt.i18n('searchPanes.emptyPanes', this.c.i18n.emptyPanes);
             }
             catch (error) {
                 message = null;
@@ -2046,6 +2051,7 @@
          */
         SearchPanes.prototype._paneDeclare = function (table, paneSettings, opts) {
             var _this = this;
+            console.log('cont', opts);
             // Create Panes
             table
                 .columns(this.c.columns.length > 0 ? this.c.columns : undefined)
@@ -2470,7 +2476,7 @@
                 }
             }
             // Run the message through the internationalisation method to improve readability
-            var message = this.s.dt.i18n('searchPanes.title', 'Filters Active - %d', filterCount);
+            var message = this.s.dt.i18n('searchPanes.title', this.c.i18n.title, filterCount);
             $$1(this.dom.title).text(message);
             if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
                 this.c.filterChanged.call(this.s.dt, filterCount);
@@ -2510,6 +2516,19 @@
             },
             columns: [],
             filterChanged: undefined,
+            i18n: {
+                clearMessage: 'Clear All',
+                clearPane: '&times;',
+                collapse: {
+                    0: 'SearchPanes',
+                    _: 'SearchPanes (%d)'
+                },
+                count: '{total}',
+                countFiltered: '{shown} ({total})',
+                emptyPanes: 'No SearchPanes',
+                loadMessage: 'Loading Search Panes...',
+                title: 'Filters Active - %d'
+            },
             layout: 'columns-3',
             order: [],
             panes: [],
@@ -2597,19 +2616,22 @@
             init: function (dt, node, config) {
                 var panes = new $.fn.dataTable.SearchPanes(dt, $.extend({
                     filterChanged: function (count) {
-                        dt.button(node).text(dt.i18n('searchPanes.collapse', { 0: 'SearchPanes', _: 'SearchPanes (%d)' }, count));
+                        dt.button(node).text(dt.i18n('searchPanes.collapse', panes.c.i18n.collapse, count));
                     }
                 }, config.config));
-                var message = dt.i18n('searchPanes.collapse', 'SearchPanes', 0);
+                var message = dt.i18n('searchPanes.collapse', panes.c.i18n.collapse, 0);
                 dt.button(node).text(message);
                 config._panes = panes;
             },
             text: 'Search Panes'
         };
-        function _init(settings, fromPre) {
+        function _init(settings, options, fromPre) {
+            if (options === void 0) { options = null; }
             if (fromPre === void 0) { fromPre = false; }
             var api = new DataTable.Api(settings);
-            var opts = api.init().searchPanes || DataTable.defaults.searchPanes;
+            var opts = options
+                ? options
+                : api.init().searchPanes || DataTable.defaults.searchPanes;
             var searchPanes = new SearchPanes(api, opts, fromPre);
             var node = searchPanes.getNode();
             return node;
@@ -2623,7 +2645,7 @@
             if (settings.oInit.searchPanes ||
                 DataTable.defaults.searchPanes) {
                 if (!settings._searchPanes) {
-                    _init(settings, true);
+                    _init(settings, null, true);
                 }
             }
         });
