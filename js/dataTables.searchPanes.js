@@ -2051,7 +2051,6 @@
          */
         SearchPanes.prototype._paneDeclare = function (table, paneSettings, opts) {
             var _this = this;
-            console.log('cont', opts);
             // Create Panes
             table
                 .columns(this.c.columns.length > 0 ? this.c.columns : undefined)
