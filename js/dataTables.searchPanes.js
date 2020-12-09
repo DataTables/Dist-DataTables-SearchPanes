@@ -1,4 +1,4 @@
-/*! SearchPanes 1.2.2
+/*! SearchPanes 1.2.1
  * 2019-2020 SpryMedia Ltd - datatables.net/license
  */
 (function () {
@@ -106,7 +106,7 @@
             this.s.colOpts = this.colExists ? this._getOptions() : this._getBonusOptions();
             var colOpts = this.s.colOpts;
             var clear = $('<button type="button">X</button>').addClass(this.classes.paneButton);
-            $(clear).text(table.i18n('searchPanes.clearPane', this.c.i18n.clearPane));
+            $(clear).text(table.i18n('searchPanes.clearPane', 'X'));
             this.dom.container.addClass(colOpts.className);
             this.dom.container.addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
                 ? this.customPaneSettings.className
@@ -551,17 +551,17 @@
                 className: className,
                 display: display !== '' ?
                     display :
-                    this.s.colOpts.emptyMessage !== false ?
+                    this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
                         this.s.colOpts.emptyMessage :
-                        this.c.emptyMessage,
+                        this.c.emptyMessage),
                 filter: filter,
                 index: index,
                 shown: shown,
                 sort: sort !== '' ?
                     sort :
-                    this.s.colOpts.emptyMessage !== false ?
+                    this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
                         this.s.colOpts.emptyMessage :
-                        this.c.emptyMessage,
+                        this.c.emptyMessage),
                 total: total,
                 type: type
             });
@@ -606,8 +606,8 @@
             var colOpts = this.s.colOpts;
             var rowData = this.s.rowData;
             // Other Variables
-            var countMessage = table.i18n('searchPanes.count', this.c.i18n.count);
-            var filteredMessage = table.i18n('searchPanes.countFiltered', this.c.i18n.countFiltered);
+            var countMessage = table.i18n('searchPanes.count', '{total}');
+            var filteredMessage = table.i18n('searchPanes.countFiltered', '{shown} ({total})');
             var loadedFilter = table.state.loaded();
             // If the listeners have not been set yet then using the latest state may result in funny errors
             if (this.s.listSet) {
@@ -819,31 +819,14 @@
                 }
                 : undefined, (this.customPaneSettings !== null && this.customPaneSettings.dtOpts !== undefined)
                 ? this.customPaneSettings.dtOpts
-                : {}, $.fn.dataTable.versionCheck('2')
-                ? {
-                    layout: {
-                        topLeft: null,
-                        topRight: null,
-                        bottomLeft: null,
-                        bottomRight: null
-                    }
-                }
                 : {}));
             $(this.dom.dtP).addClass(this.classes.table);
-            // Getting column titles is a little messy
-            var headerText = 'Custom Pane';
-            if (this.customPaneSettings && this.customPaneSettings.header) {
-                headerText = this.customPaneSettings.header;
-            }
-            else if (colOpts.header) {
-                headerText = colOpts.header;
-            }
-            else if (this.colExists) {
-                headerText = $.fn.dataTable.versionCheck('2')
-                    ? table.column(this.s.index).title()
-                    : table.settings()[0].aoColumns[this.s.index].sTitle;
-            }
-            this.dom.searchBox.attr('placeholder', headerText);
+            // This is hacky but necessary for when datatables is generating the column titles automatically
+            $(this.dom.searchBox).attr('placeholder', colOpts.header !== undefined
+                ? colOpts.header
+                : this.colExists
+                    ? table.settings()[0].aoColumns[this.s.index].sTitle
+                    : this.customPaneSettings.header || 'Custom Pane');
             // As the pane table is not in the document yet we must initialise select ourselves
             $.fn.dataTable.select.init(this.s.dtPane);
             $.fn.dataTable.ext.errMode = errMode;
@@ -1069,7 +1052,11 @@
             for (var _i = 0, options_1 = options; _i < options_1.length; _i++) {
                 var comp = options_1[_i];
                 // Initialise the object which is to be placed in the row
-                var insert = comp.label !== '' ? comp.label : this.c.emptyMessage;
+                var insert = comp.label !== '' ?
+                    comp.label :
+                    this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
+                        this.s.colOpts.emptyMessage :
+                        this.c.emptyMessage);
                 var comparisonObj = {
                     className: comp.className,
                     display: insert,
@@ -1306,9 +1293,9 @@
             var updating = this.s.updating;
             this.s.updating = true;
             var filters = this.s.dtPane.rows({ selected: true }).data().pluck('filter').toArray();
-            var nullIndex = filters.indexOf(this.s.colOpts.emptyMessage !== false ?
+            var nullIndex = filters.indexOf(this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
                 this.s.colOpts.emptyMessage :
-                this.c.emptyMessage);
+                this.c.emptyMessage));
             var container = $(this.s.dtPane.table().container());
             // If null index is found then search for empty cells as a filter.
             if (nullIndex > -1) {
@@ -1493,11 +1480,6 @@
             dtOpts: {},
             emptyMessage: '<i>No Data</i>',
             hideCount: false,
-            i18n: {
-                clearPane: '&times;',
-                count: '{total}',
-                countFiltered: '{shown} ({total})'
-            },
             layout: 'columns-3',
             name: undefined,
             orderable: true,
@@ -1544,7 +1526,7 @@
             // Add extra elements to DOM object including clear
             this.dom = {
                 clearAll: $$1('<button type="button">Clear All</button>').addClass(this.classes.clearAll),
-                container: $$1('<div/>').addClass(this.classes.panes).text(table.i18n('searchPanes.loadMessage', this.c.i18n.loadMessage)),
+                container: $$1('<div/>').addClass(this.classes.panes).text(table.i18n('searchPanes.loadMessage', 'Loading Search Panes...')),
                 emptyMessage: $$1('<div/>').addClass(this.classes.emptyMessage),
                 options: $$1('<div/>').addClass(this.classes.container),
                 panes: $$1('<div/>').addClass(this.classes.container),
@@ -1595,7 +1577,7 @@
                 }
             });
             table.settings()[0]._searchPanes = this;
-            this.dom.clearAll.text(table.i18n('searchPanes.clearMessage', this.c.i18n.clearMessage));
+            this.dom.clearAll.text(table.i18n('searchPanes.clearMessage', 'Clear All'));
             if (this.s.dt.settings()[0]._bInitComplete || fromInit) {
                 this._paneDeclare(table, paneSettings, opts);
             }
@@ -1898,7 +1880,7 @@
             // Create a message to display on the screen
             var message;
             try {
-                message = this.s.dt.i18n('searchPanes.emptyPanes', this.c.i18n.emptyPanes);
+                message = this.s.dt.i18n('searchPanes.emptyPanes', 'No SearchPanes');
             }
             catch (error) {
                 message = null;
@@ -2475,7 +2457,7 @@
                 }
             }
             // Run the message through the internationalisation method to improve readability
-            var message = this.s.dt.i18n('searchPanes.title', this.c.i18n.title, filterCount);
+            var message = this.s.dt.i18n('searchPanes.title', 'Filters Active - %d', filterCount);
             $$1(this.dom.title).text(message);
             if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
                 this.c.filterChanged.call(this.s.dt, filterCount);
@@ -2494,7 +2476,7 @@
             }
             this.s.dt.state.save();
         };
-        SearchPanes.version = '1.2.2';
+        SearchPanes.version = '1.2.1';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -2515,19 +2497,6 @@
             },
             columns: [],
             filterChanged: undefined,
-            i18n: {
-                clearMessage: 'Clear All',
-                clearPane: '&times;',
-                collapse: {
-                    0: 'SearchPanes',
-                    _: 'SearchPanes (%d)'
-                },
-                count: '{total}',
-                countFiltered: '{shown} ({total})',
-                emptyPanes: 'No SearchPanes',
-                loadMessage: 'Loading Search Panes...',
-                title: 'Filters Active - %d'
-            },
             layout: 'columns-3',
             order: [],
             panes: [],
@@ -2536,7 +2505,7 @@
         return SearchPanes;
     }());
 
-    /*! SearchPanes 1.2.2
+    /*! SearchPanes 1.2.1
      * 2019-2020 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
@@ -2615,22 +2584,19 @@
             init: function (dt, node, config) {
                 var panes = new $.fn.dataTable.SearchPanes(dt, $.extend({
                     filterChanged: function (count) {
-                        dt.button(node).text(dt.i18n('searchPanes.collapse', panes.c.i18n.collapse, count));
+                        dt.button(node).text(dt.i18n('searchPanes.collapse', { 0: 'SearchPanes', _: 'SearchPanes (%d)' }, count));
                     }
                 }, config.config));
-                var message = dt.i18n('searchPanes.collapse', panes.c.i18n.collapse, 0);
+                var message = dt.i18n('searchPanes.collapse', 'SearchPanes', 0);
                 dt.button(node).text(message);
                 config._panes = panes;
             },
             text: 'Search Panes'
         };
-        function _init(settings, options, fromPre) {
-            if (options === void 0) { options = null; }
+        function _init(settings, fromPre) {
             if (fromPre === void 0) { fromPre = false; }
             var api = new DataTable.Api(settings);
-            var opts = options
-                ? options
-                : api.init().searchPanes || DataTable.defaults.searchPanes;
+            var opts = api.init().searchPanes || DataTable.defaults.searchPanes;
             var searchPanes = new SearchPanes(api, opts, fromPre);
             var node = searchPanes.getNode();
             return node;
@@ -2644,7 +2610,7 @@
             if (settings.oInit.searchPanes ||
                 DataTable.defaults.searchPanes) {
                 if (!settings._searchPanes) {
-                    _init(settings, null, true);
+                    _init(settings, true);
                 }
             }
         });
