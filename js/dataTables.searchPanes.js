@@ -77,7 +77,6 @@
             this.dom = {
                 buttonGroup: $('<div/>').addClass(this.classes.buttonGroup),
                 clear: $('<button type="button">&#215;</button>')
-                    .addClass(this.classes.dull)
                     .addClass(this.classes.disabledButton)
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.clearButton),
@@ -342,7 +341,7 @@
                     }
                 }
                 else {
-                    $(_this.dom.clear).removeClass(_this.classes.dull).removeClass(_this.classes.disabledButton);
+                    $(_this.dom.clear).removeClass(_this.classes.disabledButton);
                     _this.s.selectPresent = true;
                     if (!_this.s.updating) {
                         _this._makeSelection();
@@ -364,7 +363,7 @@
                     else {
                         _this.s.deselect = true;
                         if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
-                            $(_this.dom.clear).addClass(_this.classes.dull).addClass(_this.classes.disabledButton);
+                            $(_this.dom.clear).addClass(_this.classes.disabledButton);
                         }
                         _this._makeSelection();
                         _this.s.deselect = false;
@@ -1463,7 +1462,6 @@
             container: 'dtsp-searchPane',
             countButton: 'dtsp-countButton',
             disabledButton: 'dtsp-disabledButton',
-            dull: 'dtsp-dull',
             hidden: 'dtsp-hidden',
             hide: 'dtsp-hide',
             layout: 'dtsp-',
@@ -2486,10 +2484,10 @@
                 this.c.filterChanged.call(this.s.dt, filterCount);
             }
             if (filterCount === 0) {
-                $$1(this.dom.clearAll).addClass(this.classes.dull).addClass(this.classes.disabledButton);
+                $$1(this.dom.clearAll).addClass(this.classes.disabledButton);
             }
             else {
-                $$1(this.dom.clearAll).removeClass(this.classes.dull).removeClass(this.classes.disabledButton);
+                $$1(this.dom.clearAll).removeClass(this.classes.disabledButton);
             }
         };
         /**
@@ -2510,7 +2508,6 @@
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
             container: 'dtsp-searchPanes',
-            dull: 'dtsp-dull',
             disabledButton: 'dtsp-disabledButton',
             emptyMessage: 'dtsp-emptyMessage',
             hide: 'dtsp-hidden',
