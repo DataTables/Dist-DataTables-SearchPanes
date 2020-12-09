@@ -83,7 +83,9 @@
                     .addClass(this.classes.disabledButton)
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.clearButton),
-                container: $('<div/>').addClass(this.classes.container).addClass(this.classes.layout +
+                container: $('<div/>')
+                    .addClass(this.classes.container)
+                    .addClass(this.classes.layout +
                     (layVal < 10 ? layout : layout.split('-')[0] + '-9')),
                 countButton: $('<button type="button"></button>')
                     .addClass(this.classes.paneButton)
@@ -167,14 +169,11 @@
             //  weird if the width of the panes is lower than expected, this fixes the design.
             // Equally this may occur when the table is resized.
             table.on('draw.dtsp', function () {
-                _this._adjustTopRow();
+                _this.adjustTopRow();
             });
             table.on('buttons-action', function () {
-                _this._adjustTopRow();
+                _this.adjustTopRow();
             });
-            $(window).on('resize.dtsp', DataTable.util.throttle(function () {
-                _this._adjustTopRow();
-            }));
             // When column-reorder is present and the columns are moved, it is necessary to
             //  reassign all of the panes indexes to the new index of the column.
             table.on('column-reorder.dtsp', function (e, settings, details) {
@@ -182,6 +181,27 @@
             });
             return this;
         }
+        /**
+         * Adjusts the layout of the top row when the screen is resized
+         */
+        SearchPane.prototype.adjustTopRow = function () {
+            var subContainers = this.dom.container.find('.' + this.classes.subRowsContainer);
+            var subRow1 = this.dom.container.find('.dtsp-subRow1');
+            var subRow2 = this.dom.container.find('.dtsp-subRow2');
+            var topRow = this.dom.container.find('.' + this.classes.topRow);
+            // If the width is 0 then it is safe to assume that the pane has not yet been displayed.
+            //  Even if it has, if the width is 0 it won't make a difference if it has the narrow class or not
+            if (($(subContainers[0]).width() < 252 || $(topRow[0]).width() < 252) && $(subContainers[0]).width() !== 0) {
+                $(subContainers[0]).addClass(this.classes.narrow);
+                $(subRow1[0]).addClass(this.classes.narrowSub).removeClass(this.classes.narrowSearch);
+                $(subRow2[0]).addClass(this.classes.narrowSub).removeClass(this.classes.narrowButton);
+            }
+            else {
+                $(subContainers[0]).removeClass(this.classes.narrow);
+                $(subRow1[0]).removeClass(this.classes.narrowSub).addClass(this.classes.narrowSearch);
+                $(subRow2[0]).removeClass(this.classes.narrowSub).addClass(this.classes.narrowButton);
+            }
+        };
         /**
          * In the case of a rebuild there is potential for new data to have been included or removed
          * so all of the rowData must be reset as a precaution.
@@ -282,6 +302,25 @@
         SearchPane.prototype.removePane = function () {
             this.s.displayed = false;
             $(this.dom.container).hide();
+        };
+        /**
+         * Resizes the pane based on the layout that is passed in
+         * @param layout the layout to be applied to this pane
+         */
+        SearchPane.prototype.resize = function (layout) {
+            this.c.layout = layout;
+            var layVal = parseInt(layout.split('-')[1], 10);
+            $(this.dom.container)
+                .removeClass()
+                .addClass(this.classes.container)
+                .addClass(this.classes.layout +
+                (layVal < 10 ? layout : layout.split('-')[0] + '-9'))
+                .addClass(this.s.colOpts.className)
+                .addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
+                ? this.customPaneSettings.className
+                : '')
+                .addClass(this.classes.show);
+            this.adjustTopRow();
         };
         /**
          * Sets the cascadeRegen property of the pane. Accessible from above because as SearchPanes.ts deals with the rebuilds.
@@ -420,7 +459,7 @@
                 originalEvent.stopPropagation();
             });
             this.s.dtPane.on('draw.dtsp', function () {
-                _this._adjustTopRow();
+                _this.adjustTopRow();
             });
             // When the button to order by the name of the options is clicked then
             //  change the ordering to whatever it isn't currently
@@ -564,27 +603,6 @@
                 total: total,
                 type: type
             });
-        };
-        /**
-         * Adjusts the layout of the top row when the screen is resized
-         */
-        SearchPane.prototype._adjustTopRow = function () {
-            var subContainers = this.dom.container.find('.' + this.classes.subRowsContainer);
-            var subRow1 = this.dom.container.find('.dtsp-subRow1');
-            var subRow2 = this.dom.container.find('.dtsp-subRow2');
-            var topRow = this.dom.container.find('.' + this.classes.topRow);
-            // If the width is 0 then it is safe to assume that the pane has not yet been displayed.
-            //  Even if it has, if the width is 0 it won't make a difference if it has the narrow class or not
-            if (($(subContainers[0]).width() < 252 || $(topRow[0]).width() < 252) && $(subContainers[0]).width() !== 0) {
-                $(subContainers[0]).addClass(this.classes.narrow);
-                $(subRow1[0]).addClass(this.classes.narrowSub).removeClass(this.classes.narrowSearch);
-                $(subRow2[0]).addClass(this.classes.narrowSub).removeClass(this.classes.narrowButton);
-            }
-            else {
-                $(subContainers[0]).removeClass(this.classes.narrow);
-                $(subRow1[0]).removeClass(this.classes.narrowSub).addClass(this.classes.narrowSearch);
-                $(subRow2[0]).removeClass(this.classes.narrowSub).addClass(this.classes.narrowButton);
-            }
         };
         /**
          * Method to construct the actual pane.
@@ -906,7 +924,7 @@
             }
             // Display the pane
             this.s.dtPane.draw();
-            this._adjustTopRow();
+            this.adjustTopRow();
             if (!this.s.listSet) {
                 this._setListeners();
                 this.s.listSet = true;
@@ -1505,7 +1523,7 @@
                 count: '{total}',
                 countFiltered: '{shown} ({total})'
             },
-            layout: 'columns-3',
+            layout: 'auto',
             name: undefined,
             orderable: true,
             orthogonal: {
@@ -2115,6 +2133,62 @@
             }
         };
         /**
+         * Resizes all of the panes
+         */
+        SearchPanes.prototype._resizePanes = function () {
+            if (this.c.layout === 'auto') {
+                var contWidth = $$1(this.s.dt.searchPanes.container()).width();
+                var target = Math.floor(contWidth / 260.0); // The neatest number of panes per row
+                var highest = 1;
+                var highestmod = 0;
+                var dispIndex = [];
+                // Get the indexes of all of the displayed panes
+                for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                    var pane = _a[_i];
+                    if (pane.s.displayed) {
+                        dispIndex.push(pane.s.index);
+                    }
+                }
+                var displayCount = dispIndex.length;
+                // If the neatest number is the number we have then use this.
+                if (target === displayCount) {
+                    highest = target;
+                }
+                else {
+                    // Go from the target down and find the value with the most panes left over, this will be the best fit
+                    for (var ppr = target; ppr > 1; ppr--) {
+                        var rem = displayCount % ppr;
+                        if (rem === 0) {
+                            highest = ppr;
+                            highestmod = 0;
+                            break;
+                        }
+                        // If there are more left over at this amount of panes per row (ppr) then it fits better so new values
+                        else if (rem > highestmod) {
+                            highest = ppr;
+                            highestmod = rem;
+                        }
+                    }
+                }
+                // If there is a perfect fit then none are to be wider
+                var widerIndexes = highestmod !== 0 ? dispIndex.slice(dispIndex.length - highestmod, dispIndex.length) : [];
+                for (var i = 0; i < this.s.panes.length; i++) {
+                    var pane = this.s.panes[i];
+                    // Resize the pane with the new layout
+                    if (pane.s.displayed) {
+                        var layout = "columns-" + (widerIndexes.indexOf(pane.s.index) === -1 ? highest : highestmod);
+                        pane.resize(layout);
+                    }
+                }
+            }
+            else {
+                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                    var pane = _c[_b];
+                    pane.adjustTopRow();
+                }
+            }
+        };
+        /**
          * Works out which panes to update when data is recieved from the server and viewTotal is active
          */
         SearchPanes.prototype._serverTotals = function () {
@@ -2261,6 +2335,10 @@
                 pane.rebuildPane(undefined, Object.keys(this.s.serverData).length > 0 ? this.s.serverData : undefined);
                 $$1(this.dom.panes).append(pane.dom.container);
             }
+            // If the layout is set to auto then the panes need to be resized to their best fit
+            if (this.c.layout === 'auto') {
+                this._resizePanes();
+            }
             // Only need to trigger a search if it is not server side processing
             if (!this.s.dt.page.info().serverSide) {
                 this.s.dt.draw();
@@ -2290,6 +2368,9 @@
                 }
                 _this.s.filterPane = -1;
             });
+            $$1(window).on('resize.dtsp', DataTable$1.util.throttle(function () {
+                _this._resizePanes();
+            }));
             // Whenever a state save occurs store the selection list in the state object
             this.s.dt.on('stateSaveParams.dtsp', function (e, settings, data) {
                 if (data.searchPanes === undefined) {
@@ -2544,7 +2625,7 @@
                 loadMessage: 'Loading Search Panes...',
                 title: 'Filters Active - %d'
             },
-            layout: 'columns-3',
+            layout: 'auto',
             order: [],
             panes: [],
             viewTotal: false
