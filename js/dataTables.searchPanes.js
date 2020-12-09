@@ -1268,7 +1268,7 @@
                 if (typeof colSelect.filter === 'string') {
                     // The filter value will not have the &amp; in place but a &,
                     //  so we need to do a replace to make sure that they will match
-                    colSelect.filter = colSelect.filter.replaceAll('&amp;', '&');
+                    colSelect.filter = colSelect.filter.replace(/&amp;/g, '&');
                 }
                 // if the filter is an array then is the column present in it
                 if (Array.isArray(filter)) {
