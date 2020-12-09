@@ -33,6 +33,9 @@
             this.classes = $.extend(true, {}, SearchPane.classes);
             // Get options from user
             this.c = $.extend(true, {}, SearchPane.defaults, opts);
+            if (opts !== undefined && opts.hideCount !== undefined && opts.viewCount === undefined) {
+                this.c.viewCount = !this.c.hideCount;
+            }
             this.customPaneSettings = panes;
             this.s = {
                 cascadeRegen: false,
@@ -768,7 +771,7 @@
                             // We are displaying the count in the same columne as the name of the search option.
                             // This is so that there is not need to call columns.adjust(), which in turn speeds up the code
                             var pill = '<span class="' + _this.classes.pill + '">' + message + '</span>';
-                            if (_this.c.hideCount || colOpts.hideCount) {
+                            if (!_this.c.viewCount || !colOpts.viewCount) {
                                 pill = '';
                             }
                             return '<div class="' + _this.classes.nameCont + '"><span title="' +
@@ -1014,8 +1017,8 @@
                 $(this.dom.nameButton).appendTo(this.dom.buttonGroup);
             }
             // If the count column is hidden then don't display the ordering button for it
-            if (!this.c.hideCount &&
-                !colOpts.hideCount &&
+            if (this.c.viewCount &&
+                colOpts.viewCount &&
                 this.c.orderable &&
                 colOpts.orderable &&
                 this.c.controls &&
@@ -1119,7 +1122,12 @@
                 },
                 threshold: null
             };
-            return $.extend(true, {}, SearchPane.defaults, defaultMutator, table.settings()[0].aoColumns[this.s.index].searchPanes);
+            var columnOptions = table.settings()[0].aoColumns[this.s.index].searchPanes;
+            var colOpts = $.extend(true, {}, SearchPane.defaults, defaultMutator, columnOptions);
+            if (columnOptions !== undefined && columnOptions.hideCount !== undefined && columnOptions.viewCount === undefined) {
+                colOpts.viewCount = !columnOptions.hideCount;
+            }
+            return colOpts;
         };
         /**
          * This method allows for changes to the panes and table to be made when a selection or a deselection occurs
@@ -1504,6 +1512,7 @@
                 display: 'display',
                 filter: 'filter',
                 hideCount: false,
+                viewCount: true,
                 search: 'filter',
                 show: undefined,
                 sort: 'sort',
@@ -1512,6 +1521,7 @@
             },
             preSelect: [],
             threshold: 0.6,
+            viewCount: true,
             viewTotal: false
         };
         return SearchPane;
