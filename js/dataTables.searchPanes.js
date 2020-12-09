@@ -78,6 +78,7 @@
                 buttonGroup: $('<div/>').addClass(this.classes.buttonGroup),
                 clear: $('<button type="button">&#215;</button>')
                     .addClass(this.classes.dull)
+                    .addClass(this.classes.disabledButton)
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.clearButton),
                 container: $('<div/>').addClass(this.classes.container).addClass(this.classes.layout +
@@ -341,7 +342,7 @@
                     }
                 }
                 else {
-                    $(_this.dom.clear).removeClass(_this.classes.dull);
+                    $(_this.dom.clear).removeClass(_this.classes.dull).removeClass(_this.classes.disabledButton);
                     _this.s.selectPresent = true;
                     if (!_this.s.updating) {
                         _this._makeSelection();
@@ -363,7 +364,7 @@
                     else {
                         _this.s.deselect = true;
                         if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
-                            $(_this.dom.clear).addClass(_this.classes.dull);
+                            $(_this.dom.clear).addClass(_this.classes.dull).addClass(_this.classes.disabledButton);
                         }
                         _this._makeSelection();
                         _this.s.deselect = false;
@@ -2484,6 +2485,12 @@
             if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
                 this.c.filterChanged.call(this.s.dt, filterCount);
             }
+            if (filterCount === 0) {
+                $$1(this.dom.clearAll).addClass(this.classes.dull).addClass(this.classes.disabledButton);
+            }
+            else {
+                $$1(this.dom.clearAll).removeClass(this.classes.dull).removeClass(this.classes.disabledButton);
+            }
         };
         /**
          * Updates the selectionList when cascade is not in place
@@ -2503,6 +2510,8 @@
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
             container: 'dtsp-searchPanes',
+            dull: 'dtsp-dull',
+            disabledButton: 'dtsp-disabledButton',
             emptyMessage: 'dtsp-emptyMessage',
             hide: 'dtsp-hidden',
             panes: 'dtsp-panesContainer',
