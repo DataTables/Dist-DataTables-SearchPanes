@@ -557,11 +557,7 @@
                 filter: filter,
                 index: index,
                 shown: shown,
-                sort: sort !== '' ?
-                    sort :
-                    this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
-                        this.s.colOpts.emptyMessage :
-                        this.c.emptyMessage),
+                sort: sort,
                 total: total,
                 type: type
             });
