@@ -1055,7 +1055,7 @@
                 def = this.c.emptyMessage;
             }
             // Override per column
-            if (this.s.colOpts.emptyMessage !== false) {
+            if (this.s.colOpts.emptyMessage !== false && this.s.colOpts.emptyMessage !== null) {
                 def = this.s.colOpts.emptyMessage;
             }
             return this.s.dt.i18n('searchPanes.emptyMessage', def);
