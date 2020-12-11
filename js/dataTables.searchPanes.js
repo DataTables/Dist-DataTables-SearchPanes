@@ -593,9 +593,7 @@
                 className: className,
                 display: display !== '' ?
                     display :
-                    this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
-                        this.s.colOpts.emptyMessage :
-                        this.c.emptyMessage),
+                    this._emptyMessage(),
                 filter: filter,
                 index: index,
                 shown: shown,
@@ -1048,6 +1046,21 @@
             $(container).show();
         };
         /**
+         * Getting the legacy message is a little complex due a legacy parameter
+         */
+        SearchPane.prototype._emptyMessage = function () {
+            var def = this.c.i18n.emptyMessage;
+            // Legacy parameter support
+            if (this.c.emptyMessage) {
+                def = this.c.emptyMessage;
+            }
+            // Override per column
+            if (this.s.colOpts.emptyMessage !== false) {
+                def = this.s.colOpts.emptyMessage;
+            }
+            return this.s.dt.i18n('searchPanes.emptyMessage', def);
+        };
+        /**
          * Gets the options for the row for the customPanes
          * @returns {object} The options for the row extended to include the options from the user.
          */
@@ -1088,9 +1101,7 @@
                 // Initialise the object which is to be placed in the row
                 var insert = comp.label !== '' ?
                     comp.label :
-                    this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
-                        this.s.colOpts.emptyMessage :
-                        this.c.emptyMessage);
+                    this._emptyMessage();
                 var comparisonObj = {
                     className: comp.className,
                     display: insert,
@@ -1332,9 +1343,7 @@
             var updating = this.s.updating;
             this.s.updating = true;
             var filters = this.s.dtPane.rows({ selected: true }).data().pluck('filter').toArray();
-            var nullIndex = filters.indexOf(this.s.dt.i18n('searchPanes.emptyMessage', this.s.colOpts.emptyMessage !== false ?
-                this.s.colOpts.emptyMessage :
-                this.c.emptyMessage));
+            var nullIndex = filters.indexOf(this._emptyMessage());
             var container = $(this.s.dtPane.table().container());
             // If null index is found then search for empty cells as a filter.
             if (nullIndex > -1) {
@@ -1516,12 +1525,13 @@
                 return dt.table().container();
             },
             dtOpts: {},
-            emptyMessage: '<i>No Data</i>',
+            emptyMessage: null,
             hideCount: false,
             i18n: {
                 clearPane: '&times;',
                 count: '{total}',
-                countFiltered: '{shown} ({total})'
+                countFiltered: '{shown} ({total})',
+                emptyMessage: '<em>No data</em>'
             },
             layout: 'auto',
             name: undefined,
@@ -2621,6 +2631,7 @@
                 },
                 count: '{total}',
                 countFiltered: '{shown} ({total})',
+                emptyMessage: '<em>No data</em>',
                 emptyPanes: 'No SearchPanes',
                 loadMessage: 'Loading Search Panes...',
                 title: 'Filters Active - %d'
