@@ -1735,6 +1735,7 @@
             if (!this.s.updating && !this.s.dt.page.info().serverSide) {
                 var filterActive = true;
                 var filterPane = this.s.filterPane;
+                var selectTotal = null;
                 // If the number of rows currently visible is equal to the number of rows in the table
                 //  then there can't be any filtering taking place
                 if (table.rows({ search: 'applied' }).data().toArray().length === table.rows().data().toArray().length) {
@@ -1744,10 +1745,12 @@
                 //  If there is only one pane with a selection present then it should not show the filtered message as
                 //  more selections may be made in that pane.
                 else if (this.c.viewTotal) {
+                    selectTotal = 0;
                     for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                         var pane = _a[_i];
                         if (pane.s.dtPane !== undefined) {
                             var selectLength = pane.s.dtPane.rows({ selected: true }).data().toArray().length;
+                            selectTotal += selectLength;
                             if (selectLength === 0) {
                                 for (var _b = 0, _c = this.s.selectionList; _b < _c.length; _b++) {
                                     var selection = _c[_b];
@@ -1766,6 +1769,10 @@
                                 filterPane = null;
                             }
                         }
+                    }
+                    // If the searchbox is in place and filtering is applied then need to cascade down anyway
+                    if (selectTotal === 0) {
+                        filterPane = null;
                     }
                 }
                 var deselectIdx = void 0;
@@ -1813,7 +1820,7 @@
                         }
                     }
                     var solePane = -1;
-                    if (newSelectionList.length === 1) {
+                    if (newSelectionList.length === 1 && selectTotal !== null && selectTotal !== 0) {
                         solePane = newSelectionList[0].index;
                     }
                     // Update all of the panes to reflect the current state of the filters
@@ -1835,7 +1842,7 @@
                     this._updateFilterCount();
                     // If the length of the selections are different then some of them have been removed and a deselect has occured
                     if (newSelectionList.length > 0 && (newSelectionList.length < this.s.selectionList.length || rebuild)) {
-                        this._cascadeRegen(newSelectionList);
+                        this._cascadeRegen(newSelectionList, selectTotal);
                         var last = newSelectionList[newSelectionList.length - 1].index;
                         for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
                             var pane = _l[_k];
@@ -1860,7 +1867,7 @@
                 }
                 else {
                     var solePane = -1;
-                    if (newSelectionList.length === 1) {
+                    if (newSelectionList.length === 1 && selectTotal !== null && selectTotal !== 0) {
                         solePane = newSelectionList[0].index;
                     }
                     for (var _p = 0, _q = this.s.panes; _p < _q.length; _p++) {
@@ -1880,7 +1887,7 @@
                     // Update the label that shows how many filters are in place
                     this._updateFilterCount();
                 }
-                if (!filterActive) {
+                if (!filterActive || selectTotal === 0) {
                     this.s.selectionList = [];
                 }
             }
@@ -1976,12 +1983,12 @@
          * Prepares the panes for selections to be made when cascade is active and a deselect has occured
          * @param newSelectionList the list of selections which are to be made
          */
-        SearchPanes.prototype._cascadeRegen = function (newSelectionList) {
+        SearchPanes.prototype._cascadeRegen = function (newSelectionList, selectTotal) {
             // Set this to true so that the actions taken do not cause this to run until it is finished
             this.regenerating = true;
             // If only one pane has been selected then take note of its index
             var solePane = -1;
-            if (newSelectionList.length === 1) {
+            if (newSelectionList.length === 1 && selectTotal !== null && selectTotal !== 0) {
                 solePane = newSelectionList[0].index;
             }
             // Let the pane know that a cascadeRegen is taking place to avoid unexpected behaviour
@@ -1996,13 +2003,19 @@
                 }
                 pane.setClear(false);
             }
+            // Rebin panes
+            this.s.dt.draw();
+            for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                var pane = _c[_b];
+                pane.updatePane(true);
+            }
             // Remake Selections
             this._makeCascadeSelections(newSelectionList);
             // Set the selection list property to be the list without the selections from the deselect pane
             this.s.selectionList = newSelectionList;
             // The regeneration of selections is over so set it back to false
-            for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                var pane = _c[_b];
+            for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                var pane = _e[_d];
                 pane.setCascadeRegen(false);
             }
             this.regenerating = false;
@@ -2417,7 +2430,7 @@
                         }
                     }
                     if (_this.c.viewTotal) {
-                        _this._prepViewTotal();
+                        _this._prepViewTotal(filterCount);
                     }
                     // If there is a filter to be applied, then we need to read from the start of the result set
                     //  and set the paging to 0. This matches the behaviour of client side processing
@@ -2511,7 +2524,7 @@
             }
             // If cascadePanes is active then make the previous selections in the order they were previously
             if (this.s.selectionList.length > 0 && this.c.cascadePanes) {
-                this._cascadeRegen(this.s.selectionList);
+                this._cascadeRegen(this.s.selectionList, this.s.selectionList.length);
             }
             // Update the title bar to show how many filters have been selected
             this._updateFilterCount();
@@ -2534,7 +2547,7 @@
             }
             table.settings()[0]._searchPanes = this;
         };
-        SearchPanes.prototype._prepViewTotal = function () {
+        SearchPanes.prototype._prepViewTotal = function (selectTotal) {
             var filterPane = this.s.filterPane;
             var filterActive = false;
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
