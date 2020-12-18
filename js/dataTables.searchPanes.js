@@ -1714,6 +1714,8 @@
             this._updateFilterCount();
             this._attachPaneContainer();
             this.s.dt.draw();
+            // Resize the panes incase there has been a change
+            this._resizePanes();
             // If a single pane has been rebuilt then return only that pane
             if (returnArray.length === 1) {
                 return returnArray[0];
