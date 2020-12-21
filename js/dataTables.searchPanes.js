@@ -46,6 +46,7 @@
                 dt: table,
                 dtPane: undefined,
                 filteringActive: false,
+                forceViewTotal: false,
                 index: idx,
                 indexes: [],
                 lastCascade: false,
@@ -774,7 +775,7 @@
                                 return row.type;
                             }
                             var message;
-                            (_this.s.filteringActive || _this.s.showFiltered) && _this.c.viewTotal
+                            ((_this.s.filteringActive || _this.s.showFiltered) && _this.c.viewTotal) || (_this.c.viewTotal && _this.s.forceViewTotal)
                                 ? message = filteredMessage.replace(/{total}/, row.total)
                                 : message = countMessage.replace(/{total}/, row.total);
                             message = message.replace(/{shown}/, row.shown);
@@ -2005,8 +2006,18 @@
             }
             // Rebin panes
             this.s.dt.draw();
-            for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                var pane = _c[_b];
+            // While all of the selections have been removed, check the table lengths
+            // If they are different, another filter is in place and we need to force viewTotal to be used
+            var noSelectionsTableLength = this.s.dt.rows({ search: 'applied' }).data().toArray().length;
+            var tableLength = this.s.dt.rows().data().toArray().length;
+            if (tableLength !== noSelectionsTableLength) {
+                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                    var pane = _c[_b];
+                    pane.s.forceViewTotal = true;
+                }
+            }
+            for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                var pane = _e[_d];
                 pane.updatePane(true);
             }
             // Remake Selections
@@ -2014,11 +2025,18 @@
             // Set the selection list property to be the list without the selections from the deselect pane
             this.s.selectionList = newSelectionList;
             // The regeneration of selections is over so set it back to false
-            for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
-                var pane = _e[_d];
+            for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
+                var pane = _g[_f];
                 pane.setCascadeRegen(false);
             }
             this.regenerating = false;
+            // ViewTotal has already been forced at this point so can cancel that for future
+            if (tableLength !== noSelectionsTableLength) {
+                for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
+                    var pane = _j[_h];
+                    pane.s.forceViewTotal = false;
+                }
+            }
         };
         /**
          * Attaches the message to the document but does not add any panes
@@ -2386,7 +2404,7 @@
             table.on('preDraw.dtsps', function () {
                 _this._updateFilterCount();
                 if ((_this.c.cascadePanes || _this.c.viewTotal) && !_this.s.dt.page.info().serverSide) {
-                    _this.redrawPanes();
+                    _this.redrawPanes(_this.c.viewTotal);
                 }
                 else {
                     _this._updateSelection();
