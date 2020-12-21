@@ -775,7 +775,8 @@
                                 return row.type;
                             }
                             var message;
-                            ((_this.s.filteringActive || _this.s.showFiltered) && _this.c.viewTotal) || (_this.c.viewTotal && _this.s.forceViewTotal)
+                            ((_this.s.filteringActive || _this.s.showFiltered) && _this.c.viewTotal) ||
+                                (_this.c.viewTotal && _this.s.forceViewTotal)
                                 ? message = filteredMessage.replace(/{total}/, row.total)
                                 : message = countMessage.replace(/{total}/, row.total);
                             message = message.replace(/{shown}/, row.shown);
@@ -1541,12 +1542,12 @@
                 display: 'display',
                 filter: 'filter',
                 hideCount: false,
-                viewCount: true,
                 search: 'filter',
                 show: undefined,
                 sort: 'sort',
                 threshold: 0.6,
-                type: 'type'
+                type: 'type',
+                viewCount: true
             },
             preSelect: [],
             threshold: 0.6,
@@ -2215,18 +2216,18 @@
                 }
                 // If there is a perfect fit then none are to be wider
                 var widerIndexes = highestmod !== 0 ? dispIndex.slice(dispIndex.length - highestmod, dispIndex.length) : [];
-                for (var i = 0; i < this.s.panes.length; i++) {
-                    var pane = this.s.panes[i];
+                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                    var pane = _c[_b];
                     // Resize the pane with the new layout
                     if (pane.s.displayed) {
-                        var layout = "columns-" + (widerIndexes.indexOf(pane.s.index) === -1 ? highest : highestmod);
+                        var layout = 'columns-' + (widerIndexes.indexOf(pane.s.index) === -1 ? highest : highestmod);
                         pane.resize(layout);
                     }
                 }
             }
             else {
-                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                    var pane = _c[_b];
+                for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                    var pane = _e[_d];
                     pane.adjustTopRow();
                 }
             }
@@ -2583,6 +2584,9 @@
                         filterPane = null;
                     }
                 }
+            }
+            if (selectTotal !== null && selectTotal !== 0) {
+                filterPane = null;
             }
             // Update all of the panes to reflect the current state of the filters
             for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
