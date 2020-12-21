@@ -1717,7 +1717,7 @@
             this._attachPaneContainer();
             this.s.dt.draw();
             // Resize the panes incase there has been a change
-            this._resizePanes();
+            this.resizePanes();
             // If a single pane has been rebuilt then return only that pane
             if (returnArray.length === 1) {
                 return returnArray[0];
@@ -1893,6 +1893,63 @@
                     this.s.selectionList = [];
                 }
             }
+        };
+        /**
+         * Resizes all of the panes
+         */
+        SearchPanes.prototype.resizePanes = function () {
+            if (this.c.layout === 'auto') {
+                var contWidth = $$1(this.s.dt.searchPanes.container()).width();
+                var target = Math.floor(contWidth / 260.0); // The neatest number of panes per row
+                var highest = 1;
+                var highestmod = 0;
+                var dispIndex = [];
+                // Get the indexes of all of the displayed panes
+                for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                    var pane = _a[_i];
+                    if (pane.s.displayed) {
+                        dispIndex.push(pane.s.index);
+                    }
+                }
+                var displayCount = dispIndex.length;
+                // If the neatest number is the number we have then use this.
+                if (target === displayCount) {
+                    highest = target;
+                }
+                else {
+                    // Go from the target down and find the value with the most panes left over, this will be the best fit
+                    for (var ppr = target; ppr > 1; ppr--) {
+                        var rem = displayCount % ppr;
+                        if (rem === 0) {
+                            highest = ppr;
+                            highestmod = 0;
+                            break;
+                        }
+                        // If there are more left over at this amount of panes per row (ppr) then it fits better so new values
+                        else if (rem > highestmod) {
+                            highest = ppr;
+                            highestmod = rem;
+                        }
+                    }
+                }
+                // If there is a perfect fit then none are to be wider
+                var widerIndexes = highestmod !== 0 ? dispIndex.slice(dispIndex.length - highestmod, dispIndex.length) : [];
+                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                    var pane = _c[_b];
+                    // Resize the pane with the new layout
+                    if (pane.s.displayed) {
+                        var layout = 'columns-' + (widerIndexes.indexOf(pane.s.index) === -1 ? highest : highestmod);
+                        pane.resize(layout);
+                    }
+                }
+            }
+            else {
+                for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                    var pane = _e[_d];
+                    pane.adjustTopRow();
+                }
+            }
+            return this;
         };
         /**
          * Attach the panes, buttons and title to the document
@@ -2177,62 +2234,6 @@
             }
         };
         /**
-         * Resizes all of the panes
-         */
-        SearchPanes.prototype._resizePanes = function () {
-            if (this.c.layout === 'auto') {
-                var contWidth = $$1(this.s.dt.searchPanes.container()).width();
-                var target = Math.floor(contWidth / 260.0); // The neatest number of panes per row
-                var highest = 1;
-                var highestmod = 0;
-                var dispIndex = [];
-                // Get the indexes of all of the displayed panes
-                for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
-                    var pane = _a[_i];
-                    if (pane.s.displayed) {
-                        dispIndex.push(pane.s.index);
-                    }
-                }
-                var displayCount = dispIndex.length;
-                // If the neatest number is the number we have then use this.
-                if (target === displayCount) {
-                    highest = target;
-                }
-                else {
-                    // Go from the target down and find the value with the most panes left over, this will be the best fit
-                    for (var ppr = target; ppr > 1; ppr--) {
-                        var rem = displayCount % ppr;
-                        if (rem === 0) {
-                            highest = ppr;
-                            highestmod = 0;
-                            break;
-                        }
-                        // If there are more left over at this amount of panes per row (ppr) then it fits better so new values
-                        else if (rem > highestmod) {
-                            highest = ppr;
-                            highestmod = rem;
-                        }
-                    }
-                }
-                // If there is a perfect fit then none are to be wider
-                var widerIndexes = highestmod !== 0 ? dispIndex.slice(dispIndex.length - highestmod, dispIndex.length) : [];
-                for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
-                    var pane = _c[_b];
-                    // Resize the pane with the new layout
-                    if (pane.s.displayed) {
-                        var layout = 'columns-' + (widerIndexes.indexOf(pane.s.index) === -1 ? highest : highestmod);
-                        pane.resize(layout);
-                    }
-                }
-            }
-            else {
-                for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
-                    var pane = _e[_d];
-                    pane.adjustTopRow();
-                }
-            }
-        };
-        /**
          * Works out which panes to update when data is recieved from the server and viewTotal is active
          */
         SearchPanes.prototype._serverTotals = function () {
@@ -2381,7 +2382,7 @@
             }
             // If the layout is set to auto then the panes need to be resized to their best fit
             if (this.c.layout === 'auto') {
-                this._resizePanes();
+                this.resizePanes();
             }
             // Only need to trigger a search if it is not server side processing
             if (!this.s.dt.page.info().serverSide) {
@@ -2413,7 +2414,7 @@
                 _this.s.filterPane = -1;
             });
             $$1(window).on('resize.dtsp', DataTable$1.util.throttle(function () {
-                _this._resizePanes();
+                _this.resizePanes();
             }));
             // Whenever a state save occurs store the selection list in the state object
             this.s.dt.on('stateSaveParams.dtsp', function (e, settings, data) {
@@ -2735,6 +2736,12 @@
                     ctx._searchPanes.rebuild(targetIdx, maintainSelections);
                 }
             });
+        });
+        apiRegister('searchPanes.resizePanes()', function () {
+            var ctx = this.context[0];
+            return ctx._searchPanes ?
+                ctx._searchPanes.resizePanes() :
+                null;
         });
         apiRegister('searchPanes.container()', function () {
             var ctx = this.context[0];
