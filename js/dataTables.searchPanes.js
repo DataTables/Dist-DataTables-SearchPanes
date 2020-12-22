@@ -183,6 +183,40 @@
             return this;
         }
         /**
+         * Adds a row to the panes table
+         * @param display the value to be displayed to the user
+         * @param filter the value to be filtered on when searchpanes is implemented
+         * @param shown the number of rows in the table that are currently visible matching this criteria
+         * @param total the total number of rows in the table that match this criteria
+         * @param sort the value to be sorted in the pane table
+         * @param type the value of which the type is to be derived from
+         */
+        SearchPane.prototype.addRow = function (display, filter, shown, total, sort, type, className) {
+            var index;
+            for (var _i = 0, _a = this.s.indexes; _i < _a.length; _i++) {
+                var entry = _a[_i];
+                if (entry.filter === filter) {
+                    index = entry.index;
+                }
+            }
+            if (index === undefined) {
+                index = this.s.indexes.length;
+                this.s.indexes.push({ filter: filter, index: index });
+            }
+            return this.s.dtPane.row.add({
+                className: className,
+                display: display !== '' ?
+                    display :
+                    this.emptyMessage(),
+                filter: filter,
+                index: index,
+                shown: shown,
+                sort: sort,
+                total: total,
+                type: type
+            });
+        };
+        /**
          * Adjusts the layout of the top row when the screen is resized
          */
         SearchPane.prototype.adjustTopRow = function () {
@@ -249,6 +283,21 @@
                 this.s.dtPane.destroy();
             }
             this.s.listSet = false;
+        };
+        /**
+         * Getting the legacy message is a little complex due a legacy parameter
+         */
+        SearchPane.prototype.emptyMessage = function () {
+            var def = this.c.i18n.emptyMessage;
+            // Legacy parameter support
+            if (this.c.emptyMessage) {
+                def = this.c.emptyMessage;
+            }
+            // Override per column
+            if (this.s.colOpts.emptyMessage !== false && this.s.colOpts.emptyMessage !== null) {
+                def = this.s.colOpts.emptyMessage;
+            }
+            return this.s.dt.i18n('searchPanes.emptyMessage', def);
         };
         /**
          * Updates the number of filters that have been applied in the title
@@ -570,40 +619,6 @@
             }
         };
         /**
-         * Adds a row to the panes table
-         * @param display the value to be displayed to the user
-         * @param filter the value to be filtered on when searchpanes is implemented
-         * @param shown the number of rows in the table that are currently visible matching this criteria
-         * @param total the total number of rows in the table that match this criteria
-         * @param sort the value to be sorted in the pane table
-         * @param type the value of which the type is to be derived from
-         */
-        SearchPane.prototype._addRow = function (display, filter, shown, total, sort, type, className) {
-            var index;
-            for (var _i = 0, _a = this.s.indexes; _i < _a.length; _i++) {
-                var entry = _a[_i];
-                if (entry.filter === filter) {
-                    index = entry.index;
-                }
-            }
-            if (index === undefined) {
-                index = this.s.indexes.length;
-                this.s.indexes.push({ filter: filter, index: index });
-            }
-            return this.s.dtPane.row.add({
-                className: className,
-                display: display !== '' ?
-                    display :
-                    this._emptyMessage(),
-                filter: filter,
-                index: index,
-                shown: shown,
-                sort: sort,
-                total: total,
-                type: type
-            });
-        };
-        /**
          * Method to construct the actual pane.
          * @param selectedRows previously selected Rows to be reselected
          * @last boolean to indicate whether this pane was the last one to have a selection made
@@ -891,7 +906,7 @@
                             (this.c.cascadePanes && rowData.bins[rowData.arrayFilter[i].filter] !== 0) ||
                             (this.c.cascadePanes && init !== null) ||
                             selected)) {
-                        var row = this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, init ?
+                        var row = this.addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, init ?
                             rowData.binsTotal[rowData.arrayFilter[i].filter] :
                             rowData.bins[rowData.arrayFilter[i].filter], this.c.viewTotal || init
                             ? String(rowData.binsTotal[rowData.arrayFilter[i].filter])
@@ -908,11 +923,11 @@
                     else if (!this.s.dt.page.info().serverSide &&
                         rowData.arrayFilter[i] &&
                         (rowData.bins[rowData.arrayFilter[i].filter] !== undefined || !this.c.cascadePanes)) {
-                        this._addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], rowData.binsTotal[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
+                        this.addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, rowData.bins[rowData.arrayFilter[i].filter], rowData.binsTotal[rowData.arrayFilter[i].filter], rowData.arrayFilter[i].sort, rowData.arrayFilter[i].type);
                     }
                     else if (!this.s.dt.page.info().serverSide) {
-                        // Just pass an empty string as the message will be calculated based on that in _addRow()
-                        this._addRow('', count_1, count_1, '', '', '');
+                        // Just pass an empty string as the message will be calculated based on that in addRow()
+                        this.addRow('', count_1, count_1, '', '', '');
                     }
                 }
             }
@@ -1048,21 +1063,6 @@
             $(container).show();
         };
         /**
-         * Getting the legacy message is a little complex due a legacy parameter
-         */
-        SearchPane.prototype._emptyMessage = function () {
-            var def = this.c.i18n.emptyMessage;
-            // Legacy parameter support
-            if (this.c.emptyMessage) {
-                def = this.c.emptyMessage;
-            }
-            // Override per column
-            if (this.s.colOpts.emptyMessage !== false && this.s.colOpts.emptyMessage !== null) {
-                def = this.s.colOpts.emptyMessage;
-            }
-            return this.s.dt.i18n('searchPanes.emptyMessage', def);
-        };
-        /**
          * Gets the options for the row for the customPanes
          * @returns {object} The options for the row extended to include the options from the user.
          */
@@ -1103,7 +1103,7 @@
                 // Initialise the object which is to be placed in the row
                 var insert = comp.label !== '' ?
                     comp.label :
-                    this._emptyMessage();
+                    this.emptyMessage();
                 var comparisonObj = {
                     className: comp.className,
                     display: insert,
@@ -1134,7 +1134,7 @@
                 }
                 // If cascadePanes is not active or if it is and the comparisonObj should be shown then add it to the pane
                 if (!this.c.cascadePanes || (this.c.cascadePanes && comparisonObj.shown !== 0)) {
-                    rows.push(this._addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.shown, comparisonObj.total, comparisonObj.sort, comparisonObj.type, comparisonObj.className));
+                    rows.push(this.addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.shown, comparisonObj.total, comparisonObj.sort, comparisonObj.type, comparisonObj.className));
                 }
             }
             return rows;
@@ -1345,7 +1345,7 @@
             var updating = this.s.updating;
             this.s.updating = true;
             var filters = this.s.dtPane.rows({ selected: true }).data().pluck('filter').toArray();
-            var nullIndex = filters.indexOf(this._emptyMessage());
+            var nullIndex = filters.indexOf(this.emptyMessage());
             var container = $(this.s.dtPane.table().container());
             // If null index is found then search for empty cells as a filter.
             if (nullIndex > -1) {
@@ -1427,7 +1427,7 @@
                         if (dataP && ((rowData.bins[dataP.filter] !== undefined && rowData.bins[dataP.filter] !== 0 && this_1.c.cascadePanes)
                             || !this_1.c.cascadePanes
                             || this_1.s.clearing)) {
-                            var row = this_1._addRow(dataP.display, dataP.filter, !this_1.c.viewTotal
+                            var row = this_1.addRow(dataP.display, dataP.filter, !this_1.c.viewTotal
                                 ? rowData.bins[dataP.filter]
                                 : rowData.bins[dataP.filter] !== undefined
                                     ? rowData.bins[dataP.filter]
@@ -1474,7 +1474,7 @@
                 // longer present in the resulting data set.
                 for (var _c = 0, selected_1 = selected; _c < selected_1.length; _c++) {
                     var selectedEl = selected_1[_c];
-                    var row = this._addRow(selectedEl.display, selectedEl.filter, 0, this.c.viewTotal
+                    var row = this.addRow(selectedEl.display, selectedEl.filter, 0, this.c.viewTotal
                         ? selectedEl.total
                         : 0, selectedEl.display, selectedEl.display);
                     this.s.updating = true;
@@ -1738,24 +1738,29 @@
                 var filterActive = true;
                 var filterPane = this.s.filterPane;
                 var selectTotal = null;
+                for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                    var pane = _a[_i];
+                    if (pane.s.dtPane !== undefined) {
+                        selectTotal += pane.s.dtPane.rows({ selected: true }).data().toArray().length;
+                    }
+                }
                 // If the number of rows currently visible is equal to the number of rows in the table
                 //  then there can't be any filtering taking place
-                if (table.rows({ search: 'applied' }).data().toArray().length === table.rows().data().toArray().length) {
+                if (selectTotal === 0 &&
+                    table.rows({ search: 'applied' }).data().toArray().length === table.rows().data().toArray().length) {
                     filterActive = false;
                 }
                 // Otherwise if viewTotal is active then it is necessary to determine which panes a select is present in.
                 //  If there is only one pane with a selection present then it should not show the filtered message as
                 //  more selections may be made in that pane.
                 else if (this.c.viewTotal) {
-                    selectTotal = 0;
-                    for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
-                        var pane = _a[_i];
+                    for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                        var pane = _c[_b];
                         if (pane.s.dtPane !== undefined) {
                             var selectLength = pane.s.dtPane.rows({ selected: true }).data().toArray().length;
-                            selectTotal += selectLength;
                             if (selectLength === 0) {
-                                for (var _b = 0, _c = this.s.selectionList; _b < _c.length; _b++) {
-                                    var selection = _c[_b];
+                                for (var _d = 0, _e = this.s.selectionList; _d < _e.length; _d++) {
+                                    var selection = _e[_d];
                                     if (selection.index === pane.s.index && selection.rows.length !== 0) {
                                         selectLength = selection.rows.length;
                                     }
@@ -1781,8 +1786,8 @@
                 var newSelectionList = [];
                 // Don't run this if it is due to the panes regenerating
                 if (!this.regenerating) {
-                    for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
-                        var pane = _e[_d];
+                    for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
+                        var pane = _g[_f];
                         // Identify the pane where a selection or deselection has been made and add it to the list.
                         if (pane.s.selectPresent) {
                             this.s.selectionList.push({ index: pane.s.index, rows: pane.s.dtPane.rows({ selected: true }).data().toArray(), protect: false });
@@ -1799,8 +1804,8 @@
                     }
                     if (this.s.selectionList.length > 0) {
                         var last = this.s.selectionList[this.s.selectionList.length - 1].index;
-                        for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
-                            var pane = _g[_f];
+                        for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
+                            var pane = _j[_h];
                             pane.s.lastSelect = (pane.s.index === last);
                         }
                     }
@@ -1826,8 +1831,8 @@
                         solePane = newSelectionList[0].index;
                     }
                     // Update all of the panes to reflect the current state of the filters
-                    for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
-                        var pane = _j[_h];
+                    for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
+                        var pane = _l[_k];
                         if (pane.s.dtPane !== undefined) {
                             var tempFilter = true;
                             pane.s.filteringActive = true;
@@ -1846,15 +1851,15 @@
                     if (newSelectionList.length > 0 && (newSelectionList.length < this.s.selectionList.length || rebuild)) {
                         this._cascadeRegen(newSelectionList, selectTotal);
                         var last = newSelectionList[newSelectionList.length - 1].index;
-                        for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
-                            var pane = _l[_k];
+                        for (var _m = 0, _o = this.s.panes; _m < _o.length; _m++) {
+                            var pane = _o[_m];
                             pane.s.lastSelect = (pane.s.index === last);
                         }
                     }
                     else if (newSelectionList.length > 0) {
                         // Update all of the other panes as you would just making a normal selection
-                        for (var _m = 0, _o = this.s.panes; _m < _o.length; _m++) {
-                            var paneUpdate = _o[_m];
+                        for (var _p = 0, _q = this.s.panes; _p < _q.length; _p++) {
+                            var paneUpdate = _q[_p];
                             if (paneUpdate.s.dtPane !== undefined) {
                                 var tempFilter = true;
                                 paneUpdate.s.filteringActive = true;
@@ -1872,8 +1877,8 @@
                     if (newSelectionList.length === 1 && selectTotal !== null && selectTotal !== 0) {
                         solePane = newSelectionList[0].index;
                     }
-                    for (var _p = 0, _q = this.s.panes; _p < _q.length; _p++) {
-                        var pane = _q[_p];
+                    for (var _r = 0, _s = this.s.panes; _r < _s.length; _r++) {
+                        var pane = _s[_r];
                         if (pane.s.dtPane !== undefined) {
                             var tempFilter = true;
                             pane.s.filteringActive = true;
@@ -2140,19 +2145,26 @@
                             pane.setClear(false);
                         }
                         var _loop_2 = function (row) {
+                            var found = false;
                             pane.s.dtPane.rows().every(function (rowIdx) {
                                 if (pane.s.dtPane.row(rowIdx).data() !== undefined &&
                                     row !== undefined &&
                                     pane.s.dtPane.row(rowIdx).data().filter === row.filter) {
+                                    found = true;
                                     pane.s.dtPane.row(rowIdx).select();
                                 }
                             });
+                            if (!found) {
+                                var newRow = pane.addRow(row.display, row.filter, 0, row.total, row.sort, row.type, row.className);
+                                newRow.select();
+                            }
                         };
                         // select every row in the pane that was selected previously
                         for (var _i = 0, _a = newSelectionList[i].rows; _i < _a.length; _i++) {
                             var row = _a[_i];
                             _loop_2(row);
                         }
+                        pane.s.dtPane.draw();
                         // Update the label that shows how many filters are in place
                         this_1._updateFilterCount();
                         pane.s.lastCascade = false;
