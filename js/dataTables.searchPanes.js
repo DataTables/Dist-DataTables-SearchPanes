@@ -1278,12 +1278,10 @@
             // For each item selected in the pane, check if it is available in the cell
             for (var _i = 0, _a = this.selections; _i < _a.length; _i++) {
                 var colSelect = _a[_i];
-                if (typeof colSelect.filter === 'string') {
+                if (typeof colSelect.filter === 'string' && typeof filter === 'string') {
                     // The filter value will not have the &amp; in place but a &,
                     //  so we need to do a replace to make sure that they will match
-                    colSelect.filter = colSelect.filter.replace(/&amp;/g, '&');
-                    colSelect.filter = colSelect.filter.replace(/&lt;/g, '<');
-                    colSelect.filter = colSelect.filter.replace(/&gt;/g, '>');
+                    colSelect.filter = colSelect.filter.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
                 }
                 // if the filter is an array then is the column present in it
                 if (Array.isArray(filter)) {
