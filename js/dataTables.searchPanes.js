@@ -807,6 +807,9 @@
                             if (!_this.c.viewCount || !colOpts.viewCount) {
                                 pill = '';
                             }
+                            if (type === 'filter') {
+                                return typeof data === 'string' && data.match(/<[^>]*>/) !== null ? data.replace(/<[^>]*>/g, '') : data;
+                            }
                             return '<div class="' + _this.classes.nameCont + '"><span title="' +
                                 (typeof data === 'string' && data.match(/<[^>]*>/) !== null ? data.replace(/<[^>]*>/g, '') : data) +
                                 '" class="' + _this.classes.name + '">' +
