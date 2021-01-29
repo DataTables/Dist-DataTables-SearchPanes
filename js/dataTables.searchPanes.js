@@ -158,7 +158,7 @@
             // If the clear button for this pane is clicked clear the selections
             if (this.c.clear) {
                 $(clear).on('click', function () {
-                    var searches = _this.dom.container.find(_this.classes.search);
+                    var searches = _this.dom.container.find('.' + _this.classes.search.replace(/ /g, '.'));
                     searches.each(function () {
                         $(this).val('');
                         $(this).trigger('input');
@@ -220,10 +220,10 @@
          * Adjusts the layout of the top row when the screen is resized
          */
         SearchPane.prototype.adjustTopRow = function () {
-            var subContainers = this.dom.container.find('.' + this.classes.subRowsContainer);
-            var subRow1 = this.dom.container.find('.dtsp-subRow1');
-            var subRow2 = this.dom.container.find('.dtsp-subRow2');
-            var topRow = this.dom.container.find('.' + this.classes.topRow);
+            var subContainers = this.dom.container.find('.' + this.classes.subRowsContainer.replace(/ /g, '.'));
+            var subRow1 = this.dom.container.find('.' + this.classes.subRow1.replace(/ /g, '.'));
+            var subRow2 = this.dom.container.find('.' + this.classes.subRow2.replace(/ /g, '.'));
+            var topRow = this.dom.container.find('.' + this.classes.topRow.replace(/ /g, '.'));
             // If the width is 0 then it is safe to assume that the pane has not yet been displayed.
             //  Even if it has, if the width is 0 it won't make a difference if it has the narrow class or not
             if (($(subContainers[0]).width() < 252 || $(topRow[0]).width() < 252) && $(subContainers[0]).width() !== 0) {
@@ -527,7 +527,7 @@
             });
             // When the clear button is clicked reset the pane
             $(this.dom.clear).on('click.dtsp', function () {
-                var searches = _this.dom.container.find('.' + _this.classes.search);
+                var searches = _this.dom.container.find('.' + _this.classes.search.replace(/ /g, '.'));
                 searches.each(function () {
                     // set the value of the search box to be an empty string and then search on that, effectively reseting
                     $(this).val('');
@@ -542,7 +542,15 @@
             // When a character is inputted into the searchbox search the pane for matching values.
             // Doing it this way means that no button has to be clicked to trigger a search, it is done asynchronously
             $(this.dom.searchBox).on('input.dtsp', function () {
-                _this.s.dtPane.search($(_this.dom.searchBox).val()).draw();
+                var searchval = $(_this.dom.searchBox).val();
+                _this.s.dtPane.search(searchval).draw();
+                if (searchval.length > 0 ||
+                    (searchval.length === 0 && _this.s.dtPane.rows({ selected: true }).data().toArray().length > 0)) {
+                    _this.dom.clear.removeClass(_this.classes.disabledButton);
+                }
+                else {
+                    _this.dom.clear.addClass(_this.classes.disabledButton);
+                }
                 _this.s.dt.state.save();
             });
             // Make sure to save the state once the pane has been built
@@ -1653,7 +1661,7 @@
          */
         SearchPanes.prototype.clearSelections = function () {
             // Load in all of the searchBoxes in the documents
-            var searches = this.dom.container.find(this.classes.search);
+            var searches = this.dom.container.find('.' + this.classes.search.replace(/ /g, '.'));
             // For each searchBox set the input text to be empty and then trigger
             //  an input on them so that they no longer filter the panes
             searches.each(function () {
