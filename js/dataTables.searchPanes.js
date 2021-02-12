@@ -1292,7 +1292,7 @@
                 if (typeof colSelect.filter === 'string' && typeof filter === 'string') {
                     // The filter value will not have the &amp; in place but a &,
                     //  so we need to do a replace to make sure that they will match
-                    colSelect.filter = colSelect.filter.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                    colSelect.filter = colSelect.filter.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
                 }
                 // if the filter is an array then is the column present in it
                 if (Array.isArray(filter)) {
