@@ -1676,7 +1676,6 @@
                     returnArray.push(pane.clearPane());
                 }
             }
-            this.s.dt.draw();
             return returnArray;
         };
         /**
@@ -1712,10 +1711,6 @@
                     this.s.serverData :
                     undefined, null, maintainSelection));
                 $$1(this.dom.panes).append(pane.dom.container);
-            }
-            // Only need to trigger a search if it is not server side processing
-            if (!this.s.dt.page.info().serverSide) {
-                this.s.dt.draw();
             }
             if (this.c.cascadePanes || this.c.viewTotal) {
                 this.redrawPanes(true);
@@ -2360,10 +2355,6 @@
                     $$1.fn.dataTable.select.init(pane.s.dtPane);
                 }
             }
-            // Only need to trigger a search if it is not server side processing
-            if (!this.s.dt.page.info().serverSide) {
-                this.s.dt.draw();
-            }
         };
         /**
          * Initialises the tables previous/preset selections and initialises callbacks for events
@@ -2406,10 +2397,6 @@
             // If the layout is set to auto then the panes need to be resized to their best fit
             if (this.c.layout === 'auto') {
                 this.resizePanes();
-            }
-            // Only need to trigger a search if it is not server side processing
-            if (!this.s.dt.page.info().serverSide) {
-                this.s.dt.draw();
             }
             // Reset the paging if that has been saved in the state
             if (!this.s.stateRead && loadedFilter !== null && loadedFilter !== undefined) {
