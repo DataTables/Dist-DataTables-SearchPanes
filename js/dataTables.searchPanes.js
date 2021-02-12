@@ -434,11 +434,11 @@
                 }
                 else {
                     $(_this.dom.clear).removeClass(_this.classes.disabledButton);
-                    _this.s.selectPresent = true;
                     if (!_this.s.updating) {
+                        _this.s.selectPresent = true;
                         _this._makeSelection();
+                        _this.s.selectPresent = false;
                     }
-                    _this.s.selectPresent = false;
                 }
             });
             // When an item is deselected on the pane, re add the currently selected items to the array
