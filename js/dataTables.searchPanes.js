@@ -1409,7 +1409,7 @@
                 if (this.colExists) {
                     // Only run populatePane if the data has not been collected yet
                     if (rowData.arrayFilter.length === 0) {
-                        this._populatePane();
+                        this._populatePane(!this.s.filteringActive);
                     }
                     // If cascadePanes is active and the table has returned to its default state then
                     //  there is a need to update certain parts ofthe rowData.
@@ -1420,7 +1420,7 @@
                     }
                     // Otherwise if viewTotal or cascadePanes is active then the data from the table must be read.
                     else if (this.c.viewTotal || this.c.cascadePanes) {
-                        this._populatePane();
+                        this._populatePane(!this.s.filteringActive);
                     }
                     // If the viewTotal option is selected then find the totals for the table
                     if (this.c.viewTotal) {
@@ -1869,7 +1869,9 @@
                             if (paneUpdate.s.dtPane !== undefined) {
                                 var tempFilter = true;
                                 paneUpdate.s.filteringActive = true;
-                                if ((filterPane !== -1 && filterPane !== null && filterPane === paneUpdate.s.index) || filterActive === false) {
+                                if ((filterPane !== -1 && filterPane !== null && filterPane === paneUpdate.s.index) ||
+                                    filterActive === false ||
+                                    paneUpdate.s.index === solePane) {
                                     tempFilter = false;
                                     paneUpdate.s.filteringActive = false;
                                 }
