@@ -2416,14 +2416,16 @@
             this._checkMessage();
             // When a draw is called on the DataTable, update all of the panes incase the data in the DataTable has changed
             table.on('preDraw.dtsps', function () {
-                _this._updateFilterCount();
-                if ((_this.c.cascadePanes || _this.c.viewTotal) && !_this.s.dt.page.info().serverSide) {
-                    _this.redrawPanes(_this.c.viewTotal);
+                if (!_this.s.updating) {
+                    _this._updateFilterCount();
+                    if ((_this.c.cascadePanes || _this.c.viewTotal) && !_this.s.dt.page.info().serverSide) {
+                        _this.redrawPanes(_this.c.viewTotal);
+                    }
+                    else {
+                        _this._updateSelection();
+                    }
+                    _this.s.filterPane = -1;
                 }
-                else {
-                    _this._updateSelection();
-                }
-                _this.s.filterPane = -1;
             });
             $$1(window).on('resize.dtsp', DataTable$1.util.throttle(function () {
                 _this.resizePanes();
@@ -2500,6 +2502,7 @@
                         }
                         var page = _this.s.dt.page();
                         processing = true;
+                        _this.s.updating = true;
                         $$1(_this.dom.panes).empty();
                         for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                             var pane = _a[_i];
@@ -2513,6 +2516,7 @@
                         if (!_this.s.dt.page.info().serverSide) {
                             _this.s.dt.draw();
                         }
+                        _this.s.updating = false;
                         if (_this.c.cascadePanes || _this.c.viewTotal) {
                             _this.redrawPanes(_this.c.cascadePanes);
                         }
@@ -2521,7 +2525,9 @@
                         }
                         _this._checkMessage();
                         _this.s.dt.one('draw', function () {
+                            _this.s.updating = true;
                             _this.s.dt.page(page).draw(false);
+                            _this.s.updating = false;
                         });
                     });
                 }
