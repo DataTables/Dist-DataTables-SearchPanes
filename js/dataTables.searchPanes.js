@@ -82,6 +82,7 @@
                 buttonGroup: $('<div/>').addClass(this.classes.buttonGroup),
                 clear: $('<button type="button">&#215;</button>')
                     .addClass(this.classes.disabledButton)
+                    .attr('disabled', 'true')
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.clearButton),
                 container: $('<div/>')
@@ -433,7 +434,7 @@
                     }
                 }
                 else {
-                    $(_this.dom.clear).removeClass(_this.classes.disabledButton);
+                    $(_this.dom.clear).removeClass(_this.classes.disabledButton).attr('disabled', 'false');
                     if (!_this.s.updating) {
                         _this.s.selectPresent = true;
                         _this._makeSelection();
@@ -455,7 +456,7 @@
                     else {
                         _this.s.deselect = true;
                         if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
-                            $(_this.dom.clear).addClass(_this.classes.disabledButton);
+                            $(_this.dom.clear).addClass(_this.classes.disabledButton).attr('disabled', 'true');
                         }
                         _this._makeSelection();
                         _this.s.deselect = false;
@@ -546,10 +547,10 @@
                 _this.s.dtPane.search(searchval).draw();
                 if (searchval.length > 0 ||
                     (searchval.length === 0 && _this.s.dtPane.rows({ selected: true }).data().toArray().length > 0)) {
-                    _this.dom.clear.removeClass(_this.classes.disabledButton);
+                    _this.dom.clear.removeClass(_this.classes.disabledButton).attr('disabled', 'false');
                 }
                 else {
-                    _this.dom.clear.addClass(_this.classes.disabledButton);
+                    _this.dom.clear.addClass(_this.classes.disabledButton).attr('disabled', 'true');
                 }
                 _this.s.dt.state.save();
             });
@@ -1048,7 +1049,8 @@
                     !this.customPaneSettings.dtOpts.searching)) {
                 $(this.dom.searchBox).attr('disabled', 'disabled')
                     .removeClass(this.classes.paneInputButton)
-                    .addClass(this.classes.disabledButton);
+                    .addClass(this.classes.disabledButton)
+                    .attr('disabled', 'true');
             }
             $(this.dom.searchBox).appendTo(this.dom.searchCont);
             // Create the contents of the searchCont div. Worth noting that this function will change when using semantic ui
@@ -2637,10 +2639,10 @@
                 this.c.filterChanged.call(this.s.dt, filterCount);
             }
             if (filterCount === 0) {
-                $$1(this.dom.clearAll).addClass(this.classes.disabledButton);
+                $$1(this.dom.clearAll).addClass(this.classes.disabledButton).attr('disabled', 'true');
             }
             else {
-                $$1(this.dom.clearAll).removeClass(this.classes.disabledButton);
+                $$1(this.dom.clearAll).removeClass(this.classes.disabledButton).attr('disabled', 'false');
             }
         };
         /**
