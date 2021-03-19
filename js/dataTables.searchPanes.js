@@ -434,7 +434,7 @@
                     }
                 }
                 else {
-                    $(_this.dom.clear).removeClass(_this.classes.disabledButton).attr('disabled', 'false');
+                    $(_this.dom.clear).removeClass(_this.classes.disabledButton).removeAttr('disabled');
                     if (!_this.s.updating) {
                         _this.s.selectPresent = true;
                         _this._makeSelection();
@@ -547,7 +547,7 @@
                 _this.s.dtPane.search(searchval).draw();
                 if (searchval.length > 0 ||
                     (searchval.length === 0 && _this.s.dtPane.rows({ selected: true }).data().toArray().length > 0)) {
-                    _this.dom.clear.removeClass(_this.classes.disabledButton).attr('disabled', 'false');
+                    _this.dom.clear.removeClass(_this.classes.disabledButton).removeAttr('disabled');
                 }
                 else {
                     _this.dom.clear.addClass(_this.classes.disabledButton).attr('disabled', 'true');
@@ -1047,7 +1047,7 @@
                     this.customPaneSettings.dtOpts !== undefined &&
                     this.customPaneSettings.dtOpts.searching !== undefined &&
                     !this.customPaneSettings.dtOpts.searching)) {
-                $(this.dom.searchBox).attr('disabled', 'disabled')
+                $(this.dom.searchBox)
                     .removeClass(this.classes.paneInputButton)
                     .addClass(this.classes.disabledButton)
                     .attr('disabled', 'true');
@@ -2642,7 +2642,7 @@
                 $$1(this.dom.clearAll).addClass(this.classes.disabledButton).attr('disabled', 'true');
             }
             else {
-                $$1(this.dom.clearAll).removeClass(this.classes.disabledButton).attr('disabled', 'false');
+                $$1(this.dom.clearAll).removeClass(this.classes.disabledButton).removeAttr('disabled');
             }
         };
         /**
