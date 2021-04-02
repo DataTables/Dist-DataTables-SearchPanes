@@ -2119,6 +2119,8 @@
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 if (pane.s.displayed === true) {
+                    // Ensure that the empty message is removed if a pane is displayed
+                    $$1(this.dom.emptyMessage).remove();
                     return;
                 }
             }
