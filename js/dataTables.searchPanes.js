@@ -2121,6 +2121,7 @@
                 if (pane.s.displayed === true) {
                     // Ensure that the empty message is removed if a pane is displayed
                     $$1(this.dom.emptyMessage).remove();
+                    $$1(this.dom.titleRow).removeClass(this.classes.hide);
                     return;
                 }
             }
