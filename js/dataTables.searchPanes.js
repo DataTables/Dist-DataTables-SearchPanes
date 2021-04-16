@@ -2362,6 +2362,7 @@
                     $$1.fn.dataTable.select.init(pane.s.dtPane);
                 }
             }
+            this._updateSelection();
         };
         /**
          * Initialises the tables previous/preset selections and initialises callbacks for events
@@ -2589,6 +2590,7 @@
                 });
             }
             table.settings()[0]._searchPanes = this;
+            this.s.dt.state.save();
         };
         SearchPanes.prototype._prepViewTotal = function (selectTotal) {
             var filterPane = this.s.filterPane;
