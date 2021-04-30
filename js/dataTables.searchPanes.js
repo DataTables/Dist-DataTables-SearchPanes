@@ -159,7 +159,7 @@
             // If the clear button for this pane is clicked clear the selections
             if (this.c.clear) {
                 $(clear).on('click', function () {
-                    var searches = _this.dom.container.find('.' + _this.classes.search.replace(/ /g, '.'));
+                    var searches = _this.dom.container.find('.' + _this.classes.search.replace(/\s+/g, '.'));
                     searches.each(function () {
                         $(this).val('');
                         $(this).trigger('input');
@@ -221,10 +221,10 @@
          * Adjusts the layout of the top row when the screen is resized
          */
         SearchPane.prototype.adjustTopRow = function () {
-            var subContainers = this.dom.container.find('.' + this.classes.subRowsContainer.replace(/ /g, '.'));
-            var subRow1 = this.dom.container.find('.' + this.classes.subRow1.replace(/ /g, '.'));
-            var subRow2 = this.dom.container.find('.' + this.classes.subRow2.replace(/ /g, '.'));
-            var topRow = this.dom.container.find('.' + this.classes.topRow.replace(/ /g, '.'));
+            var subContainers = this.dom.container.find('.' + this.classes.subRowsContainer.replace(/\s+/g, '.'));
+            var subRow1 = this.dom.container.find('.' + this.classes.subRow1.replace(/\s+/g, '.'));
+            var subRow2 = this.dom.container.find('.' + this.classes.subRow2.replace(/\s+/g, '.'));
+            var topRow = this.dom.container.find('.' + this.classes.topRow.replace(/\s+/g, '.'));
             // If the width is 0 then it is safe to assume that the pane has not yet been displayed.
             //  Even if it has, if the width is 0 it won't make a difference if it has the narrow class or not
             if (($(subContainers[0]).width() < 252 || $(topRow[0]).width() < 252) && $(subContainers[0]).width() !== 0) {
@@ -1663,7 +1663,7 @@
          */
         SearchPanes.prototype.clearSelections = function () {
             // Load in all of the searchBoxes in the documents
-            var searches = this.dom.container.find('.' + this.classes.search.replace(/ /g, '.'));
+            var searches = this.dom.container.find('.' + this.classes.search.replace(/\s+/g, '.'));
             // For each searchBox set the input text to be empty and then trigger
             //  an input on them so that they no longer filter the panes
             searches.each(function () {
