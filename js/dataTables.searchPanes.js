@@ -2500,6 +2500,9 @@
             // If the data is reloaded from the server then it is possible that it has changed completely,
             // so we need to rebuild the panes
             this.s.dt.on('xhr', function (e, settings, json, xhr) {
+                if (settings.nTable !== _this.s.dt.table().node()) {
+                    return;
+                }
                 var processing = false;
                 if (!_this.s.dt.page.info().serverSide) {
                     _this.s.dt.one('preDraw', function () {
