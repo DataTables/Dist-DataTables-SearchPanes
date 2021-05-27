@@ -1,9 +1,9 @@
 {
-    "css": [],
     "js": [
         "js/dataTables.searchPanes.js",
         "js/dataTables.searchPanes.min.js"
     ],
+    "css": [],
     "types": [
         "types/index.d.ts",
         "types/panesType.d.ts",
@@ -12,6 +12,5 @@
         "types/searchPanes.d.ts"
     ],
     "src-repo": "http://github.com/DataTables/SearchPanes",
-    "last-sync": "193121bf38b62fa3498ac3dcb5a2caf1ef2f3bb0",
     "last-tag": "1.2.2"
 }

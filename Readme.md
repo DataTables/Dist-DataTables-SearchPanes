@@ -1,37 +1,49 @@
-# SearchPanes
+# SearchPanes for DataTables 
+
+This package contains distribution files for the [SearchPanes extension](https://datatables.net/extensions/SearchPanes) for [DataTables](https://datatables.net/). Only the core software for this library is contained in this package - to be correctly styled, a styling package for SearchPanes must also be included. Styling options include DataTable's native styling, [Bootstrap](http://getbootstrap.com) and [Foundation](http://foundation.zurb.com/).
 
 The SearchPanes extension for DataTables provides improved Searching functionality allowing users to select options from a "Pane" which will then in turn search the DataTable and return the relevant results. There are multiple configuration options available to enhance SearchPanes.
 
-# Installation
 
-The SearchPanes extension is available on the [DataTables CDN](https://cdn.datatables.net/#SearchPanes) and in the [download builder](/download). See the [documentation](http://datatables.net/extensions/searchpanes/) for full details.
+## Installation
 
-# NPM
+### Browser
 
-You can also install it from [NPM](/download/npm/#SearchPanes)
+For inclusion of this library using a standard `<script>` tag, rather than using this package, it is recommended that you use the [DataTables download builder](//datatables.net/download) which can create CDN or locally hosted packages for you, will all dependencies satisfied.
 
-If you prefer to use a package manager such as NPM or Bower, distribution repositories are available with software built from this repository under the name `datatables.net-searchpanes. Styling packages for Bootstrap, Foundation and other styling libraries are also available by adding a suffix to the package name.
+### npm
 
-Please see the DataTables [NPM](//datatables.net/download/npm) installation page for further information. The [DataTables installation manual](//datatables.net/manual/installation) also has details on how to use package managers with DataTables.
-
-# Basic Usage
-
-SearchPanes is initialised by placing a `P` into the DataTables [`dom`](https://datatables.net/reference/option/dom) option. Further options can be specified using this option as an object - see the documentation for details. For example:
-
-```js
-$(document).ready(function() {
-    $('#example').DataTable( {
-        dom: 'Pfrtip'
-    });
-});
+```
+npm install datatables.net-searchpanes
 ```
 
-# Documentation / Support
+```
+var $ = require( 'jquery' );
+require( 'datatables.net-searchpanes' )( window, $ );
+```
 
-* [Documentation](https://datatables.net/extensions/searchpanes/)
-* [DataTables support forums](http://datatables.net/forums)
+### bower
 
-# GitHub
+```
+bower install --save datatables.net-searchpanes
+```
 
-If you fancy getting involved with the development of SearchPanes and help make it better, please refer to its [GitHub repo](https://github.com/DataTables/SearchPanes)
 
+
+## Documentation
+
+Full documentation and examples for SearchPanes can be found [on the website](https://datatables.net/extensions/searchpanes).
+
+## Bug / Support
+
+Support for DataTables is available through the [DataTables forums](//datatables.net/forums) and [commercial support options](//datatables.net/support) are available.
+
+
+### Contributing
+
+If you are thinking of contributing code to DataTables, first of all, thank you! All fixes, patches and enhancements to DataTables are very warmly welcomed. This repository is a distribution repo, so patches and issues sent to this repo will not be accepted. Instead, please direct pull requests to the [DataTables/SearchPanes](http://github.com/DataTables/SearchPanes). For issues / bugs, please direct your questions to the [DataTables forums](//datatables.net/forums).
+
+
+## License
+
+This software is released under the [MIT license](//datatables.net/license). You are free to use, modify and distribute this software, but all copyright information must remain.
