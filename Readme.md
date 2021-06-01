@@ -17,9 +17,15 @@ For inclusion of this library using a standard `<script>` tag, rather than using
 npm install datatables.net-searchpanes
 ```
 
+ES3 Syntax
 ```
 var $ = require( 'jquery' );
 require( 'datatables.net-searchpanes' )( window, $ );
+```
+
+ES6 Syntax
+```
+import 'datatables.net-searchpanes'
 ```
 
 ### bower

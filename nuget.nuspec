@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <version>1.2.2</version>
+        <version>1.3.0</version>
         <id>datatables.net-searchpanes</id>
         <description>This is SearchPanes for DataTables</description>
         <repository type="git" url="https://github.com/DataTables/Dist-DataTables-SearchPanes.git"/>
@@ -31,6 +31,8 @@
         <file src="types/searchPane.d.ts" target="contentFiles\any\any\wwwroot\js"/>
         <file src="types/searchPanes.d.ts" target="content\Scripts"/>
         <file src="types/searchPanes.d.ts" target="contentFiles\any\any\wwwroot\js"/>
+        <file src="types/types.d.ts" target="content\Scripts"/>
+        <file src="types/types.d.ts" target="contentFiles\any\any\wwwroot\js"/>
     </files>
 </package>
 

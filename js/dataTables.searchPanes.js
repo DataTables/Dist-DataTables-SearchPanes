@@ -1669,14 +1669,23 @@
                     if (data.searchPanes === undefined) {
                         data.searchPanes = {};
                     }
+                    if (data.searchPanes_null === undefined) {
+                        data.searchPanes_null = {};
+                    }
                     for (var _i = 0, _a = _this.s.selectionList; _i < _a.length; _i++) {
                         var selection = _a[_i];
                         var src = _this.s.dt.column(selection.index).dataSrc();
                         if (data.searchPanes[src] === undefined) {
                             data.searchPanes[src] = {};
                         }
+                        if (data.searchPanes_null[src] === undefined) {
+                            data.searchPanes_null[src] = {};
+                        }
                         for (var i = 0; i < selection.rows.length; i++) {
                             data.searchPanes[src][i] = selection.rows[i].filter;
+                            if (data.searchPanes[src][i] === null) {
+                                data.searchPanes_null[src][i] = true;
+                            }
                         }
                     }
                 });
@@ -2524,6 +2533,9 @@
                     if (data.searchPanes === undefined) {
                         data.searchPanes = {};
                     }
+                    if (data.searchPanes_null === undefined) {
+                        data.searchPanes_null = {};
+                    }
                     // Count how many filters are being applied
                     var filterCount = 0;
                     for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
@@ -2532,10 +2544,16 @@
                         if (data.searchPanes[src] === undefined) {
                             data.searchPanes[src] = {};
                         }
+                        if (data.searchPanes_null[src] === undefined) {
+                            data.searchPanes_null[src] = {};
+                        }
                         if (pane.s.dtPane !== undefined) {
                             var rowData = pane.s.dtPane.rows({ selected: true }).data().toArray();
                             for (var i = 0; i < rowData.length; i++) {
                                 data.searchPanes[src][i] = rowData[i].filter;
+                                if (data.searchPanes[src][i] === null) {
+                                    data.searchPanes_null[src][i] = true;
+                                }
                                 filterCount++;
                             }
                         }
