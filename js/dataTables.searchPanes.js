@@ -2893,7 +2893,10 @@
             init: function (dt, node, config) {
                 var panes = new $.fn.dataTable.SearchPanes(dt, $.extend({
                     filterChanged: function (count) {
-                        dt.button(node).text(dt.i18n('searchPanes.collapse', panes.c.i18n.collapse, count));
+                        // console.log(dt.context[0])
+                        dt.button(node).text(dt.i18n('searchPanes.collapse', dt.context[0].oLanguage.searchPanes !== undefined ?
+                            dt.context[0].oLanguage.searchPanes.collapse :
+                            dt.context[0]._searchPanes.c.i18n.collapse, count));
                     }
                 }, config.config));
                 var message = dt.i18n('searchPanes.collapse', panes.c.i18n.collapse, 0);
