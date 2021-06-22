@@ -855,11 +855,13 @@
                         className: 'dtsp-countColumn ' + this.classes.badgePill,
                         data: 'shown',
                         orderData: [1, 2],
+                        searchable: false,
                         targets: 1,
                         visible: false
                     },
                     {
                         data: 'total',
+                        searchable: false,
                         targets: 2,
                         visible: false
                     }
