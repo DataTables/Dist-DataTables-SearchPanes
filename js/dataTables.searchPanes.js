@@ -1444,7 +1444,6 @@
                 (!this.s.lastSelect || !this.s.lastCascade)) {
                 var colOpts = this.s.colOpts;
                 var selected = this.s.dtPane.rows({ selected: true }).data().toArray();
-                var scrollTop = $(this.s.dtPane.table().node()).parent()[0].scrollTop;
                 var rowData = this.s.rowData;
                 // Clear the pane in preparation for adding the updated search options
                 this.s.dtPane.clear();
@@ -1540,7 +1539,7 @@
                     this.s.updating = false;
                 }
                 this.s.dtPane.draw();
-                this.s.dtPane.table().node().parentNode.scrollTop = scrollTop;
+                this.s.dtPane.table().node().parentNode.scrollTop = this.s.scrollTop;
             }
         };
         SearchPane.version = '1.3.0';
