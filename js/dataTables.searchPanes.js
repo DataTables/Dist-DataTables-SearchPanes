@@ -456,6 +456,7 @@
             // which holds selected items. Custom search will be performed.
             this.s.dtPane.on('deselect.dtsp', function () {
                 t0 = setTimeout(function () {
+                    _this.s.scrollTop = $(_this.s.dtPane.table().node()).parent()[0].scrollTop;
                     if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
                         if (!_this.s.serverSelecting) {
                             _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
