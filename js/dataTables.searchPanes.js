@@ -1779,7 +1779,9 @@
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
             this._attachPaneContainer();
-            this.s.dt.draw();
+            // If the selections are to be maintained, then it is safe to assume that paging is also to be maintained
+            // Otherwise, the paging should be reset
+            this.s.dt.draw(!maintainSelection);
             // Resize the panes incase there has been a change
             this.resizePanes();
             // If a single pane has been rebuilt then return only that pane
