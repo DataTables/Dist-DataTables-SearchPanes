@@ -1657,6 +1657,7 @@
                 filterCount: 0,
                 filterPane: -1,
                 page: 0,
+                paging: false,
                 panes: [],
                 selectionList: [],
                 serverData: {},
@@ -2509,7 +2510,9 @@
             this._checkMessage();
             // When a draw is called on the DataTable, update all of the panes incase the data in the DataTable has changed
             table.on('preDraw.dtsps', function () {
-                if (!_this.s.updating) {
+                // Check that the panes are not updating to avoid infinite loops
+                // Also check that this draw is not due to paging
+                if (!_this.s.updating && !_this.s.paging) {
                     _this._updateFilterCount();
                     if ((_this.c.cascadePanes || _this.c.viewTotal) && !_this.s.dt.page.info().serverSide) {
                         _this.redrawPanes(_this.c.viewTotal);
@@ -2519,6 +2522,8 @@
                     }
                     _this.s.filterPane = -1;
                 }
+                // Paging flag reset - we only need to dodge the draw once
+                _this.s.paging = false;
             });
             $$1(window).on('resize.dtsp', dataTable$1.util.throttle(function () {
                 _this.resizePanes();
@@ -2530,11 +2535,13 @@
                 }
                 data.searchPanes.selectionList = _this.s.selectionList;
             });
+            // Listener for paging on main table
+            table.off('page');
+            table.on('page', function () {
+                _this.s.paging = true;
+                _this.s.page = _this.s.dt.page();
+            });
             if (this.s.dt.page.info().serverSide) {
-                table.off('page');
-                table.on('page', function () {
-                    _this.s.page = _this.s.dt.page();
-                });
                 table.off('preXhr.dt');
                 table.on('preXhr.dt', function (e, settings, data) {
                     if (data.searchPanes === undefined) {
