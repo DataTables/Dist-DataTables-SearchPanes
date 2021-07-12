@@ -1728,6 +1728,8 @@
                 $$1(this).trigger('input');
             });
             var returnArray = [];
+            // Clear the selectionList to prevent cascadePanes from reselecting rows
+            this.s.selectionList = [];
             // For every pane, clear the selections in the pane
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
