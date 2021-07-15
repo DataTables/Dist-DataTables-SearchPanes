@@ -471,7 +471,6 @@
                         }
                         _this._makeSelection();
                         _this.s.deselect = false;
-                        _this.s.dt.state.save();
                     }
                 }, 50);
             });
@@ -528,6 +527,7 @@
             $(this.dom.nameButton).on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([0, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+                // This state save is required so that the ordering of the panes is maintained
                 _this.s.dt.state.save();
             });
             // When the button to order by the number of entries in the column is clicked then
@@ -535,6 +535,7 @@
             $(this.dom.countButton).on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+                // This state save is required so that the ordering of the panes is maintained
                 _this.s.dt.state.save();
             });
             // When the clear button is clicked reset the pane
@@ -563,10 +564,9 @@
                 else {
                     _this.dom.clear.addClass(_this.classes.disabledButton).attr('disabled', 'true');
                 }
+                // This state save is required so that the searching on the panes is maintained
                 _this.s.dt.state.save();
             });
-            // Make sure to save the state once the pane has been built
-            this.s.dt.state.save();
             return true;
         };
         /**
@@ -1017,14 +1017,15 @@
                 for (var _j = 0, _k = loadedFilter.searchPanes.panes; _j < _k.length; _j++) {
                     var pane = _k[_j];
                     if (pane.id === this.s.index) {
-                        $(this.dom.searchBox).val(pane.searchTerm);
-                        $(this.dom.searchBox).trigger('input');
+                        // Save some time by only triggering an input if there is a value
+                        if (pane.searchTerm.length > 0) {
+                            $(this.dom.searchBox).val(pane.searchTerm);
+                            $(this.dom.searchBox).trigger('input');
+                        }
                         this.s.dtPane.order(pane.order).draw();
                     }
                 }
             }
-            // Make sure to save the state once the pane has been built
-            this.s.dt.state.save();
             return true;
         };
         /**
@@ -1865,7 +1866,6 @@
                                 protect: false,
                                 rows: pane.s.dtPane.rows({ selected: true }).data().toArray()
                             });
-                            table.state.save();
                             break;
                         }
                         else if (pane.s.deselect) {
@@ -2271,8 +2271,6 @@
                     _loop_1(pane);
                 }
             }
-            // Make sure that the state is saved after all of these selections
-            this.s.dt.state.save();
         };
         /**
          * Declares the instances of individual searchpanes dependant on the number of columns.
@@ -2355,7 +2353,6 @@
                         protect: false,
                         rows: pane.s.dtPane.rows({ selected: true }).data().toArray()
                     });
-                    table.state.save();
                     pane.s.selectPresent = false;
                     selectPresent = true;
                     break;
@@ -2700,6 +2697,7 @@
                 });
             }
             table.settings()[0]._searchPanes = this;
+            // This state save is required so that state is maintained over multiple refreshes if no actions are made
             this.s.dt.state.save();
         };
         SearchPanes.prototype._prepViewTotal = function (selectTotal) {
@@ -2777,7 +2775,6 @@
                     });
                 }
             }
-            this.s.dt.state.save();
         };
         SearchPanes.version = '1.3.0';
         SearchPanes.classes = {
