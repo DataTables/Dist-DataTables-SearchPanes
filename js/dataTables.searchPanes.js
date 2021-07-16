@@ -1018,7 +1018,7 @@
                     var pane = _k[_j];
                     if (pane.id === this.s.index) {
                         // Save some time by only triggering an input if there is a value
-                        if (pane.searchTerm.length > 0) {
+                        if (pane.searchTerm && pane.searchTerm.length > 0) {
                             $(this.dom.searchBox).val(pane.searchTerm);
                             $(this.dom.searchBox).trigger('input');
                         }
