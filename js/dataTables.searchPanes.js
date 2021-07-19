@@ -116,7 +116,7 @@
             this.s.colOpts = this.colExists ? this._getOptions() : this._getBonusOptions();
             var colOpts = this.s.colOpts;
             var clear = $('<button type="button">X</button>').addClass(this.classes.paneButton);
-            $(clear).text(table.i18n('searchPanes.clearPane', this.c.i18n.clearPane));
+            clear.text(table.i18n('searchPanes.clearPane', this.c.i18n.clearPane));
             this.dom.container.addClass(colOpts.className);
             this.dom.container.addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
                 ? this.customPaneSettings.className
@@ -161,7 +161,7 @@
             $.fn.dataTable.ext.search.push(this.s.searchFunction);
             // If the clear button for this pane is clicked clear the selections
             if (this.c.clear) {
-                $(clear).on('click', function () {
+                clear.on('click', function () {
                     var searches = _this.dom.container.find('.' + _this.classes.search.replace(/\s+/g, '.'));
                     searches.each(function () {
                         $(this).val('');
@@ -271,13 +271,15 @@
          * Strips all of the SearchPanes elements from the document and turns all of the listeners for the buttons off
          */
         SearchPane.prototype.destroy = function () {
-            $(this.s.dtPane).off('.dtsp');
-            $(this.s.dt).off('.dtsp');
-            $(this.dom.nameButton).off('.dtsp');
-            $(this.dom.countButton).off('.dtsp');
-            $(this.dom.clear).off('.dtsp');
-            $(this.dom.searchButton).off('.dtsp');
-            $(this.dom.container).remove();
+            if (this.s.dtPane !== undefined) {
+                this.s.dtPane.off('.dtsp');
+            }
+            this.s.dt.off('.dtsp');
+            this.dom.nameButton.off('.dtsp');
+            this.dom.countButton.off('.dtsp');
+            this.dom.clear.off('.dtsp');
+            this.dom.searchButton.off('.dtsp');
+            this.dom.container.remove();
             var searchIdx = $.fn.dataTable.ext.search.indexOf(this.s.searchFunction);
             while (searchIdx !== -1) {
                 $.fn.dataTable.ext.search.splice(searchIdx, 1);
@@ -340,7 +342,7 @@
                     }
                 }
                 this.s.dtPane.clear().destroy();
-                prevEl = $(this.dom.container).prev();
+                prevEl = this.dom.container.prev();
                 this.destroy();
                 this.s.dtPane = undefined;
                 $.fn.dataTable.ext.search.push(this.s.searchFunction);
@@ -357,7 +359,7 @@
          */
         SearchPane.prototype.removePane = function () {
             this.s.displayed = false;
-            $(this.dom.container).hide();
+            this.dom.container.hide();
         };
         /**
          * Resizes the pane based on the layout that is passed in
@@ -367,7 +369,7 @@
         SearchPane.prototype.resize = function (layout) {
             this.c.layout = layout;
             var layVal = parseInt(layout.split('-')[1], 10);
-            $(this.dom.container)
+            this.dom.container
                 .removeClass()
                 .addClass(this.classes.container)
                 .addClass(this.classes.layout +
@@ -444,7 +446,7 @@
                     }
                 }
                 else {
-                    $(_this.dom.clear).removeClass(_this.classes.disabledButton).removeAttr('disabled');
+                    _this.dom.clear.removeClass(_this.classes.disabledButton).removeAttr('disabled');
                     if (!_this.s.updating) {
                         _this.s.selectPresent = true;
                         _this._makeSelection();
@@ -467,7 +469,7 @@
                     else {
                         _this.s.deselect = true;
                         if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
-                            $(_this.dom.clear).addClass(_this.classes.disabledButton).attr('disabled', 'true');
+                            _this.dom.clear.addClass(_this.classes.disabledButton).attr('disabled', 'true');
                         }
                         _this._makeSelection();
                         _this.s.deselect = false;
@@ -489,7 +491,7 @@
                 // Get all of the data needed for the state save from the pane
                 if (_this.s.dtPane !== undefined) {
                     selected = _this.s.dtPane.rows({ selected: true }).data().map(function (item) { return item.filter.toString(); }).toArray();
-                    searchTerm = $(_this.dom.searchBox).val();
+                    searchTerm = _this.dom.searchBox.val();
                     order = _this.s.dtPane.order();
                     bins = rowData.binsOriginal;
                     arrayFilter = rowData.arrayOriginal;
@@ -524,7 +526,7 @@
             });
             // When the button to order by the name of the options is clicked then
             //  change the ordering to whatever it isn't currently
-            $(this.dom.nameButton).on('click.dtsp', function () {
+            this.dom.nameButton.on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([0, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
                 // This state save is required so that the ordering of the panes is maintained
@@ -532,14 +534,14 @@
             });
             // When the button to order by the number of entries in the column is clicked then
             //  change the ordering to whatever it isn't currently
-            $(this.dom.countButton).on('click.dtsp', function () {
+            this.dom.countButton.on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
                 // This state save is required so that the ordering of the panes is maintained
                 _this.s.dt.state.save();
             });
             // When the clear button is clicked reset the pane
-            $(this.dom.clear).on('click.dtsp', function () {
+            this.dom.clear.on('click.dtsp', function () {
                 var searches = _this.dom.container.find('.' + _this.classes.search.replace(/ /g, '.'));
                 searches.each(function () {
                     // set the value of the search box to be an empty string and then search on that, effectively reseting
@@ -549,16 +551,17 @@
                 _this.clearPane();
             });
             // When the search button is clicked then draw focus to the search box
-            $(this.dom.searchButton).on('click.dtsp', function () {
-                $(_this.dom.searchBox).focus();
+            this.dom.searchButton.on('click.dtsp', function () {
+                _this.dom.searchBox.focus();
             });
             // When a character is inputted into the searchbox search the pane for matching values.
             // Doing it this way means that no button has to be clicked to trigger a search, it is done asynchronously
-            $(this.dom.searchBox).on('input.dtsp', function () {
-                var searchval = $(_this.dom.searchBox).val();
+            this.dom.searchBox.on('input.dtsp', function () {
+                var searchval = _this.dom.searchBox.val();
                 _this.s.dtPane.search(searchval).draw();
-                if (searchval.length > 0 ||
-                    (searchval.length === 0 && _this.s.dtPane.rows({ selected: true }).data().toArray().length > 0)) {
+                if (typeof searchval === 'string' &&
+                    (searchval.length > 0 ||
+                        (searchval.length === 0 && _this.s.dtPane.rows({ selected: true }).data().toArray().length > 0))) {
                     _this.dom.clear.removeClass(_this.classes.disabledButton).removeAttr('disabled');
                 }
                 else {
@@ -790,17 +793,17 @@
                 });
             }
             // Add the container to the document in its original location
-            if (prevEl !== null && $(this.dom.panesContainer).has(prevEl).length > 0) {
-                $(this.dom.container).insertAfter(prevEl);
+            if (prevEl !== null && this.dom.panesContainer.has(prevEl).length > 0) {
+                this.dom.container.insertAfter(prevEl);
             }
             else {
-                $(this.dom.panesContainer).prepend(this.dom.container);
+                this.dom.panesContainer.prepend(this.dom.container);
             }
             // Declare the datatable for the pane
             var errMode = $.fn.dataTable.ext.errMode;
             $.fn.dataTable.ext.errMode = 'none';
             var haveScroller = dataTable.Scroller;
-            this.s.dtPane = $(this.dom.dtP).DataTable($.extend(true, {
+            this.s.dtPane = this.dom.dtP.DataTable($.extend(true, {
                 columnDefs: [
                     {
                         className: 'dtsp-nameColumn',
@@ -895,7 +898,7 @@
                     }
                 }
                 : {}));
-            $(this.dom.dtP).addClass(this.classes.table);
+            this.dom.dtP.addClass(this.classes.table);
             // Getting column titles is a little messy
             var headerText = 'Custom Pane';
             if (this.customPaneSettings && this.customPaneSettings.header) {
@@ -1002,7 +1005,7 @@
             }
             //  If SSP and the table is ready, apply the search for the pane
             if (this.s.dt.page.info().serverSide) {
-                this.s.dtPane.search($(this.dom.searchBox).val()).draw();
+                this.s.dtPane.search(this.dom.searchBox.val()).draw();
             }
             // Reload the selection, searchbox entry and ordering from the previous state
             // Need to check here if SSP that this is the first draw, otherwise it will infinite loop
@@ -1019,8 +1022,8 @@
                     if (pane.id === this.s.index) {
                         // Save some time by only triggering an input if there is a value
                         if (pane.searchTerm && pane.searchTerm.length > 0) {
-                            $(this.dom.searchBox).val(pane.searchTerm);
-                            $(this.dom.searchBox).trigger('input');
+                            this.dom.searchBox.val(pane.searchTerm);
+                            this.dom.searchBox.trigger('input');
                         }
                         this.s.dtPane.order(pane.order).draw();
                     }
@@ -1052,18 +1055,18 @@
             var colOpts = this.s.colOpts;
             var layVal = parseInt(this.c.layout.split('-')[1], 10);
             // Empty everything to start again
-            $(this.dom.topRow).empty();
-            $(this.dom.dtP).empty();
-            $(this.dom.topRow).addClass(this.classes.topRow);
+            this.dom.topRow.empty();
+            this.dom.dtP.empty();
+            this.dom.topRow.addClass(this.classes.topRow);
             // If there are more than 3 columns defined then make there be a smaller gap between the panes
             if (layVal > 3) {
-                $(this.dom.container).addClass(this.classes.smallGap);
+                this.dom.container.addClass(this.classes.smallGap);
             }
-            $(this.dom.topRow).addClass(this.classes.subRowsContainer);
-            $(this.dom.upper).appendTo(this.dom.topRow);
-            $(this.dom.lower).appendTo(this.dom.topRow);
-            $(this.dom.searchCont).appendTo(this.dom.upper);
-            $(this.dom.buttonGroup).appendTo(this.dom.lower);
+            this.dom.topRow.addClass(this.classes.subRowsContainer);
+            this.dom.upper.appendTo(this.dom.topRow);
+            this.dom.lower.appendTo(this.dom.topRow);
+            this.dom.searchCont.appendTo(this.dom.upper);
+            this.dom.buttonGroup.appendTo(this.dom.lower);
             // If no selections have been made in the pane then disable the clear button
             if (this.c.dtOpts.searching === false ||
                 (colOpts.dtOpts !== undefined &&
@@ -1073,20 +1076,20 @@
                     this.customPaneSettings.dtOpts !== undefined &&
                     this.customPaneSettings.dtOpts.searching !== undefined &&
                     !this.customPaneSettings.dtOpts.searching)) {
-                $(this.dom.searchBox)
+                this.dom.searchBox
                     .removeClass(this.classes.paneInputButton)
                     .addClass(this.classes.disabledButton)
                     .attr('disabled', 'true');
             }
-            $(this.dom.searchBox).appendTo(this.dom.searchCont);
+            this.dom.searchBox.appendTo(this.dom.searchCont);
             // Create the contents of the searchCont div. Worth noting that this function will change when using semantic ui
             this._searchContSetup();
             // If the clear button is allowed to show then display it
             if (this.c.clear && this.c.controls && colOpts.controls) {
-                $(this.dom.clear).appendTo(this.dom.buttonGroup);
+                this.dom.clear.appendTo(this.dom.buttonGroup);
             }
             if (this.c.orderable && colOpts.orderable && this.c.controls && colOpts.controls) {
-                $(this.dom.nameButton).appendTo(this.dom.buttonGroup);
+                this.dom.nameButton.appendTo(this.dom.buttonGroup);
             }
             // If the count column is hidden then don't display the ordering button for it
             if (this.c.viewCount &&
@@ -1095,11 +1098,11 @@
                 colOpts.orderable &&
                 this.c.controls &&
                 colOpts.controls) {
-                $(this.dom.countButton).appendTo(this.dom.buttonGroup);
+                this.dom.countButton.appendTo(this.dom.buttonGroup);
             }
-            $(this.dom.topRow).prependTo(this.dom.container);
-            $(container).append(this.dom.dtP);
-            $(container).show();
+            this.dom.topRow.prependTo(this.dom.container);
+            container.append(this.dom.dtP);
+            container.show();
         };
         /**
          * Gets the options for the row for the customPanes
@@ -1382,7 +1385,7 @@
          */
         SearchPane.prototype._searchContSetup = function () {
             if (this.c.controls && this.s.colOpts.controls) {
-                $(this.dom.searchButton).appendTo(this.dom.searchLabelCont);
+                this.dom.searchButton.appendTo(this.dom.searchLabelCont);
             }
             if (!(this.c.dtOpts.searching === false ||
                 this.s.colOpts.dtOpts.searching === false ||
@@ -1390,7 +1393,7 @@
                     this.customPaneSettings.dtOpts !== undefined &&
                     this.customPaneSettings.dtOpts.searching !== undefined &&
                     !this.customPaneSettings.dtOpts.searching))) {
-                $(this.dom.searchLabelCont).appendTo(this.dom.searchCont);
+                this.dom.searchLabelCont.appendTo(this.dom.searchCont);
             }
         };
         /**
@@ -1752,12 +1755,12 @@
         SearchPanes.prototype.rebuild = function (targetIdx, maintainSelection) {
             if (targetIdx === void 0) { targetIdx = false; }
             if (maintainSelection === void 0) { maintainSelection = false; }
-            $$1(this.dom.emptyMessage).remove();
+            this.dom.emptyMessage.remove();
             // As a rebuild from scratch is required, empty the searchpanes container.
             var returnArray = [];
             // Rebuild each pane individually, if a specific pane has been selected then only rebuild that one
             if (targetIdx === false) {
-                $$1(this.dom.panes).empty();
+                this.dom.panes.empty();
             }
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
@@ -1772,7 +1775,7 @@
                     false, this.s.dt.page.info().serverSide ?
                     this.s.serverData :
                     undefined, null, maintainSelection));
-                $$1(this.dom.panes).append(pane.dom.container);
+                this.dom.panes.append(pane.dom.container);
             }
             if (this.c.cascadePanes || this.c.viewTotal) {
                 this.redrawPanes(true);
@@ -2043,27 +2046,27 @@
          */
         SearchPanes.prototype._attach = function () {
             var _this = this;
-            $$1(this.dom.container).removeClass(this.classes.hide);
-            $$1(this.dom.titleRow).removeClass(this.classes.hide);
-            $$1(this.dom.titleRow).remove();
-            $$1(this.dom.title).appendTo(this.dom.titleRow);
+            this.dom.container.removeClass(this.classes.hide);
+            this.dom.titleRow.removeClass(this.classes.hide);
+            this.dom.titleRow.remove();
+            this.dom.title.appendTo(this.dom.titleRow);
             // If the clear button is permitted attach it
             if (this.c.clear) {
-                $$1(this.dom.clearAll).appendTo(this.dom.titleRow);
-                $$1(this.dom.clearAll).on('click.dtsps', function () {
+                this.dom.clearAll.appendTo(this.dom.titleRow);
+                this.dom.clearAll.on('click.dtsps', function () {
                     _this.clearSelections();
                 });
             }
-            $$1(this.dom.titleRow).appendTo(this.dom.container);
+            this.dom.titleRow.appendTo(this.dom.container);
             // Attach the container for each individual pane to the overall container
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
-                $$1(pane.dom.container).appendTo(this.dom.panes);
+                pane.dom.container.appendTo(this.dom.panes);
             }
             // Attach everything to the document
-            $$1(this.dom.panes).appendTo(this.dom.container);
+            this.dom.panes.appendTo(this.dom.container);
             if ($$1('div.' + this.classes.container).length === 0) {
-                $$1(this.dom.container).prependTo(this.s.dt);
+                this.dom.container.prependTo(this.s.dt);
             }
             return this.dom.container;
         };
@@ -2071,15 +2074,15 @@
          * Attach the top row containing the filter count and clear all button
          */
         SearchPanes.prototype._attachExtras = function () {
-            $$1(this.dom.container).removeClass(this.classes.hide);
-            $$1(this.dom.titleRow).removeClass(this.classes.hide);
-            $$1(this.dom.titleRow).remove();
-            $$1(this.dom.title).appendTo(this.dom.titleRow);
+            this.dom.container.removeClass(this.classes.hide);
+            this.dom.titleRow.removeClass(this.classes.hide);
+            this.dom.titleRow.remove();
+            this.dom.title.appendTo(this.dom.titleRow);
             // If the clear button is permitted attach it
             if (this.c.clear) {
-                $$1(this.dom.clearAll).appendTo(this.dom.titleRow);
+                this.dom.clearAll.appendTo(this.dom.titleRow);
             }
-            $$1(this.dom.titleRow).appendTo(this.dom.container);
+            this.dom.titleRow.appendTo(this.dom.container);
             return this.dom.container;
         };
         /**
@@ -2098,16 +2101,16 @@
             // If the message is an empty string then searchPanes.emptyPanes is undefined,
             // therefore the pane container should be removed from the display
             if (message === null) {
-                $$1(this.dom.container).addClass(this.classes.hide);
-                $$1(this.dom.titleRow).removeClass(this.classes.hide);
+                this.dom.container.addClass(this.classes.hide);
+                this.dom.titleRow.removeClass(this.classes.hide);
                 return;
             }
             else {
-                $$1(this.dom.container).removeClass(this.classes.hide);
-                $$1(this.dom.titleRow).addClass(this.classes.hide);
+                this.dom.container.removeClass(this.classes.hide);
+                this.dom.titleRow.addClass(this.classes.hide);
             }
             // Otherwise display the message
-            $$1(this.dom.emptyMessage).text(message);
+            this.dom.emptyMessage.text(message);
             this.dom.emptyMessage.appendTo(this.dom.container);
             return this.dom.container;
         };
@@ -2193,8 +2196,8 @@
                 var pane = _a[_i];
                 if (pane.s.displayed === true) {
                     // Ensure that the empty message is removed if a pane is displayed
-                    $$1(this.dom.emptyMessage).remove();
-                    $$1(this.dom.titleRow).removeClass(this.classes.hide);
+                    this.dom.emptyMessage.remove();
+                    this.dom.titleRow.removeClass(this.classes.hide);
                     return;
                 }
             }
@@ -2431,7 +2434,7 @@
                     pane.s.deselect = false;
                 }
             }
-            $$1(this.dom.panes).empty();
+            this.dom.panes.empty();
             // Rebuild the desired panes
             for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
                 var pane = _l[_k];
@@ -2442,7 +2445,7 @@
                     pane._setListeners();
                 }
                 // append all of the panes and enable select
-                $$1(this.dom.panes).append(pane.dom.container);
+                this.dom.panes.append(pane.dom.container);
                 if (pane.s.dtPane !== undefined) {
                     $$1(pane.s.dtPane.table().node()).parent()[0].scrollTop = pane.s.scrollTop;
                     $$1.fn.dataTable.select.init(pane.s.dtPane);
@@ -2457,11 +2460,11 @@
          */
         SearchPanes.prototype._startup = function (table) {
             var _this = this;
-            $$1(this.dom.container).text('');
+            this.dom.container.text('');
             // Attach clear button and title bar to the document
             this._attachExtras();
-            $$1(this.dom.container).append(this.dom.panes);
-            $$1(this.dom.panes).empty();
+            this.dom.container.append(this.dom.panes);
+            this.dom.panes.empty();
             var loadedFilter = this.s.dt.state.loaded();
             if (this.c.viewTotal && !this.c.cascadePanes) {
                 if (loadedFilter !== null &&
@@ -2487,7 +2490,7 @@
             for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
                 var pane = _e[_d];
                 pane.rebuildPane(undefined, Object.keys(this.s.serverData).length > 0 ? this.s.serverData : undefined);
-                $$1(this.dom.panes).append(pane.dom.container);
+                this.dom.panes.append(pane.dom.container);
             }
             // If the layout is set to auto then the panes need to be resized to their best fit
             if (this.c.layout === 'auto') {
@@ -2615,7 +2618,7 @@
                         var page = _this.s.dt.page();
                         processing = true;
                         _this.s.updating = true;
-                        $$1(_this.dom.panes).empty();
+                        _this.dom.panes.empty();
                         for (var _i = 0, _a = _this.s.panes; _i < _a.length; _i++) {
                             var pane = _a[_i];
                             pane.clearData(); // Clears all of the bins and will mean that the data has to be re-read
@@ -2624,7 +2627,7 @@
                             pane.rebuildPane(_this.s.selectionList[_this.s.selectionList.length - 1] !== undefined ?
                                 pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
                                 false, undefined, undefined, true);
-                            $$1(_this.dom.panes).append(pane.dom.container);
+                            _this.dom.panes.append(pane.dom.container);
                         }
                         if (!_this.s.dt.page.info().serverSide) {
                             _this.s.dt.draw();
@@ -2686,13 +2689,13 @@
                     pane.destroy();
                 }
                 table.off('.dtsps');
-                $$1(_this.dom.clearAll).off('.dtsps');
-                $$1(_this.dom.container).remove();
+                _this.dom.clearAll.off('.dtsps');
+                _this.dom.container.remove();
                 _this.clearSelections();
             });
             // When the clear All button has been pressed clear all of the selections in the panes
             if (this.c.clear) {
-                $$1(this.dom.clearAll).on('click.dtsps', function () {
+                this.dom.clearAll.on('click.dtsps', function () {
                     _this.clearSelections();
                 });
             }
@@ -2749,15 +2752,15 @@
             }
             // Run the message through the internationalisation method to improve readability
             var message = this.s.dt.i18n('searchPanes.title', this.c.i18n.title, filterCount);
-            $$1(this.dom.title).text(message);
+            this.dom.title.text(message);
             if (this.c.filterChanged !== undefined && typeof this.c.filterChanged === 'function') {
                 this.c.filterChanged.call(this.s.dt, filterCount);
             }
             if (filterCount === 0) {
-                $$1(this.dom.clearAll).addClass(this.classes.disabledButton).attr('disabled', 'true');
+                this.dom.clearAll.addClass(this.classes.disabledButton).attr('disabled', 'true');
             }
             else {
-                $$1(this.dom.clearAll).removeClass(this.classes.disabledButton).removeAttr('disabled');
+                this.dom.clearAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
             }
         };
         /**
