@@ -27,6 +27,7 @@
                 throw new Error('SearchPane requires DataTables 1.10 or newer');
             }
             // Check that Select is included
+            // eslint-disable-next-line no-extra-parens
             if (!dataTable.select) {
                 throw new Error('SearchPane requires Select');
             }
@@ -118,7 +119,7 @@
             var clear = $('<button type="button">X</button>').addClass(this.classes.paneButton);
             clear.text(table.i18n('searchPanes.clearPane', this.c.i18n.clearPane));
             this.dom.container.addClass(colOpts.className);
-            this.dom.container.addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
+            this.dom.container.addClass(this.customPaneSettings !== null && this.customPaneSettings.className !== undefined
                 ? this.customPaneSettings.className
                 : '');
             // Set the value of name incase ordering is desired
@@ -152,6 +153,7 @@
                         // get the filter value from the map
                         filter = _this.s.rowData.filterMap.get(dataIndex);
                         if (filter instanceof $.fn.dataTable.Api) {
+                            // eslint-disable-next-line no-extra-parens
                             filter = filter.toArray();
                         }
                     }
@@ -375,7 +377,7 @@
                 .addClass(this.classes.layout +
                 (layVal < 10 ? layout : layout.split('-')[0] + '-9'))
                 .addClass(this.s.colOpts.className)
-                .addClass((this.customPaneSettings !== null && this.customPaneSettings.className !== undefined)
+                .addClass(this.customPaneSettings !== null && this.customPaneSettings.className !== undefined
                 ? this.customPaneSettings.className
                 : '')
                 .addClass(this.classes.show);
@@ -561,7 +563,7 @@
                 _this.s.dtPane.search(searchval).draw();
                 if (typeof searchval === 'string' &&
                     (searchval.length > 0 ||
-                        (searchval.length === 0 && _this.s.dtPane.rows({ selected: true }).data().toArray().length > 0))) {
+                        searchval.length === 0 && _this.s.dtPane.rows({ selected: true }).data().toArray().length > 0)) {
                     _this.dom.clear.removeClass(_this.classes.disabledButton).removeAttr('disabled');
                 }
                 else {
@@ -681,8 +683,8 @@
                     }
                 }
                 // Perform checks that do not require populate pane to run
-                if ((colOpts.show === false
-                    || (colOpts.show !== undefined && colOpts.show !== true)) &&
+                if ((colOpts.show === false ||
+                    colOpts.show !== undefined && colOpts.show !== true) &&
                     idx === -1) {
                     this.dom.container.addClass(this.classes.hidden);
                     this.s.displayed = false;
@@ -715,10 +717,11 @@
                     var uniqueRatio = this._uniqueRatio(binLength, table.rows()[0].length);
                     // Don't show the pane if there isn't enough variance in the data, or there is only 1 entry
                     //  for that pane
-                    if (this.s.displayed === false && ((colOpts.show === undefined && colOpts.threshold === null ?
-                        uniqueRatio > this.c.threshold :
-                        uniqueRatio > colOpts.threshold)
-                        || (colOpts.show !== true && binLength <= 1))) {
+                    if (this.s.displayed === false &&
+                        ((colOpts.show === undefined && colOpts.threshold === null ?
+                            uniqueRatio > this.c.threshold :
+                            uniqueRatio > colOpts.threshold) ||
+                            colOpts.show !== true && binLength <= 1)) {
                         this.dom.container.addClass(this.classes.hidden);
                         this.s.displayed = false;
                         return;
@@ -763,10 +766,11 @@
                     var binLength = Object.keys(rowData.binsTotal).length;
                     var uniqueRatio = this._uniqueRatio(binLength, this.s.tableLength);
                     // Don't show the pane if there isnt enough variance in the data, or there is only 1 entry for that pane
-                    if (this.s.displayed === false && ((colOpts.show === undefined && colOpts.threshold === null ?
-                        uniqueRatio > this.c.threshold :
-                        uniqueRatio > colOpts.threshold)
-                        || (colOpts.show !== true && binLength <= 1))) {
+                    if (this.s.displayed === false &&
+                        ((colOpts.show === undefined && colOpts.threshold === null ?
+                            uniqueRatio > this.c.threshold :
+                            uniqueRatio > colOpts.threshold) ||
+                            colOpts.show !== true && binLength <= 1)) {
                         this.dom.container.addClass(this.classes.hidden);
                         this.s.displayed = false;
                         return;
@@ -802,6 +806,7 @@
             // Declare the datatable for the pane
             var errMode = $.fn.dataTable.ext.errMode;
             $.fn.dataTable.ext.errMode = 'none';
+            // eslint-disable-next-line no-extra-parens
             var haveScroller = dataTable.Scroller;
             this.s.dtPane = this.dom.dtP.DataTable($.extend(true, {
                 columnDefs: [
@@ -816,10 +821,11 @@
                                 return row.type;
                             }
                             var message;
-                            message = ((_this.s.filteringActive || _this.s.showFiltered) && _this.c.viewTotal) ||
-                                (_this.c.viewTotal && _this.s.forceViewTotal) ?
-                                filteredMessage.replace(/{total}/, row.total) :
-                                countMessage.replace(/{total}/, row.total);
+                            message =
+                                (_this.s.filteringActive || _this.s.showFiltered) && _this.c.viewTotal ||
+                                    _this.c.viewTotal && _this.s.forceViewTotal ?
+                                    filteredMessage.replace(/{total}/, row.total) :
+                                    countMessage.replace(/{total}/, row.total);
                             message = message.replace(/{shown}/, row.shown);
                             while (message.includes('{total}')) {
                                 message = message.replace(/{total}/, row.total);
@@ -880,15 +886,15 @@
                 scroller: haveScroller ? true : false,
                 select: true,
                 stateSave: table.settings()[0].oFeatures.bStateSave ? true : false
-            }, this.c.dtOpts, colOpts !== undefined ? colOpts.dtOpts : {}, (this.s.colOpts.options !== undefined || !this.colExists)
-                ? {
+            }, this.c.dtOpts, colOpts !== undefined ? colOpts.dtOpts : {}, this.s.colOpts.options !== undefined || !this.colExists ?
+                {
                     createdRow: function (row, data, dataIndex) {
                         $(row).addClass(data.className);
                     }
-                }
-                : undefined, (this.customPaneSettings !== null && this.customPaneSettings.dtOpts !== undefined)
-                ? this.customPaneSettings.dtOpts
-                : {}, $.fn.dataTable.versionCheck('2')
+                } :
+                undefined, this.customPaneSettings !== null && this.customPaneSettings.dtOpts !== undefined ?
+                this.customPaneSettings.dtOpts :
+                {}, $.fn.dataTable.versionCheck('2')
                 ? {
                     layout: {
                         bottomLeft: null,
@@ -914,6 +920,7 @@
             }
             this.dom.searchBox.attr('placeholder', headerText);
             // As the pane table is not in the document yet we must initialise select ourselves
+            // eslint-disable-next-line no-extra-parens
             $.fn.dataTable.select.init(this.s.dtPane);
             $.fn.dataTable.ext.errMode = errMode;
             // If it is not a custom pane
@@ -940,8 +947,8 @@
                     }
                     if (this.s.dt.page.info().serverSide &&
                         (!this.c.cascadePanes ||
-                            (this.c.cascadePanes && rowData.bins[rowData.arrayFilter[i].filter] !== 0) ||
-                            (this.c.cascadePanes && init !== null) ||
+                            this.c.cascadePanes && rowData.bins[rowData.arrayFilter[i].filter] !== 0 ||
+                            this.c.cascadePanes && init !== null ||
                             selected)) {
                         var row = this.addRow(rowData.arrayFilter[i].display, rowData.arrayFilter[i].filter, init ?
                             rowData.binsTotal[rowData.arrayFilter[i].filter] :
@@ -968,10 +975,11 @@
                     }
                 }
             }
+            // eslint-disable-next-line no-extra-parens
             dataTable.select.init(this.s.dtPane);
             // If there are custom options set or it is a custom pane then get them
             if (colOpts.options !== undefined ||
-                (this.customPaneSettings !== null && this.customPaneSettings.options !== undefined)) {
+                this.customPaneSettings !== null && this.customPaneSettings.options !== undefined) {
                 this._getComparisonRows();
             }
             // Display the pane
@@ -1069,13 +1077,12 @@
             this.dom.buttonGroup.appendTo(this.dom.lower);
             // If no selections have been made in the pane then disable the clear button
             if (this.c.dtOpts.searching === false ||
-                (colOpts.dtOpts !== undefined &&
-                    colOpts.dtOpts.searching === false) ||
+                colOpts.dtOpts !== undefined && colOpts.dtOpts.searching === false ||
                 (!this.c.controls || !colOpts.controls) ||
-                (this.customPaneSettings !== null &&
+                this.customPaneSettings !== null &&
                     this.customPaneSettings.dtOpts !== undefined &&
                     this.customPaneSettings.dtOpts.searching !== undefined &&
-                    !this.customPaneSettings.dtOpts.searching)) {
+                    !this.customPaneSettings.dtOpts.searching) {
                 this.dom.searchBox
                     .removeClass(this.classes.paneInputButton)
                     .addClass(this.classes.disabledButton)
@@ -1177,7 +1184,7 @@
                     }
                 }
                 // If cascadePanes is not active or if it is and the comparisonObj should be shown then add it to the pane
-                if (!this.c.cascadePanes || (this.c.cascadePanes && comparisonObj.shown !== 0)) {
+                if (!this.c.cascadePanes || this.c.cascadePanes && comparisonObj.shown !== 0) {
                     rows.push(this.addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.shown, comparisonObj.total, comparisonObj.sort, comparisonObj.type, comparisonObj.className));
                 }
             }
@@ -1360,11 +1367,11 @@
                     }
                 }
                 // otherwise if the two filter values are equal then return true
-                else if ((filter === colSelect.filter) ||
+                else if (filter === colSelect.filter ||
                     // Loose type checking incase number type in column comparing to a string
                     // eslint-disable-next-line eqeqeq
-                    (!(typeof filter === 'string' && filter.length === 0) && filter == colSelect.filter) ||
-                    (colSelect.filter === null && typeof filter === 'string' && filter === '')) {
+                    !(typeof filter === 'string' && filter.length === 0) && filter == colSelect.filter ||
+                    colSelect.filter === null && typeof filter === 'string' && filter === '') {
                     return true;
                 }
             }
@@ -1389,10 +1396,10 @@
             }
             if (!(this.c.dtOpts.searching === false ||
                 this.s.colOpts.dtOpts.searching === false ||
-                (this.customPaneSettings !== null &&
+                this.customPaneSettings !== null &&
                     this.customPaneSettings.dtOpts !== undefined &&
                     this.customPaneSettings.dtOpts.searching !== undefined &&
-                    !this.customPaneSettings.dtOpts.searching))) {
+                    !this.customPaneSettings.dtOpts.searching)) {
                 this.dom.searchLabelCont.appendTo(this.dom.searchCont);
             }
         };
@@ -1427,8 +1434,8 @@
          */
         SearchPane.prototype._uniqueRatio = function (bins, rowCount) {
             if (rowCount > 0 &&
-                ((this.s.rowData.totalOptions > 0 && !this.s.dt.page.info().serverSide) ||
-                    (this.s.dt.page.info().serverSide && this.s.tableLength > 0))) {
+                (this.s.rowData.totalOptions > 0 && !this.s.dt.page.info().serverSide ||
+                    this.s.dt.page.info().serverSide && this.s.tableLength > 0)) {
                 return bins / this.s.rowData.totalOptions;
             }
             else {
@@ -1486,10 +1493,12 @@
                         // If both view Total and cascadePanes have been selected and the count of the row
                         // is not 0 then add it to pane
                         // Do this also if the viewTotal option has been selected and cascadePanes has not
-                        if (dataP && ((rowData.bins[dataP.filter] !== undefined &&
-                            rowData.bins[dataP.filter] !== 0 && this_1.c.cascadePanes) ||
-                            !this_1.c.cascadePanes ||
-                            this_1.s.clearing)) {
+                        if (dataP &&
+                            (rowData.bins[dataP.filter] !== undefined &&
+                                rowData.bins[dataP.filter] !== 0 &&
+                                this_1.c.cascadePanes ||
+                                !this_1.c.cascadePanes ||
+                                this_1.s.clearing)) {
                             var row = this_1.addRow(dataP.display, dataP.filter, !this_1.c.viewTotal ?
                                 rowData.bins[dataP.filter] :
                                 rowData.bins[dataP.filter] !== undefined ?
@@ -1514,9 +1523,9 @@
                         _loop_1(dataP);
                     }
                 }
-                if ((colOpts.searchPanes !== undefined && colOpts.searchPanes.options !== undefined) ||
+                if (colOpts.searchPanes !== undefined && colOpts.searchPanes.options !== undefined ||
                     colOpts.options !== undefined ||
-                    (this.customPaneSettings !== null && this.customPaneSettings.options !== undefined)) {
+                    this.customPaneSettings !== null && this.customPaneSettings.options !== undefined) {
                     var rows = this._getComparisonRows();
                     var _loop_2 = function (row) {
                         var selectIndex = selected.findIndex(function (element) {
@@ -1637,6 +1646,7 @@
                 throw new Error('SearchPane requires DataTables 1.10 or newer');
             }
             // Check that Select is included
+            // eslint-disable-next-line no-extra-parens
             if (!dataTable$1.select) {
                 throw new Error('SearchPane requires Select');
             }
@@ -1887,7 +1897,7 @@
                         var last = this.s.selectionList[this.s.selectionList.length - 1].index;
                         for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
                             var pane = _j[_h];
-                            pane.s.lastSelect = (pane.s.index === last);
+                            pane.s.lastSelect = pane.s.index === last;
                         }
                     }
                     // Remove selections from the list from the pane where a deselect has taken place
@@ -1917,7 +1927,7 @@
                         if (pane.s.dtPane !== undefined) {
                             var tempFilter = true;
                             pane.s.filteringActive = true;
-                            if ((filterPane !== -1 && filterPane !== null && filterPane === pane.s.index) ||
+                            if (filterPane !== -1 && filterPane !== null && filterPane === pane.s.index ||
                                 filterActive === false ||
                                 pane.s.index === solePane) {
                                 tempFilter = false;
@@ -1935,7 +1945,7 @@
                         var last = newSelectionList[newSelectionList.length - 1].index;
                         for (var _m = 0, _o = this.s.panes; _m < _o.length; _m++) {
                             var pane = _o[_m];
-                            pane.s.lastSelect = (pane.s.index === last);
+                            pane.s.lastSelect = pane.s.index === last;
                         }
                     }
                     else if (newSelectionList.length > 0) {
@@ -1945,7 +1955,7 @@
                             if (paneUpdate.s.dtPane !== undefined) {
                                 var tempFilter = true;
                                 paneUpdate.s.filteringActive = true;
-                                if ((filterPane !== -1 && filterPane !== null && filterPane === paneUpdate.s.index) ||
+                                if (filterPane !== -1 && filterPane !== null && filterPane === paneUpdate.s.index ||
                                     filterActive === false ||
                                     paneUpdate.s.index === solePane) {
                                     tempFilter = false;
@@ -1966,7 +1976,7 @@
                         if (pane.s.dtPane !== undefined) {
                             var tempFilter = true;
                             pane.s.filteringActive = true;
-                            if ((filterPane !== -1 && filterPane !== null && filterPane === pane.s.index) ||
+                            if (filterPane !== -1 && filterPane !== null && filterPane === pane.s.index ||
                                 filterActive === false ||
                                 pane.s.index === solePane) {
                                 tempFilter = false;
@@ -2148,7 +2158,7 @@
                 pane.setCascadeRegen(true);
                 pane.setClear(true);
                 // If this is the same as the pane with the only selection then pass it as a parameter into clearPane
-                if ((pane.s.dtPane !== undefined && pane.s.index === solePane) || pane.s.dtPane !== undefined) {
+                if (pane.s.dtPane !== undefined && pane.s.index === solePane || pane.s.dtPane !== undefined) {
                     pane.clearPane();
                 }
                 pane.setClear(false);
@@ -2421,7 +2431,7 @@
                 var last = this.s.selectionList[this.s.selectionList.length - 1].index;
                 for (var _f = 0, _g = this.s.panes; _f < _g.length; _f++) {
                     var pane = _g[_f];
-                    pane.s.lastSelect = (pane.s.index === last);
+                    pane.s.lastSelect = pane.s.index === last;
                     pane.s.deselect = false;
                 }
             }
@@ -2448,6 +2458,7 @@
                 this.dom.panes.append(pane.dom.container);
                 if (pane.s.dtPane !== undefined) {
                     $$1(pane.s.dtPane.table().node()).parent()[0].scrollTop = pane.s.scrollTop;
+                    // eslint-disable-next-line no-extra-parens
                     $$1.fn.dataTable.select.init(pane.s.dtPane);
                 }
             }
@@ -2498,7 +2509,7 @@
             }
             // Reset the paging if that has been saved in the state
             if (!this.s.stateRead && loadedFilter !== null && loadedFilter !== undefined) {
-                this.s.dt.page((loadedFilter.start / this.s.dt.page.len()));
+                this.s.dt.page(loadedFilter.start / this.s.dt.page.len());
                 this.s.dt.draw('page');
             }
             this.s.stateRead = true;
@@ -2653,16 +2664,16 @@
                 var pane = _j[_h];
                 if (pane !== undefined &&
                     pane.s.dtPane !== undefined &&
-                    ((pane.s.colOpts.preSelect !== undefined && pane.s.colOpts.preSelect.length > 0) ||
-                        (pane.customPaneSettings !== null &&
+                    (pane.s.colOpts.preSelect !== undefined && pane.s.colOpts.preSelect.length > 0 ||
+                        pane.customPaneSettings !== null &&
                             pane.customPaneSettings.preSelect !== undefined &&
-                            pane.customPaneSettings.preSelect.length > 0))) {
+                            pane.customPaneSettings.preSelect.length > 0)) {
                     var tableLength = pane.s.dtPane.rows().data().toArray().length;
                     for (var i = 0; i < tableLength; i++) {
                         if (pane.s.colOpts.preSelect.includes(pane.s.dtPane.cell(i, 0).data()) ||
-                            (pane.customPaneSettings !== null &&
+                            pane.customPaneSettings !== null &&
                                 pane.customPaneSettings.preSelect !== undefined &&
-                                pane.customPaneSettings.preSelect.includes(pane.s.dtPane.cell(i, 0).data()))) {
+                                pane.customPaneSettings.preSelect.includes(pane.s.dtPane.cell(i, 0).data())) {
                             pane.s.dtPane.row(i).select();
                         }
                     }
@@ -2673,7 +2684,7 @@
                 var last = this.s.selectionList[this.s.selectionList.length - 1].index;
                 for (var _k = 0, _l = this.s.panes; _k < _l.length; _k++) {
                     var pane = _l[_k];
-                    pane.s.lastSelect = (pane.s.index === last);
+                    pane.s.lastSelect = pane.s.index === last;
                 }
             }
             // If cascadePanes is active then make the previous selections in the order they were previously
@@ -2731,7 +2742,7 @@
                 var pane = _c[_b];
                 if (pane.s.dtPane !== undefined) {
                     pane.s.filteringActive = true;
-                    if ((filterPane !== -1 && filterPane !== null && filterPane === pane.s.index) ||
+                    if (filterPane !== -1 && filterPane !== null && filterPane === pane.s.index ||
                         filterActive === false) {
                         pane.s.filteringActive = false;
                     }
@@ -2851,16 +2862,22 @@
         }
         else {
             // Browser - assume jQuery has already been loaded
+            // eslint-disable-next-line no-extra-parens
             factory(window.jQuery, window, document);
         }
     }(function ($, window, document) {
         setJQuery($);
         setJQuery$1($);
         var dataTable = $.fn.dataTable;
+        // eslint-disable-next-line no-extra-parens
         $.fn.dataTable.SearchPanes = SearchPanes;
+        // eslint-disable-next-line no-extra-parens
         $.fn.DataTable.SearchPanes = SearchPanes;
+        // eslint-disable-next-line no-extra-parens
         $.fn.dataTable.SearchPane = SearchPane;
+        // eslint-disable-next-line no-extra-parens
         $.fn.DataTable.SearchPane = SearchPane;
+        // eslint-disable-next-line no-extra-parens
         var apiRegister = $.fn.dataTable.Api.register;
         apiRegister('searchPanes()', function () {
             return this;
