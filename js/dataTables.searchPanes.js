@@ -818,10 +818,10 @@
                                 filteredMessage.replace(/{total}/, row.total) :
                                 countMessage.replace(/{total}/, row.total);
                             message = message.replace(/{shown}/, row.shown);
-                            while (message.indexOf('{total}') !== -1) {
+                            while (message.includes('{total}')) {
                                 message = message.replace(/{total}/, row.total);
                             }
-                            while (message.indexOf('{shown}') !== -1) {
+                            while (message.includes('{shown}')) {
                                 message = message.replace(/{shown}/, row.shown);
                             }
                             // We are displaying the count in the same columne as the name of the search option.
@@ -1339,7 +1339,7 @@
                 }
                 // if the filter is an array then is the column present in it
                 if (Array.isArray(filter)) {
-                    if (filter.indexOf(colSelect.filter) !== -1) {
+                    if (filter.includes(colSelect.filter)) {
                         return true;
                     }
                 }
@@ -2025,7 +2025,7 @@
                     var pane = _c[_b];
                     // Resize the pane with the new layout
                     if (pane.s.displayed) {
-                        var layout = 'columns-' + (widerIndexes.indexOf(pane.s.index) === -1 ? highest : highestmod);
+                        var layout = 'columns-' + (!widerIndexes.includes(pane.s.index) ? highest : highestmod);
                         pane.resize(layout);
                     }
                 }
@@ -2656,10 +2656,10 @@
                             pane.customPaneSettings.preSelect.length > 0))) {
                     var tableLength = pane.s.dtPane.rows().data().toArray().length;
                     for (var i = 0; i < tableLength; i++) {
-                        if (pane.s.colOpts.preSelect.indexOf(pane.s.dtPane.cell(i, 0).data()) !== -1 ||
+                        if (pane.s.colOpts.preSelect.includes(pane.s.dtPane.cell(i, 0).data()) ||
                             (pane.customPaneSettings !== null &&
                                 pane.customPaneSettings.preSelect !== undefined &&
-                                pane.customPaneSettings.preSelect.indexOf(pane.s.dtPane.cell(i, 0).data()) !== -1)) {
+                                pane.customPaneSettings.preSelect.includes(pane.s.dtPane.cell(i, 0).data()))) {
                             pane.s.dtPane.row(i).select();
                         }
                     }
