@@ -1051,7 +1051,7 @@
             var container = this.dom.container;
             var colOpts = this.s.colOpts;
             var layVal = parseInt(this.c.layout.split('-')[1], 10);
-            //  Empty everything to start again
+            // Empty everything to start again
             $(this.dom.topRow).empty();
             $(this.dom.dtP).empty();
             $(this.dom.topRow).addClass(this.classes.topRow);
@@ -1227,7 +1227,7 @@
             this.s.rowData.bins = {};
             var settings = this.s.dt.settings()[0];
             // If cascadePanes or viewTotal are active it is necessary to get the data which is currently
-            //  being displayed for their functionality.
+            // being displayed for their functionality.
             // Also make sure that this was not the last pane to have a selection made
             if (!this.s.dt.page.info().serverSide) {
                 var indexArray = (this.c.cascadePanes || this.c.viewTotal) && (!this.s.clearing && !last) ?
@@ -1250,7 +1250,7 @@
             if (bins === void 0) { bins = this.s.rowData.bins; }
             var colOpts = this.s.colOpts;
             // Retrieve the rendered data from the cell using the fnGetCellData function
-            //  rather than the cell().render API method for optimisation
+            // rather than the cell().render API method for optimisation
             if (typeof colOpts.orthogonal === 'string') {
                 var rendered = settings.oApi._fnGetCellData(settings, rowIdx, this.s.index, colOpts.orthogonal);
                 this.s.rowData.filterMap.set(rowIdx, rendered);
@@ -1330,7 +1330,7 @@
                 var colSelect = _a[_i];
                 if (typeof colSelect.filter === 'string' && typeof filter === 'string') {
                     // The filter value will not have the &amp; in place but a &,
-                    //  so we need to do a replace to make sure that they will match
+                    // so we need to do a replace to make sure that they will match
                     colSelect.filter = colSelect.filter
                         .replace(/&amp;/g, '&')
                         .replace(/&lt;/g, '<')
@@ -1351,7 +1351,7 @@
                         }
                     }
                     // If the combiner is an "and" then we need to check against all possible selections
-                    //  so if it fails here then the and is not met and return false
+                    // so if it fails here then the and is not met and return false
                     else if (colOpts.combiner === 'and') {
                         return false;
                     }
@@ -1366,7 +1366,7 @@
                 }
             }
             // If the combiner is an and then we need to check against all possible selections
-            //  so return true here if so because it would have returned false earlier if it had failed
+            // so return true here if so because it would have returned false earlier if it had failed
             if (colOpts.combiner === 'and') {
                 return true;
             }
@@ -1458,7 +1458,7 @@
                         this._populatePane(!this.s.filteringActive);
                     }
                     // If cascadePanes is active and the table has returned to its default state then
-                    //  there is a need to update certain parts ofthe rowData.
+                    // there is a need to update certain parts ofthe rowData.
                     else if (this.c.cascadePanes &&
                         this.s.dt.rows().data().toArray().length ===
                             this.s.dt.rows({ search: 'applied' }).data().toArray().length) {
@@ -1481,7 +1481,7 @@
                     }
                     var _loop_1 = function (dataP) {
                         // If both view Total and cascadePanes have been selected and the count of the row
-                        //  is not 0 then add it to pane
+                        // is not 0 then add it to pane
                         // Do this also if the viewTotal option has been selected and cascadePanes has not
                         if (dataP && ((rowData.bins[dataP.filter] !== undefined &&
                             rowData.bins[dataP.filter] !== 0 && this_1.c.cascadePanes) ||
@@ -1495,7 +1495,7 @@
                                 String(rowData.binsTotal[dataP.filter]) :
                                 rowData.bins[dataP.filter], dataP.sort, dataP.type);
                             // Find out if the filter was selected in the previous search,
-                            //  if so select it and remove from array.
+                            // if so select it and remove from array.
                             var selectIndex = selected.findIndex(function (element) {
                                 return element.filter === dataP.filter;
                             });
@@ -1723,7 +1723,7 @@
             // Load in all of the searchBoxes in the documents
             var searches = this.dom.container.find('.' + this.classes.search.replace(/\s+/g, '.'));
             // For each searchBox set the input text to be empty and then trigger
-            //  an input on them so that they no longer filter the panes
+            // an input on them so that they no longer filter the panes
             searches.each(function () {
                 $$1(this).val('');
                 $$1(this).trigger('input');
@@ -1815,14 +1815,14 @@
                     }
                 }
                 // If the number of rows currently visible is equal to the number of rows in the table
-                //  then there can't be any filtering taking place
+                // then there can't be any filtering taking place
                 if (selectTotal === 0 &&
                     table.rows({ search: 'applied' }).data().toArray().length === table.rows().data().toArray().length) {
                     filterActive = false;
                 }
                 // Otherwise if viewTotal is active then it is necessary to determine which panes a select is present in.
-                //  If there is only one pane with a selection present then it should not show the filtered message as
-                //  more selections may be made in that pane.
+                // If there is only one pane with a selection present then it should not show the filtered message as
+                // more selections may be made in that pane.
                 else if (this.c.viewTotal) {
                     for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
                         var pane = _c[_b];
@@ -1837,12 +1837,12 @@
                                 }
                             }
                             // If filterPane === -1 then a pane with a selection has not been found yet,
-                            //  so set filterPane to that panes index
+                            // so set filterPane to that panes index
                             if (selectLength > 0 && filterPane === -1) {
                                 filterPane = pane.s.index;
                             }
                             // Then if another pane is found with a selection then set filterPane to null to
-                            //  show that multiple panes have selections present
+                            // show that multiple panes have selections present
                             else if (selectLength > 0) {
                                 filterPane = null;
                             }
@@ -1926,7 +1926,7 @@
                     // Update the label that shows how many filters are in place
                     this._updateFilterCount();
                     // If the length of the selections are different then some of them have been
-                    //  removed and a deselect has occured
+                    // removed and a deselect has occured
                     if (newSelectionList.length > 0 && (newSelectionList.length < this.s.selectionList.length || rebuild)) {
                         this._cascadeRegen(newSelectionList, selectTotal);
                         var last = newSelectionList[newSelectionList.length - 1].index;
@@ -2012,7 +2012,7 @@
                             break;
                         }
                         // If there are more left over at this amount of panes per row (ppr)
-                        //  then it fits better so new values
+                        // then it fits better so new values
                         else if (rem > highestmod) {
                             highest = ppr;
                             highestmod = rem;
@@ -2096,7 +2096,7 @@
                 message = null;
             }
             // If the message is an empty string then searchPanes.emptyPanes is undefined,
-            //  therefore the pane container should be removed from the display
+            // therefore the pane container should be removed from the display
             if (message === null) {
                 $$1(this.dom.container).addClass(this.classes.hide);
                 $$1(this.dom.titleRow).removeClass(this.classes.hide);
@@ -2139,7 +2139,7 @@
                 solePane = newSelectionList[0].index;
             }
             // Let the pane know that a cascadeRegen is taking place to avoid unexpected behaviour
-            //  and clear all of the previous selections in the pane
+            // and clear all of the previous selections in the pane
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 pane.setCascadeRegen(true);
@@ -2217,18 +2217,18 @@
          */
         SearchPanes.prototype._makeCascadeSelections = function (newSelectionList) {
             // make selections in the order they were made previously,
-            //  excluding those from the pane where a deselect was made
+            // excluding those from the pane where a deselect was made
             for (var i = 0; i < newSelectionList.length; i++) {
                 var _loop_1 = function (pane) {
                     if (pane.s.index === newSelectionList[i].index && pane.s.dtPane !== undefined) {
                         // When regenerating the cascade selections we need this flag so that
-                        //  the panes are only ignored if it
-                        //  is the last selection and the pane for that selection
+                        // the panes are only ignored if it
+                        // is the last selection and the pane for that selection
                         if (i === newSelectionList.length - 1) {
                             pane.s.lastCascade = true;
                         }
                         // if there are any selections currently in the pane then
-                        //  deselect them as we are about to make our new selections
+                        // deselect them as we are about to make our new selections
                         if (pane.s.dtPane.rows({ selected: true }).data().toArray().length > 0 && pane.s.dtPane !== undefined) {
                             pane.setClear(true);
                             pane.clearPane();
@@ -2264,8 +2264,8 @@
                 };
                 var this_1 = this;
                 // As the selections may have been made across the panes
-                //  in a different order to the pane index we must identify
-                //   which pane has the index of the selection. This is also important for colreorder etc
+                // in a different order to the pane index we must identify
+                // which pane has the index of the selection. This is also important for colreorder etc
                 for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                     var pane = _a[_i];
                     _loop_1(pane);
@@ -2316,8 +2316,8 @@
             }
             else {
                 // Otherwise add the paneStartup function to the list of functions
-                //  that are to be run when the table is initialised. This will garauntee that the
-                //   panes are initialised before the init event and init Complete callback is fired
+                // that are to be run when the table is initialised. This will garauntee that the
+                // panes are initialised before the init event and init Complete callback is fired
                 this.s.dt.settings()[0].aoInitComplete.push({ fn: function () {
                         _this._startup(table);
                     } });
@@ -2575,10 +2575,10 @@
                         _this._prepViewTotal(filterCount);
                     }
                     // If there is a filter to be applied, then we need to read from the start of the result set
-                    //  and set the paging to 0. This matches the behaviour of client side processing
+                    // and set the paging to 0. This matches the behaviour of client side processing
                     if (filterCount > 0) {
                         // If the number of filters has changed we need to read from the start of the
-                        //  result set and reset the paging
+                        // result set and reset the paging
                         if (filterCount !== _this.s.filterCount) {
                             data.start = 0;
                             _this.s.page = 0;
@@ -2620,7 +2620,7 @@
                             var pane = _a[_i];
                             pane.clearData(); // Clears all of the bins and will mean that the data has to be re-read
                             // Pass a boolean to say whether this is the last choice made for maintaining selections
-                            //  when rebuilding
+                            // when rebuilding
                             pane.rebuildPane(_this.s.selectionList[_this.s.selectionList.length - 1] !== undefined ?
                                 pane.s.index === _this.s.selectionList[_this.s.selectionList.length - 1].index :
                                 false, undefined, undefined, true);
@@ -2708,13 +2708,13 @@
                 if (pane.s.dtPane !== undefined) {
                     var selectLength = pane.s.dtPane.rows({ selected: true }).data().toArray().length;
                     // If filterPane === -1 then a pane with a selection has not been found yet,
-                    //  so set filterPane to that panes index
+                    // so set filterPane to that panes index
                     if (selectLength > 0 && filterPane === -1) {
                         filterPane = pane.s.index;
                         filterActive = true;
                     }
                     // Then if another pane is found with a selection then set filterPane to null to
-                    //  show that multiple panes have selections present
+                    // show that multiple panes have selections present
                     else if (selectLength > 0) {
                         filterPane = null;
                     }
