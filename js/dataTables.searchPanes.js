@@ -448,14 +448,12 @@
                         _this.s.dt.draw(false);
                     }
                 }
-                else {
-                    _this.dom.clear.removeClass(_this.classes.disabledButton).removeAttr('disabled');
-                    if (!_this.s.updating) {
-                        _this.s.selectPresent = true;
-                        _this._makeSelection();
-                        _this.s.selectPresent = false;
-                    }
+                else if (!_this.s.updating) {
+                    _this.s.selectPresent = true;
+                    _this._makeSelection();
+                    _this.s.selectPresent = false;
                 }
+                _this.dom.clear.removeClass(_this.classes.disabledButton).removeAttr('disabled');
             });
             // When an item is deselected on the pane, re add the currently selected items to the array
             // which holds selected items. Custom search will be performed.
@@ -472,11 +470,11 @@
                     }
                     else {
                         _this.s.deselect = true;
-                        if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
-                            _this.dom.clear.addClass(_this.classes.disabledButton).attr('disabled', 'true');
-                        }
                         _this._makeSelection();
                         _this.s.deselect = false;
+                    }
+                    if (_this.s.dtPane.rows({ selected: true }).data().toArray().length === 0) {
+                        _this.dom.clear.addClass(_this.classes.disabledButton).attr('disabled', 'true');
                     }
                 }, 50);
             });
