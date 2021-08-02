@@ -437,6 +437,7 @@
             var t0;
             // When an item is selected on the pane, add these to the array which holds selected items.
             // Custom search will perform.
+            this.s.dtPane.off('select.dtsp');
             this.s.dtPane.on('select.dtsp', function () {
                 clearTimeout(t0);
                 if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
@@ -458,6 +459,7 @@
             });
             // When an item is deselected on the pane, re add the currently selected items to the array
             // which holds selected items. Custom search will be performed.
+            this.s.dtPane.off('deselect.dtsp');
             this.s.dtPane.on('deselect.dtsp', function () {
                 t0 = setTimeout(function () {
                     _this.s.scrollTop = $(_this.s.dtPane.table().node()).parent()[0].scrollTop;
@@ -520,14 +522,17 @@
                     selected: selected
                 });
             });
+            this.s.dtPane.off('user-select.dtsp');
             this.s.dtPane.on('user-select.dtsp', function (e, _dt, type, cell, originalEvent) {
                 originalEvent.stopPropagation();
             });
+            // this.s.dtPane.off('draw.dtsp');
             this.s.dtPane.on('draw.dtsp', function () {
                 _this.adjustTopRow();
             });
             // When the button to order by the name of the options is clicked then
             //  change the ordering to whatever it isn't currently
+            this.dom.nameButton.off('click.dtsp');
             this.dom.nameButton.on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([0, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
@@ -536,6 +541,7 @@
             });
             // When the button to order by the number of entries in the column is clicked then
             //  change the ordering to whatever it isn't currently
+            this.dom.countButton.off('click.dtsp');
             this.dom.countButton.on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
                 _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
@@ -543,6 +549,7 @@
                 _this.s.dt.state.save();
             });
             // When the clear button is clicked reset the pane
+            this.dom.clear.off('click.dtsp');
             this.dom.clear.on('click.dtsp', function () {
                 var searches = _this.dom.container.find('.' + _this.classes.search.replace(/ /g, '.'));
                 searches.each(function () {
@@ -553,11 +560,13 @@
                 _this.clearPane();
             });
             // When the search button is clicked then draw focus to the search box
+            this.dom.searchButton.off('click.dtsp');
             this.dom.searchButton.on('click.dtsp', function () {
                 _this.dom.searchBox.focus();
             });
             // When a character is inputted into the searchbox search the pane for matching values.
             // Doing it this way means that no button has to be clicked to trigger a search, it is done asynchronously
+            this.dom.searchBox.off('click.dtsp');
             this.dom.searchBox.on('input.dtsp', function () {
                 var searchval = _this.dom.searchBox.val();
                 _this.s.dtPane.search(searchval).draw();
@@ -1778,6 +1787,12 @@
                     this.s.serverData :
                     undefined, null, maintainSelection));
                 this.dom.panes.append(pane.dom.container);
+            }
+            for (var _b = 0, _c = this.s.panes; _b < _c.length; _b++) {
+                var pane = _c[_b];
+                if (pane.s.dtPane !== undefined) {
+                    pane._setListeners();
+                }
             }
             if (this.c.cascadePanes || this.c.viewTotal) {
                 this.redrawPanes(true);
