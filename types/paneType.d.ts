@@ -139,6 +139,7 @@ export interface IS {
     dt: any;
     dtPane: any;
     filteringActive: boolean;
+    firstSet: boolean;
     forceViewTotal: boolean;
     index: number;
     indexes: IIndexes[];
