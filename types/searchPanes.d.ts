@@ -61,6 +61,16 @@ export default class SearchPanes {
      */
     private _checkMessage;
     /**
+     * Checks which panes are collapsed and then performs relevant actions to the collapse/show all buttons
+     *
+     * @param pane The pane to be checked
+     */
+    private _checkCollapse;
+    /**
+     * Collapses all of the panes
+     */
+    private _collapseAll;
+    /**
      * Gets the selection list from the previous state and stores it in the selectionList Property
      */
     private _getState;
@@ -91,6 +101,15 @@ export default class SearchPanes {
      * Works out which panes to update when data is recieved from the server and viewTotal is active
      */
     private _serverTotals;
+    /**
+     * Sets the listeners for the collapse and show all buttons
+     * Also sets and performs checks on current panes to see if they are collapsed
+     */
+    private _setCollapseListener;
+    /**
+     * Shows all of the panes
+     */
+    private _showAll;
     /**
      * Initialises the tables previous/preset selections and initialises callbacks for events
      *

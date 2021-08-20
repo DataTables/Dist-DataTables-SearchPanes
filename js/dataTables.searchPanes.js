@@ -88,6 +88,9 @@
                     .attr('disabled', 'true')
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.clearButton),
+                collapseButton: $('<button type="button"><span class="dtsp-caret">&#x5e;</span></button>')
+                    .addClass(this.classes.paneButton)
+                    .addClass(this.classes.collapseButton),
                 container: $('<div/>')
                     .addClass(this.classes.container)
                     .addClass(this.classes.layout +
@@ -271,6 +274,24 @@
             return this;
         };
         /**
+         * Collapses the pane so that only the header is displayed
+         */
+        SearchPane.prototype.collapse = function () {
+            var _this = this;
+            if (!this.s.displayed) {
+                return;
+            }
+            this.dom.collapseButton.addClass(this.classes.rotated);
+            $(this.s.dtPane.table().container()).addClass(this.classes.hidden);
+            this.dom.topRow.addClass(this.classes.bordered);
+            this.dom.countButton.addClass(this.classes.disabledButton);
+            this.dom.nameButton.addClass(this.classes.disabledButton);
+            this.dom.searchButton.addClass(this.classes.disabledButton);
+            this.dom.topRow.one('click', function () {
+                _this.show();
+            });
+        };
+        /**
          * Strips all of the SearchPanes elements from the document and turns all of the listeners for the buttons off
          */
         SearchPane.prototype.destroy = function () {
@@ -278,6 +299,7 @@
                 this.s.dtPane.off('.dtsp');
             }
             this.dom.nameButton.off('.dtsp');
+            this.dom.collapseButton.off('.dtsp');
             this.dom.countButton.off('.dtsp');
             this.dom.clear.off('.dtsp');
             this.dom.searchButton.off('.dtsp');
@@ -403,6 +425,20 @@
             this.s.clearing = val;
         };
         /**
+         * Expands the pane from the collapsed state
+         */
+        SearchPane.prototype.show = function () {
+            if (!this.s.displayed) {
+                return;
+            }
+            this.dom.collapseButton.removeClass(this.classes.rotated);
+            $(this.s.dtPane.table().container()).removeClass(this.classes.hidden);
+            this.dom.topRow.removeClass(this.classes.bordered);
+            this.dom.countButton.removeClass(this.classes.disabledButton);
+            this.dom.nameButton.removeClass(this.classes.disabledButton);
+            this.dom.searchButton.removeClass(this.classes.disabledButton);
+        };
+        /**
          * Updates the values of all of the panes
          *
          * @param draw whether this has been triggered by a draw event or not
@@ -495,6 +531,7 @@
                     var order;
                     var bins;
                     var arrayFilter;
+                    var collapsed;
                     // Get all of the data needed for the state save from the pane
                     if (_this.s.dtPane !== undefined) {
                         selected = _this.s.dtPane
@@ -506,6 +543,7 @@
                         order = _this.s.dtPane.order();
                         bins = rowData.binsOriginal;
                         arrayFilter = rowData.arrayOriginal;
+                        collapsed = _this.dom.collapseButton.hasClass(_this.classes.rotated);
                     }
                     if (data.searchPanes === undefined) {
                         data.searchPanes = {};
@@ -523,6 +561,7 @@
                     data.searchPanes.panes.push({
                         arrayFilter: arrayFilter,
                         bins: bins,
+                        collapsed: collapsed,
                         id: _this.s.index,
                         order: order,
                         searchTerm: searchTerm,
@@ -555,6 +594,28 @@
                 _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
                 // This state save is required so that the ordering of the panes is maintained
                 _this.s.dt.state.save();
+            });
+            // When the button to order by the number of entries in the column is clicked then
+            //  change the ordering to whatever it isn't currently
+            this.dom.collapseButton.off('click.dtsp');
+            this.dom.collapseButton.on('click.dtsp', function (e) {
+                e.stopPropagation();
+                var container = $(_this.s.dtPane.table().container());
+                // Toggle the classes
+                _this.dom.collapseButton.toggleClass(_this.classes.rotated);
+                container.toggleClass(_this.classes.hidden);
+                _this.dom.topRow.toggleClass(_this.classes.bordered);
+                _this.dom.countButton.toggleClass(_this.classes.disabledButton);
+                _this.dom.nameButton.toggleClass(_this.classes.disabledButton);
+                _this.dom.searchButton.toggleClass(_this.classes.disabledButton);
+                if (container.hasClass(_this.classes.hidden)) {
+                    _this.dom.topRow.on('click', function () { return _this.dom.collapseButton.click(); });
+                }
+                else {
+                    _this.dom.topRow.off('click');
+                }
+                _this.s.dt.state.save();
+                return;
             });
             // When the clear button is clicked reset the pane
             this.dom.clear.off('click.dtsp');
@@ -1024,6 +1085,9 @@
             if (this.s.dt.page.info().serverSide) {
                 this.s.dtPane.search(this.dom.searchBox.val()).draw();
             }
+            if (this.s.colOpts.initCollapsed && this.s.colOpts.collapse) {
+                this.collapse();
+            }
             // Reload the selection, searchbox entry and ordering from the previous state
             // Need to check here if SSP that this is the first draw, otherwise it will infinite loop
             if (loadedFilter &&
@@ -1043,6 +1107,13 @@
                             this.dom.searchBox.trigger('input');
                         }
                         this.s.dtPane.order(pane.order).draw();
+                        // Is the pane to be hidden or shown?
+                        if (pane.collapsed) {
+                            this.collapse();
+                        }
+                        else {
+                            this.show();
+                        }
                     }
                 }
             }
@@ -1115,6 +1186,9 @@
                 this.c.controls &&
                 colOpts.controls) {
                 this.dom.countButton.appendTo(this.dom.buttonGroup);
+            }
+            if (this.c.collapse && colOpts.collapse && this.c.controls && colOpts.controls) {
+                this.dom.collapseButton.appendTo(this.dom.buttonGroup);
             }
             this.dom.topRow.prependTo(this.dom.container);
             container.append(this.dom.dtP);
@@ -1569,11 +1643,14 @@
         };
         SearchPane.version = '1.3.0';
         SearchPane.classes = {
+            bordered: 'dtsp-bordered',
             buttonGroup: 'dtsp-buttonGroup',
             buttonSub: 'dtsp-buttonSub',
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
             clearButton: 'clearButton',
+            collapseAll: 'dtsp-collapseAll',
+            collapseButton: 'dtsp-collapseButton',
             container: 'dtsp-searchPane',
             countButton: 'dtsp-countButton',
             disabledButton: 'dtsp-disabledButton',
@@ -1587,6 +1664,7 @@
             paneButton: 'dtsp-paneButton',
             paneInputButton: 'dtsp-paneInputButton',
             pill: 'dtsp-pill',
+            rotated: 'dtsp-rotated',
             search: 'dtsp-search',
             searchCont: 'dtsp-searchCont',
             searchIcon: 'dtsp-searchIcon',
@@ -1603,6 +1681,7 @@
         SearchPane.defaults = {
             cascadePanes: false,
             clear: true,
+            collapse: true,
             combiner: 'or',
             container: function (dt) {
                 return dt.table().container();
@@ -1617,6 +1696,7 @@
                 countFiltered: '{shown} ({total})',
                 emptyMessage: '<em>No data</em>'
             },
+            initCollapsed: false,
             layout: 'auto',
             name: undefined,
             orderable: true,
@@ -1666,10 +1746,15 @@
             // Add extra elements to DOM object including clear
             this.dom = {
                 clearAll: $$1('<button type="button">Clear All</button>').addClass(this.classes.clearAll),
+                collapseAll: $$1('<button type="button">Collapse All</button>').addClass(this.classes.collapseAll),
                 container: $$1('<div/>').addClass(this.classes.panes).text(table.i18n('searchPanes.loadMessage', this.c.i18n.loadMessage)),
                 emptyMessage: $$1('<div/>').addClass(this.classes.emptyMessage),
                 options: $$1('<div/>').addClass(this.classes.container),
                 panes: $$1('<div/>').addClass(this.classes.container),
+                showAll: $$1('<button type="button">Show All</button>')
+                    .addClass(this.classes.showAll)
+                    .addClass(this.classes.disabledButton)
+                    .attr('disabled', 'true'),
                 title: $$1('<div/>').addClass(this.classes.title),
                 titleRow: $$1('<div/>').addClass(this.classes.titleRow),
                 wrapper: $$1('<div/>')
@@ -1728,6 +1813,8 @@
             });
             table.settings()[0]._searchPanes = this;
             this.dom.clearAll.text(table.i18n('searchPanes.clearMessage', this.c.i18n.clearMessage));
+            this.dom.collapseAll.text(table.i18n('searchPanes.collapseMessage', this.c.i18n.collapseMessage));
+            this.dom.showAll.text(table.i18n('searchPanes.showMessage', this.c.i18n.showMessage));
             if (this.s.dt.settings()[0]._bInitComplete || fromInit) {
                 this._paneDeclare(table, paneSettings, opts);
             }
@@ -2076,6 +2163,9 @@
                     _this.clearSelections();
                 });
             }
+            if (this.c.collapse) {
+                this._setCollapseListener();
+            }
             this.dom.titleRow.appendTo(this.dom.container);
             // Attach the container for each individual pane to the overall container
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
@@ -2100,6 +2190,11 @@
             // If the clear button is permitted attach it
             if (this.c.clear) {
                 this.dom.clearAll.appendTo(this.dom.titleRow);
+            }
+            // If collapsing is permitted attach those buttons
+            if (this.c.collapse) {
+                this.dom.showAll.appendTo(this.dom.titleRow);
+                this.dom.collapseAll.appendTo(this.dom.titleRow);
             }
             this.dom.titleRow.appendTo(this.dom.container);
             return this.dom.container;
@@ -2222,6 +2317,48 @@
             }
             // Otherwise attach the custom message or remove the container from the display
             return this._attachMessage();
+        };
+        /**
+         * Checks which panes are collapsed and then performs relevant actions to the collapse/show all buttons
+         *
+         * @param pane The pane to be checked
+         */
+        SearchPanes.prototype._checkCollapse = function () {
+            var disableClose = true;
+            var disableShow = true;
+            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                var pane = _a[_i];
+                if (pane.s.displayed) {
+                    // It the pane is not collapsed
+                    if (!pane.dom.collapseButton.hasClass(pane.classes.rotated)) {
+                        // Enable the collapse all button
+                        this.dom.collapseAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
+                        disableClose = false;
+                    }
+                    else {
+                        // Otherwise enable the show all button
+                        this.dom.showAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
+                        disableShow = false;
+                    }
+                }
+            }
+            // If this flag is still true, no panes are open so the close button should be disabled
+            if (disableClose) {
+                this.dom.collapseAll.addClass(this.classes.disabledButton).attr('disabled', 'true');
+            }
+            // If this flag is still true, no panes are closed so the show button should be disabled
+            if (disableShow) {
+                this.dom.showAll.addClass(this.classes.disabledButton).attr('disabled', 'true');
+            }
+        };
+        /**
+         * Collapses all of the panes
+         */
+        SearchPanes.prototype._collapseAll = function () {
+            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                var pane = _a[_i];
+                pane.collapse();
+            }
         };
         /**
          * Gets the selection list from the previous state and stores it in the selectionList Property
@@ -2474,6 +2611,40 @@
             this._updateSelection();
         };
         /**
+         * Sets the listeners for the collapse and show all buttons
+         * Also sets and performs checks on current panes to see if they are collapsed
+         */
+        SearchPanes.prototype._setCollapseListener = function () {
+            var _this = this;
+            this.dom.collapseAll.on('click.dtsps', function () {
+                _this._collapseAll();
+                _this.dom.collapseAll.addClass(_this.classes.disabledButton).attr('disabled', 'true');
+                _this.dom.showAll.removeClass(_this.classes.disabledButton).removeAttr('disabled');
+                _this.s.dt.state.save();
+            });
+            this.dom.showAll.on('click.dtsps', function () {
+                _this._showAll();
+                _this.dom.showAll.addClass(_this.classes.disabledButton).attr('disabled', 'true');
+                _this.dom.collapseAll.removeClass(_this.classes.disabledButton).removeAttr('disabled');
+                _this.s.dt.state.save();
+            });
+            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                var pane = _a[_i];
+                // We want to make the same check whenever there is a collapse/expand
+                pane.dom.collapseButton.on('click', function () { return _this._checkCollapse(); });
+            }
+            this._checkCollapse();
+        };
+        /**
+         * Shows all of the panes
+         */
+        SearchPanes.prototype._showAll = function () {
+            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                var pane = _a[_i];
+                pane.show();
+            }
+        };
+        /**
          * Initialises the tables previous/preset selections and initialises callbacks for events
          *
          * @param table the parent table for which the searchPanes are being created
@@ -2709,10 +2880,15 @@
                     pane.destroy();
                 }
                 table.off('.dtsps');
+                _this.dom.collapseAll.off('.dtsps');
+                _this.dom.showAll.off('.dtsps');
                 _this.dom.clearAll.off('.dtsps');
                 _this.dom.container.remove();
                 _this.clearSelections();
             });
+            if (this.c.collapse) {
+                this._setCollapseListener();
+            }
             // When the clear All button has been pressed clear all of the selections in the panes
             if (this.c.clear) {
                 this.dom.clearAll.on('click.dtsps', function () {
@@ -2803,12 +2979,14 @@
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
+            collapseAll: 'dtsp-collapseAll',
             container: 'dtsp-searchPanes',
             disabledButton: 'dtsp-disabledButton',
             emptyMessage: 'dtsp-emptyMessage',
             hide: 'dtsp-hidden',
             panes: 'dtsp-panesContainer',
             search: 'dtsp-search',
+            showAll: 'dtsp-showAll',
             title: 'dtsp-title',
             titleRow: 'dtsp-titleRow'
         };
@@ -2816,6 +2994,7 @@
         SearchPanes.defaults = {
             cascadePanes: false,
             clear: true,
+            collapse: true,
             columns: [],
             container: function (dt) {
                 return dt.table().container();
@@ -2828,11 +3007,13 @@
                     0: 'SearchPanes',
                     _: 'SearchPanes (%d)'
                 },
+                collapseMessage: 'Collapse All',
                 count: '{total}',
                 countFiltered: '{shown} ({total})',
                 emptyMessage: '<em>No data</em>',
                 emptyPanes: 'No SearchPanes',
                 loadMessage: 'Loading Search Panes...',
+                showMessage: 'Show All',
                 title: 'Filters Active - %d'
             },
             layout: 'auto',

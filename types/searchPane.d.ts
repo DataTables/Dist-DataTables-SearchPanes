@@ -45,6 +45,10 @@ export default class SearchPane {
      */
     clearPane(): this;
     /**
+     * Collapses the pane so that only the header is displayed
+     */
+    collapse(): void;
+    /**
      * Strips all of the SearchPanes elements from the document and turns all of the listeners for the buttons off
      */
     destroy(): void;
@@ -90,6 +94,10 @@ export default class SearchPane {
      * @param val the boolean value which the clearing property is to be assigned
      */
     setClear(val: boolean): void;
+    /**
+     * Expands the pane from the collapsed state
+     */
+    show(): void;
     /**
      * Updates the values of all of the panes
      *

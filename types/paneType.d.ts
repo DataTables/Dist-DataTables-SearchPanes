@@ -2,11 +2,14 @@
 /// <reference types="datatables.net" />
 export interface IClasses {
     badgePill?: string;
+    bordered: string;
     buttonGroup: string;
     buttonSub: string;
     clear: string;
     clearAll: string;
     clearButton: string;
+    collapseAll: string;
+    collapseButton: string;
     container: string;
     countButton: string;
     disabledButton: string;
@@ -23,6 +26,7 @@ export interface IClasses {
     paneButton: string;
     paneInputButton: string;
     pill: string;
+    rotated: string;
     search: string;
     searchCont: string;
     searchIcon: string;
@@ -56,6 +60,7 @@ export interface IDataArray {
 export interface IDefaults {
     cascadePanes: boolean;
     clear: boolean;
+    collapse: boolean;
     combiner: string;
     container: (dt: any) => HTMLElement;
     controls: boolean;
@@ -70,6 +75,7 @@ export interface IDefaults {
         countFiltered: string;
         emptyMessage: string;
     };
+    initCollapsed: boolean;
     layout: string;
     name: string;
     orderable: boolean;
@@ -82,6 +88,7 @@ export interface IDefaults {
 export interface IDOM {
     buttonGroup: JQuery<HTMLElement>;
     clear: JQuery<HTMLElement>;
+    collapseButton: JQuery<HTMLElement>;
     container: JQuery<HTMLElement>;
     countButton: JQuery<HTMLElement>;
     dtP: JQuery<HTMLElement>;
