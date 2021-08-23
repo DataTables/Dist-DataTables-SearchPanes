@@ -1085,7 +1085,10 @@
             if (this.s.dt.page.info().serverSide) {
                 this.s.dtPane.search(this.dom.searchBox.val()).draw();
             }
-            if (this.s.colOpts.initCollapsed && this.s.colOpts.collapse) {
+            if ((this.c.initCollapsed && this.s.colOpts.initCollapsed !== false ||
+                this.s.colOpts.initCollapsed) &&
+                (this.c.collapse && this.s.colOpts.collapse !== false ||
+                    this.s.colOpts.collapse)) {
                 this.collapse();
             }
             // Reload the selection, searchbox entry and ordering from the previous state
@@ -1187,7 +1190,9 @@
                 colOpts.controls) {
                 this.dom.countButton.appendTo(this.dom.buttonGroup);
             }
-            if (this.c.collapse && colOpts.collapse && this.c.controls && colOpts.controls) {
+            if ((this.c.collapse && this.s.colOpts.collapse !== false ||
+                this.s.colOpts.collapse) &&
+                this.c.controls && colOpts.controls) {
                 this.dom.collapseButton.appendTo(this.dom.buttonGroup);
             }
             this.dom.topRow.prependTo(this.dom.container);
@@ -1282,7 +1287,9 @@
             var table = this.s.dt;
             // We need to reset the thresholds as if they have a value in colOpts then that value will be used
             var defaultMutator = {
+                collapse: null,
                 emptyMessage: false,
+                initCollapsed: null,
                 orthogonal: {
                     threshold: null
                 },
