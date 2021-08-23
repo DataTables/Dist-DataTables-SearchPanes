@@ -278,7 +278,9 @@
          */
         SearchPane.prototype.collapse = function () {
             var _this = this;
-            if (!this.s.displayed) {
+            if (!this.s.displayed ||
+                (!this.c.collapse && this.s.colOpts.collapse !== true ||
+                    this.s.colOpts.collapse === false)) {
                 return;
             }
             this.dom.collapseButton.addClass(this.classes.rotated);
