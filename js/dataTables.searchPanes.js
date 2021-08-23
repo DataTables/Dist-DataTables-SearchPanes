@@ -2032,8 +2032,6 @@
                             pane.updatePane(!tempFilter ? false : filterActive);
                         }
                     }
-                    // Update the label that shows how many filters are in place
-                    this._updateFilterCount();
                     // If the length of the selections are different then some of them have been
                     // removed and a deselect has occured
                     if (newSelectionList.length > 0 && (newSelectionList.length < this.s.selectionList.length || rebuild)) {
@@ -2061,6 +2059,8 @@
                             }
                         }
                     }
+                    // Update the label that shows how many filters are in place
+                    this._updateFilterCount();
                 }
                 else {
                     var solePane = -1;
@@ -2416,12 +2416,9 @@
                         pane.s.scrollTop = $$1(pane.s.dtPane.table().node()).parent()[0].scrollTop;
                         pane.s.dtPane.draw();
                         pane.s.dtPane.table().node().parentNode.scrollTop = pane.s.scrollTop;
-                        // Update the label that shows how many filters are in place
-                        this_1._updateFilterCount();
                         pane.s.lastCascade = false;
                     }
                 };
-                var this_1 = this;
                 // As the selections may have been made across the panes
                 // in a different order to the pane index we must identify
                 // which pane has the index of the selection. This is also important for colreorder etc
@@ -2699,18 +2696,17 @@
                     pane.updatePane();
                 }
             }
-            this._updateFilterCount();
             this._checkMessage();
             // When a draw is called on the DataTable, update all of the panes incase the data in the DataTable has changed
             table.on('preDraw.dtsps', function () {
                 // Check that the panes are not updating to avoid infinite loops
                 // Also check that this draw is not due to paging
                 if (!_this.s.updating && !_this.s.paging) {
-                    _this._updateFilterCount();
                     if ((_this.c.cascadePanes || _this.c.viewTotal) && !_this.s.dt.page.info().serverSide) {
                         _this.redrawPanes(_this.c.viewTotal);
                     }
                     else {
+                        _this._updateFilterCount();
                         _this._updateSelection();
                     }
                     _this.s.filterPane = -1;
