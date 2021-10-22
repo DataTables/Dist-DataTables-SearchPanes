@@ -2909,25 +2909,30 @@
                     });
                 }
             });
-            // PreSelect any selections which have been defined using the preSelect option
-            for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
-                var pane = _j[_h];
-                if (pane !== undefined &&
-                    pane.s.dtPane !== undefined &&
-                    (pane.s.colOpts.preSelect !== undefined && pane.s.colOpts.preSelect.length > 0 ||
-                        pane.customPaneSettings !== null &&
-                            pane.customPaneSettings.preSelect !== undefined &&
-                            pane.customPaneSettings.preSelect.length > 0)) {
-                    var tableLength = pane.s.dtPane.rows().data().toArray().length;
-                    for (var i = 0; i < tableLength; i++) {
-                        if (pane.s.colOpts.preSelect.includes(pane.s.dtPane.cell(i, 0).data()) ||
+            if (!loadedFilter ||
+                !loadedFilter.searchPanes ||
+                !loadedFilter.searchPanes.selectionList ||
+                loadedFilter.searchPanes.selectionList.length === 0) {
+                // PreSelect any selections which have been defined using the preSelect option
+                for (var _h = 0, _j = this.s.panes; _h < _j.length; _h++) {
+                    var pane = _j[_h];
+                    if (pane !== undefined &&
+                        pane.s.dtPane !== undefined &&
+                        (pane.s.colOpts.preSelect !== undefined && pane.s.colOpts.preSelect.length > 0 ||
                             pane.customPaneSettings !== null &&
                                 pane.customPaneSettings.preSelect !== undefined &&
-                                pane.customPaneSettings.preSelect.includes(pane.s.dtPane.cell(i, 0).data())) {
-                            pane.s.dtPane.row(i).select();
+                                pane.customPaneSettings.preSelect.length > 0)) {
+                        var tableLength = pane.s.dtPane.rows().data().toArray().length;
+                        for (var i = 0; i < tableLength; i++) {
+                            if (pane.s.colOpts.preSelect.includes(pane.s.dtPane.cell(i, 0).data()) ||
+                                pane.customPaneSettings !== null &&
+                                    pane.customPaneSettings.preSelect !== undefined &&
+                                    pane.customPaneSettings.preSelect.includes(pane.s.dtPane.cell(i, 0).data())) {
+                                pane.s.dtPane.row(i).select();
+                            }
                         }
+                        pane.updateTable();
                     }
-                    pane.updateTable();
                 }
             }
             if (this.s.selectionList !== undefined && this.s.selectionList.length > 0) {
