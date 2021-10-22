@@ -991,11 +991,7 @@
                     ? table.column(this.s.index).title()
                     : table.settings()[0].aoColumns[this.s.index].sTitle;
             }
-            headerText = headerText
-                .replace(/&amp;/g, '&')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"');
+            headerText = this._escapeHTML(headerText);
             this.dom.searchBox.attr('placeholder', headerText);
             // As the pane table is not in the document yet we must initialise select ourselves
             // eslint-disable-next-line no-extra-parens
@@ -1209,6 +1205,19 @@
             this.dom.topRow.prependTo(this.dom.container);
             container.append(this.dom.dtP);
             container.show();
+        };
+        /**
+         * Escape html characters within a string
+         *
+         * @param txt the string to be escaped
+         * @returns the escaped string
+         */
+        SearchPane.prototype._escapeHTML = function (txt) {
+            return txt
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"');
         };
         /**
          * Gets the options for the row for the customPanes
@@ -1442,11 +1451,7 @@
                 if (typeof colSelect.filter === 'string' && typeof filter === 'string') {
                     // The filter value will not have the &amp; in place but a &,
                     // so we need to do a replace to make sure that they will match
-                    colSelect.filter = colSelect.filter
-                        .replace(/&amp;/g, '&')
-                        .replace(/&lt;/g, '<')
-                        .replace(/&gt;/g, '>')
-                        .replace(/&quot;/g, '"');
+                    colSelect.filter = this._escapeHTML(colSelect.filter);
                 }
                 // if the filter is an array then is the column present in it
                 if (Array.isArray(filter)) {
@@ -1549,6 +1554,7 @@
          * @param draw a flag to define whether this has been called due to a draw event or not
          */
         SearchPane.prototype._updateCommon = function (draw) {
+            var _this = this;
             if (draw === void 0) { draw = false; }
             // Update the panes if doing a deselect. if doing a select then
             // update all of the panes except for the one causing the change
@@ -1609,9 +1615,7 @@
                                 rowData.bins[dataP.filter], dataP.sort, dataP.type);
                             // Find out if the filter was selected in the previous search,
                             // if so select it and remove from array.
-                            var selectIndex = selected.findIndex(function (element) {
-                                return element.filter === dataP.filter;
-                            });
+                            var selectIndex = selected.findIndex(function (element) { return _this._escapeHTML(element.filter) === _this._escapeHTML(dataP.filter); });
                             if (selectIndex !== -1) {
                                 row.select();
                                 selected.splice(selectIndex, 1);
@@ -2381,6 +2385,19 @@
             }
         };
         /**
+         * Escape html characters within a string
+         *
+         * @param txt the string to be escaped
+         * @returns the escaped string
+         */
+        SearchPanes.prototype._escapeHTML = function (txt) {
+            return txt
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"');
+        };
+        /**
          * Gets the selection list from the previous state and stores it in the selectionList Property
          */
         SearchPanes.prototype._getState = function () {
@@ -2395,6 +2412,7 @@
          * @param newSelectionList the list of selections to be made, in the order they were originally selected
          */
         SearchPanes.prototype._makeCascadeSelections = function (newSelectionList) {
+            var _this = this;
             // make selections in the order they were made previously,
             // excluding those from the pane where a deselect was made
             for (var i = 0; i < newSelectionList.length; i++) {
@@ -2419,7 +2437,8 @@
                             pane.s.dtPane.rows().every(function (rowIdx) {
                                 if (pane.s.dtPane.row(rowIdx).data() !== undefined &&
                                     row !== undefined &&
-                                    pane.s.dtPane.row(rowIdx).data().filter === row.filter) {
+                                    _this._escapeHTML(pane.s.dtPane.row(rowIdx).data().filter) ===
+                                        _this._escapeHTML(row.filter)) {
                                     found = true;
                                     pane.s.dtPane.row(rowIdx).select();
                                 }

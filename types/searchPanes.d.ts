@@ -71,6 +71,13 @@ export default class SearchPanes {
      */
     private _collapseAll;
     /**
+     * Escape html characters within a string
+     *
+     * @param txt the string to be escaped
+     * @returns the escaped string
+     */
+    private _escapeHTML;
+    /**
      * Gets the selection list from the previous state and stores it in the selectionList Property
      */
     private _getState;
