@@ -1566,8 +1566,8 @@
             // update all of the panes except for the one causing the change
             if (!this.s.dt.page.info().serverSide &&
                 this.s.dtPane !== undefined &&
+                this.s.selectPresent !== true &&
                 (!this.s.filteringActive || this.c.cascadePanes || draw === true) &&
-                (this.c.cascadePanes !== true || this.s.selectPresent !== true) &&
                 (!this.s.lastSelect || !this.s.lastCascade)) {
                 var colOpts = this.s.colOpts;
                 var selected = this.s.dtPane.rows({ selected: true }).data().toArray();
