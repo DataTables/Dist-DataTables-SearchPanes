@@ -991,6 +991,11 @@
                     ? table.column(this.s.index).title()
                     : table.settings()[0].aoColumns[this.s.index].sTitle;
             }
+            headerText = headerText
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"');
             this.dom.searchBox.attr('placeholder', headerText);
             // As the pane table is not in the document yet we must initialise select ourselves
             // eslint-disable-next-line no-extra-parens
