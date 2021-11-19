@@ -1222,6 +1222,7 @@
          */
         SearchPane.prototype._escapeHTML = function (txt) {
             return txt
+                .toString()
                 .replace(/&amp;/g, '&')
                 .replace(/&lt;/g, '<')
                 .replace(/&gt;/g, '>')
@@ -2400,6 +2401,7 @@
          */
         SearchPanes.prototype._escapeHTML = function (txt) {
             return txt
+                .toString()
                 .replace(/&amp;/g, '&')
                 .replace(/&lt;/g, '<')
                 .replace(/&gt;/g, '>')
