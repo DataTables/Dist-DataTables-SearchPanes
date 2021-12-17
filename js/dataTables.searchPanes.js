@@ -2219,10 +2219,13 @@
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 if (pane.s.dtPane) {
-                    this.s.selectionList.push({
-                        column: pane.s.index,
-                        rows: pane.s.dtPane.rows({ selected: true }).data().toArray().map(function (el) { return el.filter; })
-                    });
+                    var rows = pane.s.dtPane.rows({ selected: true }).data().toArray().map(function (el) { return el.filter; });
+                    if (rows.length) {
+                        this.s.selectionList.push({
+                            column: pane.s.index,
+                            rows: rows
+                        });
+                    }
                 }
             }
         };
