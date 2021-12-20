@@ -1388,7 +1388,7 @@
             }
             this.s.updating = updating;
         };
-        SearchPane.version = '1.3.0';
+        SearchPane.version = '2.0.0-dev';
         SearchPane.classes = {
             bordered: 'dtsp-bordered',
             buttonGroup: 'dtsp-buttonGroup',
