@@ -1229,6 +1229,7 @@
             var rows = [];
             // Clear all of the other rows from the pane, only custom options are to be displayed when they are defined
             this.s.dtPane.clear();
+            this.s.indexes = [];
             for (var _i = 0, options_1 = options; _i < options_1.length; _i++) {
                 var comp = options_1[_i];
                 // Initialise the object which is to be placed in the row
