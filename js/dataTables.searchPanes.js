@@ -2089,6 +2089,7 @@
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
             this._attachPaneContainer();
+            this._initSelectionListeners();
             // If the selections are to be maintained, then it is safe to assume that paging is also to be maintained
             // Otherwise, the paging should be reset
             this.s.dt.draw(!maintainSelection);
@@ -2152,6 +2153,12 @@
                 }
             }
             return this;
+        };
+        /**
+         * Holder method that is userd in SearchPanesST to set listeners that have an effect on other panes
+         */
+        SearchPanes.prototype._initSelectionListeners = function () {
+            return;
         };
         /**
          * Blank method that is overridden in SearchPanesST to retrieve the totals from the server data
@@ -2773,6 +2780,30 @@
             return _this;
         }
         /**
+         * Ensures that the correct selection listeners are set for selection tracking
+         *
+         * @param preSelect Any values that are to be preselected
+         */
+        SearchPanesST.prototype._initSelectionListeners = function (preSelect) {
+            if (preSelect === void 0) { preSelect = []; }
+            this.s.selectionList = preSelect;
+            // Set selection listeners for each pane
+            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
+                var pane = _a[_i];
+                if (pane.s.displayed) {
+                    pane.s.dtPane
+                        .off('select.dtsp')
+                        .on('select.dtsp', this._update(pane))
+                        .off('deselect.dtsp')
+                        .on('deselect.dtsp', this._update(pane));
+                }
+            }
+            // Update on every draw
+            this.s.dt.off('draw.dtsps').on('draw.dtsps', this._update());
+            // Also update right now as table has just initialised
+            this._updateSelectionList();
+        };
+        /**
          * Retrieve the total values from the server data
          */
         SearchPanesST.prototype._serverTotals = function () {
@@ -2836,29 +2867,6 @@
          */
         SearchPanesST.prototype._updateSelection = function () {
             return;
-        };
-        /**
-         * Ensures that the correct selection listeners are set for selection tracking
-         *
-         * @param preSelect Any values that are to be preselected
-         */
-        SearchPanesST.prototype._initSelectionListeners = function (preSelect) {
-            this.s.selectionList = preSelect;
-            // Set selection listeners for each pane
-            for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
-                var pane = _a[_i];
-                if (pane.s.displayed) {
-                    pane.s.dtPane
-                        .off('select.dtsp')
-                        .on('select.dtsp', this._update(pane))
-                        .off('deselect.dtsp')
-                        .on('deselect.dtsp', this._update(pane));
-                }
-            }
-            // Update on every draw
-            this.s.dt.off('draw.dtsps').on('draw.dtsps', this._update());
-            // Also update right now as table has just initialised
-            this._updateSelectionList();
         };
         /**
          * Returns a function that updates the selection list based on a specific pane
@@ -3113,13 +3121,16 @@
             },
             config: {},
             init: function (dt, node, config) {
-                var panes = new $.fn.dataTable.SearchPanes(dt, $.extend({
+                var buttonOpts = $.extend({
                     filterChanged: function (count) {
                         dt.button(node).text(dt.i18n('searchPanes.collapse', dt.context[0].oLanguage.searchPanes !== undefined ?
                             dt.context[0].oLanguage.searchPanes.collapse :
                             dt.context[0]._searchPanes.c.i18n.collapse, count));
                     }
-                }, config.config));
+                }, config.config);
+                var panes = buttonOpts && (buttonOpts.cascadePanes || buttonOpts.viewTotal) ?
+                    new $.fn.dataTable.SearchPanesST(dt, buttonOpts) :
+                    new $.fn.dataTable.SearchPanes(dt, buttonOpts);
                 dt.button(node).text(config.text || dt.i18n('searchPanes.collapse', panes.c.i18n.collapse, 0));
                 config._panes = panes;
             },
