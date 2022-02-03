@@ -2813,19 +2813,21 @@
         SearchPanesST.prototype._serverTotals = function () {
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
-                var colTitle = this.s.dt.column(pane.s.index).dataSrc();
-                var blockVT = true;
-                // If any of the counts are not equal to the totals filtering must be active
-                for (var _b = 0, _c = this.s.serverData.searchPanes.options[colTitle]; _b < _c.length; _b++) {
-                    var data = _c[_b];
-                    if (data.total !== data.count) {
-                        blockVT = false;
-                        break;
+                if (!pane.s.colOpts.show) {
+                    var colTitle = this.s.dt.column(pane.s.index).dataSrc();
+                    var blockVT = true;
+                    // If any of the counts are not equal to the totals filtering must be active
+                    for (var _b = 0, _c = this.s.serverData.searchPanes.options[colTitle]; _b < _c.length; _b++) {
+                        var data = _c[_b];
+                        if (data.total !== data.count) {
+                            blockVT = false;
+                            break;
+                        }
                     }
+                    // Set if filtering is present on the pane and populate the data arrays
+                    pane.s.filteringActive = !blockVT;
+                    pane._serverPopulate(this.s.serverData);
                 }
-                // Set if filtering is present on the pane and populate the data arrays
-                pane.s.filteringActive = !blockVT;
-                pane._serverPopulate(this.s.serverData);
             }
         };
         /**
