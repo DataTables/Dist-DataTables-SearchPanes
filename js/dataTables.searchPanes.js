@@ -2814,7 +2814,7 @@
         SearchPanesST.prototype._serverTotals = function () {
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
-                if (!pane.s.colOpts.show) {
+                if (pane.s.colOpts.show) {
                     var colTitle = this.s.dt.column(pane.s.index).dataSrc();
                     var blockVT = true;
                     // If any of the counts are not equal to the totals filtering must be active
