@@ -631,6 +631,58 @@
             this.s.selections = selectedRows;
             this._searchExtras();
         };
+        /**
+         * Adds the custom options to the pane
+         *
+         * @returns {Array} Returns the array of rows which have been added to the pane
+         */
+        SearchPane.prototype._getComparisonRows = function () {
+            // Find the appropriate options depending on whether this is a pane for a specific column or a custom pane
+            var options = this.s.colOpts.options
+                ? this.s.colOpts.options
+                : this.s.customPaneSettings && this.s.customPaneSettings.options
+                    ? this.s.customPaneSettings.options
+                    : undefined;
+            if (options === undefined) {
+                return;
+            }
+            var allRows = this.s.dt.rows();
+            var tableValsTotal = allRows.data().toArray();
+            var rows = [];
+            // Clear all of the other rows from the pane, only custom options are to be displayed when they are defined
+            this.s.dtPane.clear();
+            this.s.indexes = [];
+            for (var _i = 0, options_1 = options; _i < options_1.length; _i++) {
+                var comp = options_1[_i];
+                // Initialise the object which is to be placed in the row
+                var insert = comp.label !== '' ?
+                    comp.label :
+                    this.emptyMessage();
+                var comparisonObj = {
+                    className: comp.className,
+                    display: insert,
+                    filter: typeof comp.value === 'function' ? comp.value : [],
+                    sort: insert,
+                    total: 0,
+                    type: insert
+                };
+                // If a custom function is in place
+                if (typeof comp.value === 'function') {
+                    // Count the number of times the function evaluates to true for the original data in the Table
+                    for (var i = 0; i < tableValsTotal.length; i++) {
+                        if (comp.value.call(this.s.dt, tableValsTotal[i], allRows[0][i])) {
+                            comparisonObj.total++;
+                        }
+                    }
+                    // Update the comparisonObj
+                    if (typeof comparisonObj.filter !== 'function') {
+                        comparisonObj.filter.push(comp.filter);
+                    }
+                }
+                rows.push(this.addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.sort, comparisonObj.type, comparisonObj.className, comparisonObj.total));
+            }
+            return rows;
+        };
         SearchPane.prototype._getMessage = function (row) {
             return this.s.dt.i18n('searchPanes.count', this.c.i18n.count).replace(/{total}/g, row.total);
         };
@@ -1214,58 +1266,6 @@
             return $$4.extend(true, {}, SearchPane.defaults, defaultMutator, this.c ? this.c : {});
         };
         /**
-         * Adds the custom options to the pane
-         *
-         * @returns {Array} Returns the array of rows which have been added to the pane
-         */
-        SearchPane.prototype._getComparisonRows = function () {
-            // Find the appropriate options depending on whether this is a pane for a specific column or a custom pane
-            var options = this.s.colOpts.options
-                ? this.s.colOpts.options
-                : this.s.customPaneSettings && this.s.customPaneSettings.options
-                    ? this.s.customPaneSettings.options
-                    : undefined;
-            if (options === undefined) {
-                return;
-            }
-            var allRows = this.s.dt.rows();
-            var tableValsTotal = allRows.data().toArray();
-            var rows = [];
-            // Clear all of the other rows from the pane, only custom options are to be displayed when they are defined
-            this.s.dtPane.clear();
-            this.s.indexes = [];
-            for (var _i = 0, options_1 = options; _i < options_1.length; _i++) {
-                var comp = options_1[_i];
-                // Initialise the object which is to be placed in the row
-                var insert = comp.label !== '' ?
-                    comp.label :
-                    this.emptyMessage();
-                var comparisonObj = {
-                    className: comp.className,
-                    display: insert,
-                    filter: typeof comp.value === 'function' ? comp.value : [],
-                    sort: insert,
-                    total: 0,
-                    type: insert
-                };
-                // If a custom function is in place
-                if (typeof comp.value === 'function') {
-                    // Count the number of times the function evaluates to true for the original data in the Table
-                    for (var i = 0; i < tableValsTotal.length; i++) {
-                        if (comp.value.call(this.s.dt, tableValsTotal[i], allRows[0][i])) {
-                            comparisonObj.total++;
-                        }
-                    }
-                    // Update the comparisonObj
-                    if (typeof comparisonObj.filter !== 'function') {
-                        comparisonObj.filter.push(comp.filter);
-                    }
-                }
-                rows.push(this.addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.sort, comparisonObj.type, comparisonObj.className, comparisonObj.total));
-            }
-            return rows;
-        };
-        /**
          * Gets the options for the row for the customPanes
          *
          * @returns {object} The options for the row extended to include the options from the user.
@@ -1757,48 +1757,78 @@
          * This overrides the method in SearchPane
          */
         SearchPaneCascade.prototype.updateRows = function () {
-            if (!this.s.dt.page.info().serverSide) {
-                // Get the latest count values from the table
-                this._activePopulatePane();
-                this.s.rowData.binsShown = {};
-                for (var _i = 0, _a = this.s.dt.rows({ search: 'applied' }).indexes().toArray(); _i < _a.length; _i++) {
-                    var index = _a[_i];
-                    this._updateShown(index, this.s.dt.settings()[0], this.s.rowData.binsShown);
-                }
-            }
             // Note the currently selected values in the pane and remove all of the rows
             var selected = this.s.dtPane.rows({ selected: true }).data().toArray();
-            this.s.dtPane.rows().remove();
-            // Go over all of the rows that could be displayed
-            for (var _b = 0, _c = this.s.rowData.arrayFilter; _b < _c.length; _b++) {
-                var data = _c[_b];
-                // Cascade - If there are no rows present in the table don't show the option
-                if (data.shown === 0) {
-                    continue;
-                }
-                // Add the row to the pane
-                var row = this.addRow(data.display, data.filter, data.sort, data.type, undefined);
-                // Check if this row was selected
-                for (var i = 0; i < selected.length; i++) {
-                    var selection = selected[i];
-                    if (selection.filter === data.filter) {
-                        row.select();
-                        // Remove the row from the to find list and then add it to the selections list
-                        selected.splice(i, 1);
-                        this.s.selections.push(data.filter);
-                        break;
+            if (this.s.colOpts.options ||
+                this.s.customPaneSettings && this.s.customPaneSettings.options) {
+                // If there are custom options set or it is a custom pane then get them
+                this._getComparisonRows();
+                var rows = this.s.dtPane.rows().toArray()[0];
+                for (var i = 0; i < rows.length; i++) {
+                    var row = this.s.dtPane.row(rows[i]);
+                    var rowData = row.data();
+                    if (rowData === undefined) {
+                        continue;
+                    }
+                    if (rowData.shown === 0) {
+                        row.remove();
+                        rows = this.s.dtPane.rows();
+                        i--;
+                        continue;
+                    }
+                    for (var _i = 0, selected_1 = selected; _i < selected_1.length; _i++) {
+                        var selection = selected_1[_i];
+                        if (rowData.filter === selection.filter) {
+                            row.select();
+                            selected.splice(i, 1);
+                            this.s.selections.push(rowData.filter);
+                            break;
+                        }
                     }
                 }
             }
-            // Add all of the rows that were previously selected but aren't any more
-            for (var _d = 0, selected_1 = selected; _d < selected_1.length; _d++) {
-                var selection = selected_1[_d];
-                for (var _e = 0, _f = this.s.rowData.arrayOriginal; _e < _f.length; _e++) {
-                    var data = _f[_e];
-                    if (data.filter === selection.filter) {
-                        var row = this.addRow(data.display, data.filter, data.sort, data.type, undefined);
-                        row.select();
-                        this.s.selections.push(data.filter);
+            else {
+                if (!this.s.dt.page.info().serverSide) {
+                    // Get the latest count values from the table
+                    this._activePopulatePane();
+                    this.s.rowData.binsShown = {};
+                    for (var _a = 0, _b = this.s.dt.rows({ search: 'applied' }).indexes().toArray(); _a < _b.length; _a++) {
+                        var index = _b[_a];
+                        this._updateShown(index, this.s.dt.settings()[0], this.s.rowData.binsShown);
+                    }
+                }
+                this.s.dtPane.rows().remove();
+                // Go over all of the rows that could be displayed
+                for (var _c = 0, _d = this.s.rowData.arrayFilter; _c < _d.length; _c++) {
+                    var data = _d[_c];
+                    // Cascade - If there are no rows present in the table don't show the option
+                    if (data.shown === 0) {
+                        continue;
+                    }
+                    // Add the row to the pane
+                    var row = this.addRow(data.display, data.filter, data.sort, data.type, undefined);
+                    // Check if this row was selected
+                    for (var i = 0; i < selected.length; i++) {
+                        var selection = selected[i];
+                        if (selection.filter === data.filter) {
+                            row.select();
+                            // Remove the row from the to find list and then add it to the selections list
+                            selected.splice(i, 1);
+                            this.s.selections.push(data.filter);
+                            break;
+                        }
+                    }
+                }
+                // Add all of the rows that were previously selected but aren't any more
+                for (var _e = 0, selected_2 = selected; _e < selected_2.length; _e++) {
+                    var selection = selected_2[_e];
+                    for (var _f = 0, _g = this.s.rowData.arrayOriginal; _f < _g.length; _f++) {
+                        var data = _g[_f];
+                        if (data.filter === selection.filter) {
+                            var row = this.addRow(data.display, data.filter, data.sort, data.type, undefined);
+                            row.select();
+                            this.s.selections.push(data.filter);
+                        }
                     }
                 }
             }
@@ -1823,6 +1853,61 @@
                     this._populatePaneArray(index, this.s.rowData.arrayFilter, settings);
                 }
             }
+        };
+        SearchPaneCascade.prototype._getComparisonRows = function () {
+            // Find the appropriate options depending on whether this is a pane for a specific column or a custom pane
+            var options = this.s.colOpts.options
+                ? this.s.colOpts.options
+                : this.s.customPaneSettings && this.s.customPaneSettings.options
+                    ? this.s.customPaneSettings.options
+                    : undefined;
+            if (options === undefined) {
+                return;
+            }
+            var allRows = this.s.dt.rows();
+            var shownRows = this.s.dt.rows({ search: 'applied' });
+            var tableValsTotal = allRows.data().toArray();
+            var tableValsShown = shownRows.data().toArray();
+            var rows = [];
+            // Clear all of the other rows from the pane, only custom options are to be displayed when they are defined
+            this.s.dtPane.clear();
+            this.s.indexes = [];
+            for (var _i = 0, options_1 = options; _i < options_1.length; _i++) {
+                var comp = options_1[_i];
+                // Initialise the object which is to be placed in the row
+                var insert = comp.label !== '' ?
+                    comp.label :
+                    this.emptyMessage();
+                var comparisonObj = {
+                    className: comp.className,
+                    display: insert,
+                    filter: typeof comp.value === 'function' ? comp.value : [],
+                    shown: 0,
+                    sort: insert,
+                    total: 0,
+                    type: insert
+                };
+                // If a custom function is in place
+                if (typeof comp.value === 'function') {
+                    // Count the number of times the function evaluates to true for the original data in the Table
+                    for (var i = 0; i < tableValsTotal.length; i++) {
+                        if (comp.value.call(this.s.dt, tableValsTotal[i], allRows[0][i])) {
+                            comparisonObj.total++;
+                        }
+                    }
+                    for (var i = 0; i < tableValsShown.length; i++) {
+                        if (comp.value.call(this.s.dt, tableValsShown[i], shownRows[0][i])) {
+                            comparisonObj.shown++;
+                        }
+                    }
+                    // Update the comparisonObj
+                    if (typeof comparisonObj.filter !== 'function') {
+                        comparisonObj.filter.push(comp.filter);
+                    }
+                }
+                rows.push(this.addRow(comparisonObj.display, comparisonObj.filter, comparisonObj.sort, comparisonObj.type, comparisonObj.className, comparisonObj.total, comparisonObj.shown));
+            }
+            return rows;
         };
         /**
          * Gets the message that is to be used to indicate the count for each SearchPane row
