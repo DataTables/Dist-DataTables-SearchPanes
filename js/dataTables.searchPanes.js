@@ -2093,7 +2093,7 @@
             // Attach panes, clear buttons, and title bar to the document
             this._updateFilterCount();
             this._attachPaneContainer();
-            this._initSelectionListeners();
+            this._initSelectionListeners(false);
             // If the selections are to be maintained, then it is safe to assume that paging is also to be maintained
             // Otherwise, the paging should be reset
             this.s.dt.draw(!maintainSelection);
@@ -2160,8 +2160,10 @@
         };
         /**
          * Holder method that is userd in SearchPanesST to set listeners that have an effect on other panes
+         *
+         * @param isPreselect boolean to indicate if the preselect array is to override the current selection list.
          */
-        SearchPanes.prototype._initSelectionListeners = function () {
+        SearchPanes.prototype._initSelectionListeners = function (isPreselect) {
             return;
         };
         /**
@@ -2778,7 +2780,7 @@
             }
             _this = _super.call(this, paneSettings, opts, fromPreInit, paneClass) || this;
             var loadedFilter = _this.s.dt.state.loaded();
-            var loadFn = function () { return _this._initSelectionListeners(loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.selectionList ?
+            var loadFn = function () { return _this._initSelectionListeners(true, loadedFilter && loadedFilter.searchPanes && loadedFilter.searchPanes.selectionList ?
                 loadedFilter.searchPanes.selectionList :
                 _this.c.preSelect); };
             _this.s.dt.off('init.dtsps').on('init.dtsps', loadFn);
@@ -2789,9 +2791,12 @@
          *
          * @param preSelect Any values that are to be preselected
          */
-        SearchPanesST.prototype._initSelectionListeners = function (preSelect) {
+        SearchPanesST.prototype._initSelectionListeners = function (isPreselect, preSelect) {
+            if (isPreselect === void 0) { isPreselect = true; }
             if (preSelect === void 0) { preSelect = []; }
-            this.s.selectionList = preSelect;
+            if (isPreselect) {
+                this.s.selectionList = preSelect;
+            }
             // Set selection listeners for each pane
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
@@ -2915,6 +2920,7 @@
                 }
             }
             this._remakeSelections();
+            this._updateFilterCount();
         };
         /**
          * Remake the selections that were present before new data or calculations have occured
