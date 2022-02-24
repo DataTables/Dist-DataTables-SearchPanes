@@ -1319,7 +1319,12 @@
                 }
                 // if the filter is an array then is the column present in it
                 if (Array.isArray(filter)) {
-                    if (filter.includes(colSelect)) {
+                    if (colOpts.combiner === 'and') {
+                        if (!filter.includes(colSelect)) {
+                            return false;
+                        }
+                    }
+                    else if (filter.includes(colSelect)) {
                         return true;
                     }
                 }
@@ -3033,13 +3038,23 @@
                 }
                 for (var _b = 0, _c = this.s.selectionList; _b < _c.length; _b++) {
                     var selection = _c[_b];
-                    var pane = this.s.panes[selection.column];
+                    var pane = void 0;
+                    for (var _d = 0, _e = this.s.panes; _d < _e.length; _d++) {
+                        var paneCheck = _e[_d];
+                        if (paneCheck.s.index === selection.column) {
+                            pane = paneCheck;
+                            break;
+                        }
+                    }
+                    if (!pane.s.dtPane) {
+                        continue;
+                    }
                     var ids = pane.s.dtPane.rows().indexes().toArray();
                     // Select the rows that are present in the selection list
-                    for (var _d = 0, _e = selection.rows; _d < _e.length; _d++) {
-                        var row = _e[_d];
-                        for (var _f = 0, ids_1 = ids; _f < ids_1.length; _f++) {
-                            var id = ids_1[_f];
+                    for (var _f = 0, _g = selection.rows; _f < _g.length; _f++) {
+                        var row = _g[_f];
+                        for (var _h = 0, ids_1 = ids; _h < ids_1.length; _h++) {
+                            var id = ids_1[_h];
                             var currRow = pane.s.dtPane.row(id);
                             var data = currRow.data();
                             if (row === data.filter) {
@@ -3060,8 +3075,8 @@
                     var prevSelectedPanes = 0;
                     var selectedPanes = 0;
                     // Add the number of all of the filters throughout the panes
-                    for (var _g = 0, _h = this.s.panes; _g < _h.length; _g++) {
-                        var currPane = _h[_g];
+                    for (var _j = 0, _k = this.s.panes; _j < _k.length; _j++) {
+                        var currPane = _k[_j];
                         if (currPane.s.dtPane) {
                             filterCount += currPane.getPaneCount();
                             if (filterCount > prevSelectedPanes) {
@@ -3071,8 +3086,8 @@
                         }
                     }
                     filteringActive = filterCount > 0;
-                    for (var _j = 0, _k = this.s.panes; _j < _k.length; _j++) {
-                        var currPane = _k[_j];
+                    for (var _l = 0, _m = this.s.panes; _l < _m.length; _l++) {
+                        var currPane = _m[_l];
                         if (currPane.s.displayed) {
                             // Set the filtering active flag
                             if (anotherFilter || pane.s.index !== currPane.s.index || !filteringActive) {
@@ -3098,8 +3113,8 @@
                     pane = this.s.panes[this.s.selectionList[this.s.selectionList.length - 1].column];
                 }
                 // Update the rows of all of the other panes
-                for (var _l = 0, _m = this.s.panes; _l < _m.length; _l++) {
-                    var currPane = _m[_l];
+                for (var _o = 0, _p = this.s.panes; _o < _p.length; _o++) {
+                    var currPane = _p[_o];
                     if (currPane.s.displayed && (!pane || currPane.s.index !== pane.s.index)) {
                         currPane.updateRows();
                     }
