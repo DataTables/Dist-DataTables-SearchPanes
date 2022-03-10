@@ -3004,6 +3004,10 @@
                         column: paneIn.s.index,
                         rows: rows
                     });
+                    paneIn.dom.clear.removeClass(this.classes.disabledButton).removeAttr('disabled');
+                }
+                else {
+                    paneIn.dom.clear.addClass(this.classes.disabledButton).attr('disabled', 'true');
                 }
                 if (this.s.dt.page.info().serverSide) {
                     this.s.dt.draw(false);
