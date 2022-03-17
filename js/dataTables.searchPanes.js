@@ -2066,6 +2066,7 @@
                 minPaneWidth: 260.0,
                 page: 0,
                 paging: false,
+                pagingST: false,
                 paneClass: paneClass,
                 panes: [],
                 selectionList: [],
@@ -2640,6 +2641,11 @@
             // Listener for paging on main table
             table.off('page.dtsps').on('page.dtsps', function () {
                 _this.s.paging = true;
+                // This is an indicator to any selection tracking classes that paging has occured
+                // It has to happen here so that we don't stack event listeners unnecessarily
+                // The value is only ever set back to false in the SearchPanesST class
+                // Equally it is never read in this class
+                _this.s.pagingST = true;
                 _this.s.page = _this.s.dt.page();
             });
             if (this.s.dt.page.info().serverSide) {
@@ -2989,7 +2995,12 @@
         SearchPanesST.prototype._updateSelectionList = function (paneIn) {
             if (paneIn === void 0) { paneIn = undefined; }
             // Bail if any of these flags are set
-            if (this.s.updating || paneIn && paneIn.s.serverSelecting) {
+            if (this.s.pagingST) {
+                // Reset pagingST flag
+                this.s.pagingST = false;
+                return;
+            }
+            else if (this.s.updating || paneIn && paneIn.s.serverSelecting) {
                 return;
             }
             if (paneIn !== undefined) {
