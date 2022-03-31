@@ -10,7 +10,7 @@
         <license type="expression">MIT</license>
         <tags>SearchPanes  search  filtering  Datatables jQuery table</tags>
         <dependencies>
-            <dependency id="datatables.net" version="1.11.3"/>
+            <dependency id="datatables.net" version="1.11.5"/>
         </dependencies>
         <contentFiles>
             <files include="**/*" buildAction="Content"/>
@@ -21,18 +21,6 @@
         <file src="js/dataTables.searchPanes.js" target="contentFiles\any\any\wwwroot\js"/>
         <file src="js/dataTables.searchPanes.min.js" target="content\Scripts"/>
         <file src="js/dataTables.searchPanes.min.js" target="contentFiles\any\any\wwwroot\js"/>
-        <file src="types/index.d.ts" target="content\Scripts"/>
-        <file src="types/index.d.ts" target="contentFiles\any\any\wwwroot\js"/>
-        <file src="types/panesType.d.ts" target="content\Scripts"/>
-        <file src="types/panesType.d.ts" target="contentFiles\any\any\wwwroot\js"/>
-        <file src="types/paneType.d.ts" target="content\Scripts"/>
-        <file src="types/paneType.d.ts" target="contentFiles\any\any\wwwroot\js"/>
-        <file src="types/searchPane.d.ts" target="content\Scripts"/>
-        <file src="types/searchPane.d.ts" target="contentFiles\any\any\wwwroot\js"/>
-        <file src="types/searchPanes.d.ts" target="content\Scripts"/>
-        <file src="types/searchPanes.d.ts" target="contentFiles\any\any\wwwroot\js"/>
-        <file src="types/types.d.ts" target="content\Scripts"/>
-        <file src="types/types.d.ts" target="contentFiles\any\any\wwwroot\js"/>
     </files>
 </package>
 
