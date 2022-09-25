@@ -1,4 +1,4 @@
-/*! SearchPanes 2.0.0-dev
- * 2019-2020 SpryMedia Ltd - datatables.net/license
+/*! SearchPanes 2.0.2
+ * 2019-2022 SpryMedia Ltd - datatables.net/license
  */
 export {};
