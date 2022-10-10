@@ -1,18 +1,28 @@
 {
     "js": [
         "js/dataTables.searchPanes.js",
-        "js/dataTables.searchPanes.min.js"
+        "js/dataTables.searchPanes.min.js",
+        "js/dataTables.searchPanes.min.mjs",
+        "js/dataTables.searchPanes.mjs"
     ],
     "css": [],
     "types": [
         "types/index.d.ts",
         "types/panesType.d.ts",
         "types/paneType.d.ts",
+        "types/SearchPaneCascade.d.ts",
+        "types/SearchPaneCascadeViewTotal.d.ts",
         "types/searchPane.d.ts",
+        "types/SearchPane.d.ts",
+        "types/SearchPanesCV.d.ts",
         "types/searchPanes.d.ts",
+        "types/SearchPanes.d.ts",
+        "types/SearchPanesSTC.d.ts",
+        "types/SearchPanesST.d.ts",
+        "types/SearchPaneST.d.ts",
+        "types/SearchPaneViewTotal.d.ts",
         "types/types.d.ts"
     ],
     "src-repo": "http://github.com/DataTables/SearchPanes",
-    "last-tag": "2.0.0",
-    "last-sync": "280e1ee3a2307f81ee91dd9f5165f5673d4f53f9"
+    "last-tag": "2.0.2"
 }
