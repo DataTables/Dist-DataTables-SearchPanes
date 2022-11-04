@@ -32,6 +32,5 @@
         "types/types.d.ts"
     ],
     "src-repo": "http://github.com/DataTables/SearchPanes",
-    "last-tag": "2.0.2",
-    "last-sync": "e43de6a84a29e2fbf692c2e1d06f97dce03cf9a2"
+    "last-tag": "2.0.2"
 }
