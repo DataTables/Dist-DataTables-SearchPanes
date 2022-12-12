@@ -1860,7 +1860,7 @@ import DataTable from 'datatables.net';
             this.s.dtPane.table().node().parentNode.scrollTop = this.s.scrollTop;
             // If client side updated the tables results
             if (!this.s.dt.page.info().serverSide) {
-                this.s.dt.draw();
+                this.s.dt.draw(false);
             }
         };
         /**
@@ -3104,7 +3104,7 @@ import DataTable from 'datatables.net';
                 var tmpSL = this.s.selectionList;
                 var anotherFilter = false;
                 this.clearSelections();
-                this.s.dt.draw();
+                this.s.dt.draw(false);
                 // When there are no selections present if the length of the data does not match the searched data
                 // then another filter is present
                 if (this.s.dt.rows().toArray()[0].length > this.s.dt.rows({ search: 'applied' }).toArray()[0].length) {
@@ -3157,7 +3157,7 @@ import DataTable from 'datatables.net';
                         continue;
                     }
                     // Update the table to display the current results
-                    this.s.dt.draw();
+                    this.s.dt.draw(false);
                     var filteringActive = false;
                     var filterCount = 0;
                     var prevSelectedPanes = 0;
@@ -3192,7 +3192,7 @@ import DataTable from 'datatables.net';
                     }
                 }
                 // Update table to show final search results
-                this.s.dt.draw();
+                this.s.dt.draw(false);
             }
             else {
                 // Identify the last pane to have a change in selection
