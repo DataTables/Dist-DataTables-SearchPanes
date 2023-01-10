@@ -2164,6 +2164,11 @@ var DataTable = $.fn.dataTable;
                     if (_this.s.selectionList.length > 0) {
                         data.searchPanesLast = src;
                     }
+                    // Config options that will change how the querying is done
+                    data.searchPanes_options = {
+                        viewCount: _this.c.viewCount,
+                        viewTotal: _this.c.viewTotal
+                    };
                 });
             }
             this._setXHR();
@@ -2771,6 +2776,11 @@ var DataTable = $.fn.dataTable;
                             .column(_this.s.selectionList[_this.s.selectionList.length - 1].column)
                             .dataSrc();
                     }
+                    // Config options that will change how the querying is done
+                    data.searchPanes_options = {
+                        viewCount: _this.c.viewCount,
+                        viewTotal: _this.c.viewTotal
+                    };
                 });
             }
             else {
@@ -2916,7 +2926,9 @@ var DataTable = $.fn.dataTable;
             layout: 'auto',
             order: [],
             panes: [],
-            preSelect: []
+            preSelect: [],
+            viewCount: true,
+            viewTotal: false
         };
         return SearchPanes;
     }());
