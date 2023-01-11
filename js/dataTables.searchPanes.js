@@ -815,7 +815,7 @@ var DataTable = $.fn.dataTable;
         SearchPane.prototype._makeSelection = function () {
             this.updateTable();
             this.s.updating = true;
-            this.s.dt.draw();
+            this.s.dt.draw(false);
             this.s.updating = false;
         };
         /**
@@ -2166,6 +2166,7 @@ var DataTable = $.fn.dataTable;
                     }
                     // Config options that will change how the querying is done
                     data.searchPanes_options = {
+                        cascade: _this.c.cascadePanes,
                         viewCount: _this.c.viewCount,
                         viewTotal: _this.c.viewTotal
                     };
@@ -2778,6 +2779,7 @@ var DataTable = $.fn.dataTable;
                     }
                     // Config options that will change how the querying is done
                     data.searchPanes_options = {
+                        cascade: _this.c.cascadePanes,
                         viewCount: _this.c.viewCount,
                         viewTotal: _this.c.viewTotal
                     };
@@ -2901,6 +2903,7 @@ var DataTable = $.fn.dataTable;
         };
         // Define SearchPanes default options
         SearchPanes.defaults = {
+            cascadePanes: false,
             clear: true,
             collapse: true,
             columns: [],

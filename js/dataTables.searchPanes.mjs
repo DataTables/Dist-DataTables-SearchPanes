@@ -781,7 +781,7 @@ import DataTable from 'datatables.net';
         SearchPane.prototype._makeSelection = function () {
             this.updateTable();
             this.s.updating = true;
-            this.s.dt.draw();
+            this.s.dt.draw(false);
             this.s.updating = false;
         };
         /**
@@ -2132,6 +2132,7 @@ import DataTable from 'datatables.net';
                     }
                     // Config options that will change how the querying is done
                     data.searchPanes_options = {
+                        cascade: _this.c.cascadePanes,
                         viewCount: _this.c.viewCount,
                         viewTotal: _this.c.viewTotal
                     };
@@ -2744,6 +2745,7 @@ import DataTable from 'datatables.net';
                     }
                     // Config options that will change how the querying is done
                     data.searchPanes_options = {
+                        cascade: _this.c.cascadePanes,
                         viewCount: _this.c.viewCount,
                         viewTotal: _this.c.viewTotal
                     };
@@ -2867,6 +2869,7 @@ import DataTable from 'datatables.net';
         };
         // Define SearchPanes default options
         SearchPanes.defaults = {
+            cascadePanes: false,
             clear: true,
             collapse: true,
             columns: [],
