@@ -321,6 +321,7 @@ var DataTable = $.fn.dataTable;
             this.dom.searchButton.addClass(this.classes.disabledButton);
             this.dom.collapseButton.addClass(this.classes.rotated);
             this.dom.topRow.one('click.dtsp', function () { return _this.show(); });
+            this.dom.topRow.trigger('collapse.dtsps');
         };
         /**
          * Strips all of the SearchPanes elements from the document and turns all of the listeners for the buttons off
@@ -549,6 +550,7 @@ var DataTable = $.fn.dataTable;
                     _this.dom.topRow.off('click.dtsp');
                 }
                 _this.s.dt.state.save();
+                _this.dom.topRow.trigger('collapse.dtsps');
             });
             // When the clear button is clicked reset the pane
             this.dom.clear.off('click.dtsp').on('click.dtsp', function () {
@@ -644,6 +646,7 @@ var DataTable = $.fn.dataTable;
             this.dom.searchButton.removeClass(this.classes.disabledButton);
             this.dom.collapseButton.removeClass(this.classes.rotated);
             $$5(this.s.dtPane.table().container()).removeClass(this.classes.hidden);
+            this.dom.topRow.trigger('collapse.dtsps');
         };
         /**
          * Finds the ratio of the number of different options in the table to the number of rows
@@ -2648,7 +2651,7 @@ var DataTable = $.fn.dataTable;
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 // We want to make the same check whenever there is a collapse/expand
-                pane.dom.collapseButton.on('click.dtsps', function () { return _this._checkCollapse(); });
+                pane.dom.topRow.on('collapse.dtsps', function () { return _this._checkCollapse(); });
             }
             this._checkCollapse();
         };
