@@ -5,7 +5,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net';
 
-
 (function () {
     'use strict';
 
@@ -870,15 +869,30 @@ import DataTable from 'datatables.net';
          * @param notUpdating Whether the panes are updating themselves or not
          */
         SearchPane.prototype._updateSelection = function (notUpdating) {
-            this.s.scrollTop = $$5(this.s.dtPane.table().node()).parent()[0].scrollTop;
-            if (this.s.dt.page.info().serverSide && !this.s.updating) {
-                if (!this.s.serverSelecting) {
-                    this.s.serverSelect = this.s.dtPane.rows({ selected: true }).data().toArray();
-                    this.s.dt.draw(false);
+            var _this = this;
+            var settings = this.s.dt.settings()[0];
+            var oApi = settings.oApi;
+            var run = function () {
+                _this.s.scrollTop = $$5(_this.s.dtPane.table().node()).parent()[0].scrollTop;
+                if (_this.s.dt.page.info().serverSide && !_this.s.updating) {
+                    if (!_this.s.serverSelecting) {
+                        _this.s.serverSelect = _this.s.dtPane.rows({ selected: true }).data().toArray();
+                        _this.s.dt.draw(false);
+                    }
                 }
+                else if (notUpdating) {
+                    _this._makeSelection();
+                }
+                oApi._fnProcessingDisplay(settings, false);
+            };
+            // If the processing display is enabled, we need to allow the browser
+            // to draw it before performing our calculations
+            if (settings.oFeatures.bProcessing) {
+                oApi._fnProcessingDisplay(settings, true);
+                setTimeout(run, 1);
             }
-            else if (notUpdating) {
-                this._makeSelection();
+            else {
+                run();
             }
         };
         /**
