@@ -1,5 +1,5 @@
-/*! SearchPanes 2.1.2-dev
- * 2019-2023 SpryMedia Ltd - datatables.net/license
+/*! SearchPanes 2.1.2
+ * © SpryMedia Ltd - datatables.net/license
  */
 
 (function( factory ){
@@ -1462,7 +1462,7 @@ var DataTable = $.fn.dataTable;
             }
             this.s.updating = updating;
         };
-        SearchPane.version = '2.0.0-dev';
+        SearchPane.version = '2.1.2';
         SearchPane.classes = {
             bordered: 'dtsp-bordered',
             buttonGroup: 'dtsp-buttonGroup',
@@ -2912,7 +2912,7 @@ var DataTable = $.fn.dataTable;
                 this.dom.clearAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
             }
         };
-        SearchPanes.version = '2.1.2-dev';
+        SearchPanes.version = '2.1.2';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -3288,8 +3288,8 @@ var DataTable = $.fn.dataTable;
         return SearchPanesST;
     }(SearchPanes));
 
-    /*! SearchPanes 2.1.2-dev
-     * 2019-2023 SpryMedia Ltd - datatables.net/license
+    /*! SearchPanes 2.1.2
+     * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery$4($);
     setJQuery($);
