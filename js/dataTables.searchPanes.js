@@ -149,7 +149,7 @@ var DataTable = $.fn.dataTable;
                 nameButton: $$5('<button type="button"></button>')
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.nameButton),
-                panesContainer: panesContainer,
+                panesContainer: $$5(panesContainer),
                 searchBox: $$5('<input/>').addClass(this.classes.paneInputButton).addClass(this.classes.search),
                 searchButton: $$5('<button type = "button"/>')
                     .addClass(this.classes.searchIcon)
