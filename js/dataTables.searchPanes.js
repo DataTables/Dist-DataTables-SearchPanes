@@ -487,7 +487,7 @@ var DataTable = $.fn.dataTable;
                         selected = _this.s.dtPane
                             .rows({ selected: true })
                             .data()
-                            .map(function (item) { return item.filter.toString(); })
+                            .map(function (item) { return item.filter !== null ? item.filter.toString() : null; })
                             .toArray();
                         searchTerm = _this.dom.searchBox.val();
                         order = _this.s.dtPane.order();
