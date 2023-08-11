@@ -2185,6 +2185,9 @@ var DataTable = $.fn.dataTable;
                             if (data.searchPanes[src][i] === null) {
                                 data.searchPanes_null[src][i] = true;
                             }
+                            else {
+                                data.searchPanes_null[src][i] = false;
+                            }
                         }
                     }
                     if (_this.s.selectionList.length > 0) {
@@ -2777,6 +2780,9 @@ var DataTable = $.fn.dataTable;
                                 data.searchPanes[src][i] = rowData[i].filter;
                                 if (!data.searchPanes[src][i]) {
                                     data.searchPanes_null[src][i] = true;
+                                }
+                                else {
+                                    data.searchPanes_null[src][i] = false;
                                 }
                                 filterCount++;
                             }

@@ -2145,6 +2145,9 @@ let $ = jQuery;
                             if (data.searchPanes[src][i] === null) {
                                 data.searchPanes_null[src][i] = true;
                             }
+                            else {
+                                data.searchPanes_null[src][i] = false;
+                            }
                         }
                     }
                     if (_this.s.selectionList.length > 0) {
@@ -2737,6 +2740,9 @@ let $ = jQuery;
                                 data.searchPanes[src][i] = rowData[i].filter;
                                 if (!data.searchPanes[src][i]) {
                                     data.searchPanes_null[src][i] = true;
+                                }
+                                else {
+                                    data.searchPanes_null[src][i] = false;
                                 }
                                 filterCount++;
                             }
