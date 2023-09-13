@@ -1110,8 +1110,9 @@ var DataTable = $.fn.dataTable;
             // we need to set the select style to make sure the event
             // handlers are added.
             this.dom.dtP.on('init.dt', function (e, s) {
-                var style = _this.s.dtPane.select.style();
-                _this.s.dtPane.select.style(style);
+                var dt = _this.dom.dtP.DataTable();
+                var style = dt.select.style();
+                dt.select.style(style);
             });
             this.s.dtPane = this.dom.dtP.DataTable($$5.extend(true, this._getPaneConfig(), this.c.dtOpts, this.s.colOpts ? this.s.colOpts.dtOpts : {}, this.s.colOpts.options || !this.s.colExists ?
                 {
