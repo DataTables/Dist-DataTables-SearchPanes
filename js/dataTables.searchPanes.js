@@ -1106,6 +1106,13 @@ var DataTable = $.fn.dataTable;
             var errMode = $$5.fn.dataTable.ext.errMode;
             $$5.fn.dataTable.ext.errMode = 'none';
             // eslint-disable-next-line no-extra-parens
+            // For async loading of a DataTable (e.g. language file)
+            // we need to set the select style to make sure the event
+            // handlers are added.
+            this.dom.dtP.on('init.dt', function (e, s) {
+                var style = _this.s.dtPane.select.style();
+                _this.s.dtPane.select.style(style);
+            });
             this.s.dtPane = this.dom.dtP.DataTable($$5.extend(true, this._getPaneConfig(), this.c.dtOpts, this.s.colOpts ? this.s.colOpts.dtOpts : {}, this.s.colOpts.options || !this.s.colExists ?
                 {
                     createdRow: function (row, data) {
@@ -1140,9 +1147,6 @@ var DataTable = $.fn.dataTable;
             }
             headerText = this._escapeHTML(headerText);
             this.dom.searchBox.attr('placeholder', headerText);
-            // As the pane table is not in the document yet we must initialise select ourselves
-            // eslint-disable-next-line no-extra-parens
-            $$5.fn.dataTable.select.init(this.s.dtPane);
             $$5.fn.dataTable.ext.errMode = errMode;
             // If it is not a custom pane
             if (this.s.colExists) {
@@ -1168,8 +1172,6 @@ var DataTable = $.fn.dataTable;
                     }
                 }
             }
-            // eslint-disable-next-line no-extra-parens
-            dataTable$2.select.init(this.s.dtPane);
             // If there are custom options set or it is a custom pane then get them
             if (this.s.colOpts.options ||
                 this.s.customPaneSettings && this.s.customPaneSettings.options) {
