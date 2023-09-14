@@ -711,7 +711,9 @@ var DataTable = $.fn.dataTable;
                     className: comp.className,
                     display: insert,
                     filter: typeof comp.value === 'function' ? comp.value : [],
-                    sort: insert,
+                    sort: comp.order !== undefined
+                        ? comp.order
+                        : insert,
                     total: 0,
                     type: insert
                 };
