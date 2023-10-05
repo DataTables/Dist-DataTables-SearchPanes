@@ -788,7 +788,7 @@ let $ = jQuery;
         SearchPane.prototype._makeSelection = function () {
             this.updateTable();
             this.s.updating = true;
-            this.s.dt.draw(false);
+            this.s.dt.draw();
             this.s.updating = false;
         };
         /**
