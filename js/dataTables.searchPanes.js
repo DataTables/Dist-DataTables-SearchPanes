@@ -2452,6 +2452,7 @@ var DataTable = $.fn.dataTable;
             if (this.c.clear) {
                 this.dom.clearAll
                     .appendTo(this.dom.titleRow)
+                    .off('click.dtsps')
                     .on('click.dtsps', function () { return _this.clearSelections(); });
             }
             if (this.c.collapse) {
@@ -2897,7 +2898,9 @@ var DataTable = $.fn.dataTable;
             }
             // When the clear All button has been pressed clear all of the selections in the panes
             if (this.c.clear) {
-                this.dom.clearAll.on('click.dtsps', function () { return _this.clearSelections(); });
+                this.dom.clearAll
+                    .off('click.dtsps')
+                    .on('click.dtsps', function () { return _this.clearSelections(); });
             }
             hostSettings._searchPanes = this;
             // This state save is required so that state is maintained over multiple refreshes if no actions are made
