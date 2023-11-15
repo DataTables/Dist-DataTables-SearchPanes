@@ -2667,13 +2667,17 @@ var DataTable = $.fn.dataTable;
          */
         SearchPanes.prototype._setCollapseListener = function () {
             var _this = this;
-            this.dom.collapseAll.on('click.dtsps', function () {
+            this.dom.collapseAll
+                .off('click.dtsps')
+                .on('click.dtsps', function () {
                 _this._collapseAll();
                 _this.dom.collapseAll.addClass(_this.classes.disabledButton).attr('disabled', 'true');
                 _this.dom.showAll.removeClass(_this.classes.disabledButton).removeAttr('disabled');
                 _this.s.dt.state.save();
             });
-            this.dom.showAll.on('click.dtsps', function () {
+            this.dom.showAll
+                .off('click.dtsps')
+                .on('click.dtsps', function () {
                 _this._showAll();
                 _this.dom.showAll.addClass(_this.classes.disabledButton).attr('disabled', 'true');
                 _this.dom.collapseAll.removeClass(_this.classes.disabledButton).removeAttr('disabled');
@@ -2682,7 +2686,7 @@ var DataTable = $.fn.dataTable;
             for (var _i = 0, _a = this.s.panes; _i < _a.length; _i++) {
                 var pane = _a[_i];
                 // We want to make the same check whenever there is a collapse/expand
-                pane.dom.topRow.on('collapse.dtsps', function () { return _this._checkCollapse(); });
+                pane.dom.topRow.off('collapse.dtsps').on('collapse.dtsps', function () { return _this._checkCollapse(); });
             }
             this._checkCollapse();
         };
@@ -3452,8 +3456,8 @@ var DataTable = $.fn.dataTable;
         fnInit: _init
     });
     // DataTables 2 layout feature
-    if (DataTable.ext.features) {
-        DataTable.ext.features.register('searchPanes', _init);
+    if (DataTable.feature) {
+        DataTable.feature.register('searchPanes', _init);
     }
 
 })();
