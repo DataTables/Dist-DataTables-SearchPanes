@@ -1535,7 +1535,7 @@ let $ = jQuery;
             if (DataTable.versionCheck('2')) {
                 var last = dt.select.last();
                 var selectedIndex_1;
-                if (last) {
+                if (last && dt.row(last.row).any()) {
                     selectedIndex_1 = dt.row(last.row).data().index;
                 }
                 dt.rows().remove();
