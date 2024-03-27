@@ -841,7 +841,12 @@ var DataTable = $.fn.dataTable;
             if (bins === void 0) { bins = this.s.rowData.bins; }
             // Retrieve the rendered data from the cell using the fastData function
             // rather than the cell().render API method for optimisation
-            var fastData = settings.fastData;
+            var fastData = settings.fastData
+                ? settings.fastData
+                : function (row, col, orth) {
+                    // Legacy DT1
+                    return settings.oApi._fnGetCellData(settings, row, col, orth);
+                };
             if (typeof this.s.colOpts.orthogonal === 'string') {
                 var rendered = fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal);
                 this.s.rowData.filterMap.set(rowIdx, rendered);
@@ -1767,7 +1772,12 @@ var DataTable = $.fn.dataTable;
             var orth = typeof this.s.colOpts.orthogonal === 'string'
                 ? this.s.colOpts.orthogonal
                 : this.s.colOpts.orthogonal.search;
-            var fastData = this.s.dt.settings()[0].fastData;
+            var fastData = settings.fastData
+                ? settings.fastData
+                : function (row, col, orth) {
+                    // Legacy DT1
+                    return settings.oApi._fnGetCellData(settings, row, col, orth);
+                };
             var filter = fastData(rowIdx, this.s.index, orth);
             var add = function (f) {
                 if (!bins[f]) {
