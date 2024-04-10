@@ -116,10 +116,15 @@ let $ = jQuery;
                 topRow: $$5('<div/>').addClass(this.classes.topRow),
                 upper: $$5('<div/>').addClass(this.classes.subRow1).addClass(this.classes.narrowSearch)
             };
-            var title = this.s.colExists
-                ? $$5(this.s.dt.column(this.s.index).header()).text()
-                : (this.s.customPaneSettings.header || 'Custom Pane');
-            this.dom.dtP.find('th').eq(0).html(title);
+            var title = '';
+            if (this.s.colExists) {
+                title = $$5(this.s.dt.column(this.s.index).header()).text();
+                this.dom.dtP.find('th').eq(0).text(title);
+            }
+            else {
+                title = this.s.customPaneSettings.header || 'Custom Pane';
+                this.dom.dtP.find('th').eq(0).html(title);
+            }
             // Set the value of name incase ordering is desired
             if (this.s.colOpts.name) {
                 this.s.name = this.s.colOpts.name;
