@@ -141,10 +141,7 @@ var DataTable = $.fn.dataTable;
                 countButton: $$5('<button type="button"><span></span></button>')
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.countButton),
-                dtP: $$5('<table width="100%"><thead><tr><th>' +
-                    (this.s.colExists
-                        ? $$5(this.s.dt.column(this.s.index).header()).text()
-                        : this.s.customPaneSettings.header || 'Custom Pane') + '</th><th/></tr></thead></table>'),
+                dtP: $$5('<table width="100%"><thead><tr><th></th><th></th></tr></thead></table>'),
                 lower: $$5('<div/>').addClass(this.classes.subRow2).addClass(this.classes.narrowButton),
                 nameButton: $$5('<button type="button"><span></span></button>')
                     .addClass(this.classes.paneButton)
@@ -159,6 +156,10 @@ var DataTable = $.fn.dataTable;
                 topRow: $$5('<div/>').addClass(this.classes.topRow),
                 upper: $$5('<div/>').addClass(this.classes.subRow1).addClass(this.classes.narrowSearch)
             };
+            var title = this.s.colExists
+                ? $$5(this.s.dt.column(this.s.index).header()).text()
+                : (this.s.customPaneSettings.header || 'Custom Pane');
+            this.dom.dtP.find('th').eq(0).html(title);
             // Set the value of name incase ordering is desired
             if (this.s.colOpts.name) {
                 this.s.name = this.s.colOpts.name;
@@ -167,9 +168,7 @@ var DataTable = $.fn.dataTable;
                 this.s.name = this.s.customPaneSettings.name;
             }
             else {
-                this.s.name = this.s.colExists ?
-                    $$5(this.s.dt.column(this.s.index).header()).text() :
-                    this.s.customPaneSettings.header || 'Custom Pane';
+                this.s.name = title;
             }
             var tableNode = this.s.dt.table(0).node();
             // Custom search function for table
@@ -1324,10 +1323,10 @@ var DataTable = $.fn.dataTable;
         SearchPane.prototype._escapeHTML = function (txt) {
             return txt
                 .toString()
-                .replace(/&amp;/g, '&')
                 .replace(/&lt;/g, '<')
                 .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"');
+                .replace(/&quot;/g, '"')
+                .replace(/&amp;/g, '&');
         };
         /**
          * Gets the options for the row for the customPanes
