@@ -1,4 +1,4 @@
-/*! SearchPanes 2.3.1
+/*! SearchPanes 2.3.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -3000,7 +3000,7 @@ var DataTable = $.fn.dataTable;
                 this.dom.clearAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
             }
         };
-        SearchPanes.version = '2.3.1';
+        SearchPanes.version = '2.3.2';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -3377,7 +3377,7 @@ var DataTable = $.fn.dataTable;
         return SearchPanesST;
     }(SearchPanes));
 
-    /*! SearchPanes 2.3.1
+    /*! SearchPanes 2.3.2
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery$4($);
