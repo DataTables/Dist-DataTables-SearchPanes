@@ -722,8 +722,8 @@ let $ = jQuery;
             // eslint-disable-next-line no-extra-parens
             var haveScroller = dataTable$2.Scroller;
             var langOpts = this.s.dt.settings()[0].oLanguage;
-            langOpts.url = undefined;
-            langOpts.sUrl = undefined;
+            langOpts.url = null;
+            langOpts.sUrl = null;
             return {
                 columnDefs: [
                     {
