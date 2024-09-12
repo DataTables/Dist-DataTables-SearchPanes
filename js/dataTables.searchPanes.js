@@ -868,7 +868,6 @@ var DataTable = $.fn.dataTable;
                 }
                 this.s.rowData.filterMap.set(rowIdx, filter);
                 if (!bins[filter]) {
-                    bins[filter] = 1;
                     this._addOption(filter, fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.display), fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.sort), fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.type), arrayFilter, bins);
                     this.s.rowData.totalOptions++;
                 }
@@ -1009,6 +1008,7 @@ var DataTable = $.fn.dataTable;
             }
             // Otherwise we must just be adding an option
             else {
+                bins[filter] = 1;
                 arrayFilter.push({
                     display: display,
                     filter: filter,
