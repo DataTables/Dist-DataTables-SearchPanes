@@ -1,4 +1,4 @@
-/*! SearchPanes 2.3.2
+/*! SearchPanes 2.3.3
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -1127,6 +1127,20 @@ var DataTable = $.fn.dataTable;
                 var style = dt.select.style();
                 dt.select.style(style);
             });
+            var layout;
+            if ($$5.fn.dataTable.versionCheck('2')) {
+                // We need to modify the layout default to null all entries, keeping in
+                // mind that the default might have been modified by the dev using DT,
+                // so it needs to be dynamic.
+                var cloned_1 = $$5.extend(true, {}, $$5.fn.dataTable.defaults.layout);
+                $$5.each(cloned_1, function (key, val) {
+                    cloned_1[key] = null;
+                });
+                layout = { layout: cloned_1 };
+            }
+            else {
+                layout = { dom: 't' };
+            }
             this.s.dtPane = this.dom.dtP.DataTable($$5.extend(true, this._getPaneConfig(), this.c.dtOpts, this.s.colOpts ? this.s.colOpts.dtOpts : {}, this.s.colOpts.options || !this.s.colExists ?
                 {
                     createdRow: function (row, data) {
@@ -1135,16 +1149,7 @@ var DataTable = $.fn.dataTable;
                 } :
                 undefined, this.s.customPaneSettings !== null && this.s.customPaneSettings.dtOpts ?
                 this.s.customPaneSettings.dtOpts :
-                {}, $$5.fn.dataTable.versionCheck('2')
-                ? {
-                    layout: {
-                        bottomStart: null,
-                        bottomEnd: null,
-                        topStart: null,
-                        topEnd: null
-                    }
-                }
-                : { dom: 't' }));
+                {}, layout));
             this.dom.dtP.addClass(this.classes.table);
             // Getting column titles is a little messy
             var headerText = 'Custom Pane';
@@ -3000,7 +3005,7 @@ var DataTable = $.fn.dataTable;
                 this.dom.clearAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
             }
         };
-        SearchPanes.version = '2.3.2';
+        SearchPanes.version = '2.3.3';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -3377,7 +3382,7 @@ var DataTable = $.fn.dataTable;
         return SearchPanesST;
     }(SearchPanes));
 
-    /*! SearchPanes 2.3.2
+    /*! SearchPanes 2.3.3
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery$4($);
@@ -3507,10 +3512,6 @@ var DataTable = $.fn.dataTable;
         var opts = options
             ? options
             : api.init().searchPanes || dataTable.defaults.searchPanes;
-        // Don't create a SearchPane for a SearchPane (can happen if a default is set)
-        if (api.table().container().closest('.dtsp-searchPanes')) {
-            return null;
-        }
         var searchPanes = opts && (opts.cascadePanes || opts.viewTotal) ?
             new SearchPanesST(api, opts, fromPre) :
             new SearchPanes(api, opts, fromPre);
