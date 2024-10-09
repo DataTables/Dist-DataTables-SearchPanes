@@ -4,7 +4,7 @@
     "main": "js/dataTables.searchPanes.js",
     "module": "js/dataTables.searchPanes.mjs",
     "types": "./types/types.d.ts",
-    "version": "2.3.2",
+    "version": "2.3.3",
     "files": [
         "js/**/*.js",
         "js/**/*.mjs",
