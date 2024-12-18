@@ -2877,12 +2877,8 @@ var DataTable = $.fn.dataTable;
                         if (filterCount !== _this.s.filterCount) {
                             data.start = 0;
                             _this.s.page = 0;
+                            _this.s.dt.page(_this.s.page);
                         }
-                        // Otherwise it is a paging request and we need to read from whatever the paging has been set to
-                        else {
-                            data.start = _this.s.page * _this.s.dt.page.len();
-                        }
-                        _this.s.dt.page(_this.s.page);
                         _this.s.filterCount = filterCount;
                     }
                     if (_this.s.selectionList.length > 0) {
