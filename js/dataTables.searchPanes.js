@@ -539,7 +539,8 @@ var DataTable = $.fn.dataTable;
             //  change the ordering to whatever it isn't currently
             this.dom.countButton.off('click.dtsp').on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
-                _this.s.dtPane.order([[1, currentOrder === 'asc' ? 'desc' : 'asc']]).draw();
+                var dir = currentOrder === 'asc' ? 'desc' : 'asc';
+                _this.s.dtPane.order([[2, dir], [1, dir]]).draw();
                 // This state save is required so that the ordering of the panes is maintained
                 _this.s.dt.state.save();
             });
@@ -811,6 +812,13 @@ var DataTable = $.fn.dataTable;
                         searchable: false,
                         targets: 1,
                         visible: false
+                    },
+                    {
+                        data: 'shown',
+                        searchable: false,
+                        targets: 2,
+                        visible: false,
+                        defaultContent: 0
                     }
                 ],
                 deferRender: true,
