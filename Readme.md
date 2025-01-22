@@ -1,6 +1,6 @@
 # SearchPanes for DataTables 
 
-This package contains distribution files for the [SearchPanes extension](https://datatables.net/extensions/searchpanes) for [DataTables](https://datatables.net/). Only the core software for this library is contained in this package - to be correctly styled, a styling package for SearchPanes must also be included. Styling options include DataTable's native styling, [Bootstrap](http://getbootstrap.com) and [Foundation](http://foundation.zurb.com/).
+This is the distribution package for the [SearchPanes extension](https://datatables.net/extensions/searchpanes) for [DataTables](https://datatables.net/). Only the core software for this library is contained in this package - to be correctly styled, a styling package for SearchPanes must also be included. Please see the [npm installation documentation on the DataTables site](https://datatables.net/manual/installation#Node.js-/-NPM) for full details.
 
 The SearchPanes extension for DataTables provides improved Searching functionality allowing users to select options from a "Pane" which will then in turn search the DataTable and return the relevant results. There are multiple configuration options available to enhance SearchPanes.
 
@@ -9,41 +9,36 @@ The SearchPanes extension for DataTables provides improved Searching functionali
 
 ### Browser
 
-For inclusion of this library using a standard `<script>` tag, rather than using this package, it is recommended that you use the [DataTables download builder](//datatables.net/download) which can create CDN or locally hosted packages for you, will all dependencies satisfied.
+To use DataTables with a simple `<script>` tag, rather than using this package, it is recommended that you use the [DataTables download builder](//datatables.net/download) which can create CDN or locally hosted packages for you, will all dependencies satisfied.
 
 ### npm
 
+For installation via npm, yarn and other similar package managers, install this package with your package manager - e.g.:
+
 ```
+npm install datatables.net
 npm install datatables.net-searchpanes
 ```
 
-ES3 Syntax
-```
-var $ = require( 'jquery' );
-require( 'datatables.net-searchpanes' )( window, $ );
-```
+Then, to load and initialise DataTables and SearchPanes in your code use:
 
-ES6 Syntax
 ```
+import DataTable from 'datatables.net';
 import 'datatables.net-searchpanes'
-```
 
-### bower
-
+new DataTable('#myTable', {
+    // initalisation options
+});
 ```
-bower install --save datatables.net-searchpanes
-```
-
 
 
 ## Documentation
 
-Full documentation and examples for SearchPanes can be found [on the website](https://datatables.net/extensions/searchpanes).
+Full documentation and examples for SearchPanes can be found [on the DataTables website](https://datatables.net/extensions/searchpanes).
 
 ## Bug / Support
 
 Support for DataTables is available through the [DataTables forums](//datatables.net/forums) and [commercial support options](//datatables.net/support) are available.
-
 
 ### Contributing
 
