@@ -27,7 +27,7 @@ import DataTable from 'datatables.net';
 import 'datatables.net-searchpanes'
 
 new DataTable('#myTable', {
-    // initalisation options
+    // initialisation options
 });
 ```
 
