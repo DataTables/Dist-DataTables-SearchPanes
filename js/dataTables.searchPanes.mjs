@@ -84,10 +84,12 @@ let $ = jQuery;
                     .addClass(this.classes.disabledButton)
                     .addClass(this.classes.paneButton)
                     .addClass(this.classes.clearButton)
+                    .attr('aria-label', table.i18n('searchPanes.buttons.clearPane', this.c.i18n.aria.clearPane))
                     .html(this.s.dt.i18n('searchPanes.clearPane', this.c.i18n.clearPane)),
                 collapseButton: $$5('<button type="button"><span class="' + this.classes.caret + '">&#x5e;</span></button>')
                     .addClass(this.classes.paneButton)
-                    .addClass(this.classes.collapseButton),
+                    .addClass(this.classes.collapseButton)
+                    .attr('aria-label', table.i18n('searchPanes.buttons.collapse', this.c.i18n.aria.collapse)),
                 container: $$5('<div/>')
                     .addClass(this.classes.container)
                     .addClass(this.s.colOpts.className)
@@ -100,17 +102,20 @@ let $ = jQuery;
                     : ''),
                 countButton: $$5('<button type="button"><span></span></button>')
                     .addClass(this.classes.paneButton)
-                    .addClass(this.classes.countButton),
+                    .addClass(this.classes.countButton)
+                    .attr('aria-label', table.i18n('searchPanes.buttons.orderByCount', this.c.i18n.aria.orderByCount)),
                 dtP: $$5('<table width="100%"><thead><tr><th></th><th></th></tr></thead></table>'),
                 lower: $$5('<div/>').addClass(this.classes.subRow2).addClass(this.classes.narrowButton),
                 nameButton: $$5('<button type="button"><span></span></button>')
                     .addClass(this.classes.paneButton)
-                    .addClass(this.classes.nameButton),
+                    .addClass(this.classes.nameButton)
+                    .attr('aria-label', table.i18n('searchPanes.buttons.orderByLabel', this.c.i18n.aria.orderByLabel)),
                 panesContainer: $$5(panesContainer),
                 searchBox: $$5('<input/>').addClass(this.classes.paneInputButton).addClass(this.classes.search),
                 searchButton: $$5('<button type="button"><span></span></button>')
                     .addClass(this.classes.searchIcon)
-                    .addClass(this.classes.paneButton),
+                    .addClass(this.classes.paneButton)
+                    .attr('aria-label', table.i18n('searchPanes.buttons.clearSearch', this.c.i18n.aria.clearSearch)),
                 searchCont: $$5('<div/>').addClass(this.classes.searchCont),
                 searchLabelCont: $$5('<div/>').addClass(this.classes.searchLabelCont),
                 topRow: $$5('<div/>').addClass(this.classes.topRow),
@@ -1133,7 +1138,12 @@ let $ = jQuery;
                     : this.s.dt.settings()[0].aoColumns[this.s.index].sTitle;
             }
             headerText = this._escapeHTML(headerText);
-            this.dom.searchBox.attr('placeholder', headerText);
+            var titleText = this.s.dt
+                .i18n('searchBuilder.searchTitle', this.c.i18n.searchTitle)
+                .replace('{name}', headerText);
+            this.dom.searchBox
+                .attr('placeholder', headerText)
+                .attr('title', titleText);
             $$5.fn.dataTable.ext.errMode = errMode;
             // If it is not a custom pane
             if (this.s.colExists) {
@@ -1501,9 +1511,17 @@ let $ = jQuery;
             emptyMessage: null,
             hideCount: false,
             i18n: {
+                aria: {
+                    clearPane: 'Clear selection',
+                    clearSearch: 'Clear search',
+                    collapse: 'Collapse / show pane',
+                    orderByCount: 'Order by count',
+                    orderByLabel: 'Order by label'
+                },
                 clearPane: '&times;',
                 count: '{total}',
-                emptyMessage: '<em>No data</em>'
+                emptyMessage: '<em>No data</em>',
+                searchTitle: 'Search: {name}'
             },
             initCollapsed: false,
             layout: 'auto',
