@@ -1,4 +1,4 @@
-/*! SearchPanes 2.3.3
+/*! SearchPanes 2.3.4
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -2517,9 +2517,9 @@ let $ = jQuery;
                 var pane = _a[_i];
                 this.dom.panes.append(pane.dom.container);
             }
+            this.dom.container.children().detach();
             // Attach everything to the document
             this.dom.container
-                .text('')
                 .removeClass(this.classes.hide)
                 .append(this.dom.titleRow)
                 .append(this.dom.panes);
@@ -2987,7 +2987,7 @@ let $ = jQuery;
                 this.dom.clearAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
             }
         };
-        SearchPanes.version = '2.3.3';
+        SearchPanes.version = '2.3.4';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -3364,7 +3364,7 @@ let $ = jQuery;
         return SearchPanesST;
     }(SearchPanes));
 
-    /*! SearchPanes 2.3.3
+    /*! SearchPanes 2.3.4
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery$4($);
