@@ -405,6 +405,12 @@ let $ = jQuery;
                 ? this.s.customPaneSettings.className
                 : '');
             this.adjustTopRow();
+            // Force the width for the table to be 100% - the use of flexbox for the content
+            // in each row makes this difficult as the content will expand to fit it, causing
+            // the host table to widen and we need to force it smaller.
+            this.dom.dtP.css('table-layout', 'fixed');
+            this.dom.dtP.css('width', '100%');
+            this.dom.dtP.find('colgroup col').css('width', '100%');
         };
         /**
          * Sets the listeners for the pane.
