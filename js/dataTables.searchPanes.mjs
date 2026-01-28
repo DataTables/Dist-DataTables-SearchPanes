@@ -1692,7 +1692,7 @@ let $ = jQuery;
                 // Store the selected rows
                 this.s.serverSelect = this.s.dtPane.rows({ selected: true }).data().toArray();
                 // Update the pane
-                this.s.dtPane.draw();
+                this.s.dtPane.draw(false);
                 reselect();
             }
         };
