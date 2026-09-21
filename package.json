@@ -1,14 +1,13 @@
 {
     "name": "datatables.net-searchpanes",
     "description": "SearchPanes for DataTables",
-    "main": "js/dataTables.searchPanes.js",
-    "module": "js/dataTables.searchPanes.mjs",
+    "main": "./js/dataTables.searchPanes.js",
+    "module": "./js/dataTables.searchPanes.mjs",
     "types": "./types/types.d.ts",
     "version": "2.3.5",
     "files": [
-        "js/**/*.js",
-        "js/**/*.mjs",
-        "types/**/*.d.ts"
+        "js",
+        "types"
     ],
     "keywords": [
         "SearchPanes",
@@ -44,5 +43,16 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/DataTables/Dist-DataTables-SearchPanes.git"
-    }
+    },
+    "exports": {
+        ".": {
+            "types": "./types/types.d.ts",
+            "import": "./js/dataTables.searchPanes.mjs",
+            "default": "./js/dataTables.searchPanes.mjs",
+            "require": "./js/dataTables.searchPanes.js"
+        },
+        "./js/*": "./js/*",
+        "./package.json": "./package.json"
+    },
+    "sideEffects": true
 }
