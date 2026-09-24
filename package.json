@@ -48,8 +48,8 @@
         ".": {
             "types": "./types/types.d.ts",
             "import": "./js/dataTables.searchPanes.mjs",
-            "default": "./js/dataTables.searchPanes.mjs",
-            "require": "./js/dataTables.searchPanes.js"
+            "require": "./js/dataTables.searchPanes.js",
+            "default": "./js/dataTables.searchPanes.mjs"
         },
         "./js/*": "./js/*",
         "./package.json": "./package.json"
