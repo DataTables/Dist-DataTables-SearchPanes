@@ -22,11 +22,9 @@
         "search",
         "filtering",
         "Datatables",
-        "jQuery",
         "table"
     ],
     "require": {
-        "datatables.net/datatables.net": "^2",
-        "datatables.net/jquery": ">=1.7"
+        "datatables.net/datatables.net": "^3"
     }
 }

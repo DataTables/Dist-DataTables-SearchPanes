@@ -14,36 +14,20 @@
         "search",
         "filtering",
         "Datatables",
-        "jQuery",
         "table",
         "filter",
         "sort"
     ],
     "dependencies": {
-        "datatables.net": "^2",
-        "jquery": ">=1.7"
+        "datatables.net": "^3"
     },
-    "moduleType": [
-        "globals",
-        "amd",
-        "node"
-    ],
-    "ignore": [
-        "composer.json",
-        "datatables.json",
-        "package.json"
-    ],
     "author": {
         "name": "SpryMedia Ltd",
         "url": "http://datatables.net"
     },
     "homepage": "https://datatables.net",
     "bugs": "https://datatables.net/forums",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/DataTables/Dist-DataTables-SearchPanes.git"
-    },
+    "license": "SEE LICENSE IN License.txt",
     "exports": {
         ".": {
             "types": "./types/types.d.ts",
@@ -54,5 +38,9 @@
         "./js/*": "./js/*",
         "./package.json": "./package.json"
     },
-    "sideEffects": true
+    "sideEffects": true,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DataTables/SearchPanes.git"
+    }
 }

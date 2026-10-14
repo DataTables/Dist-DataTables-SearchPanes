@@ -4,19 +4,21 @@
         <version>2.3.5</version>
         <id>datatables.net-searchpanes</id>
         <description>This is SearchPanes for DataTables</description>
-        <repository type="git" url="https://github.com/DataTables/Dist-DataTables-SearchPanes.git"/>
+        <repository type="git" url="https://github.com/DataTables/SearchPanes"/>
         <authors>SpryMedia Ltd</authors>
         <projectUrl>http://datatables.net</projectUrl>
         <license type="expression">MIT</license>
-        <tags>SearchPanes  search  filtering  Datatables jQuery table</tags>
+        <tags>SearchPanes  search  filtering  Datatables table</tags>
         <dependencies>
-            <dependency id="datatables.net" version="2.3.2"/>
+            <dependency id="datatables.net" version="^3"/>
         </dependencies>
         <contentFiles>
             <files include="**/*" buildAction="Content"/>
         </contentFiles>
+        <readme>Readme.md</readme>
     </metadata>
     <files>
+        <file src="Readme.md" target=""/>
         <file src="js/dataTables.searchPanes.js" target="content\Scripts"/>
         <file src="js/dataTables.searchPanes.js" target="contentFiles\any\any\wwwroot\js"/>
         <file src="js/dataTables.searchPanes.min.js" target="content\Scripts"/>
@@ -27,4 +29,3 @@
         <file src="js/dataTables.searchPanes.mjs" target="contentFiles\any\any\wwwroot\js"/>
     </files>
 </package>
-
