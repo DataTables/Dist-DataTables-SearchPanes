@@ -1,8 +1,8 @@
-/*! SearchPanes 2.1.2 for DataTables
+/*! SearchPanes 3.0.0 for DataTables
  * Copyright (c) SpryMedia Ltd - https://datatables.net/license/plus
  */
 
-import DataTable from '2.3.5';
+import DataTable from '3.0.0';
 
 class SearchPane {
     /**
@@ -1594,7 +1594,7 @@ class SearchPane {
         this.s.updating = updating;
     }
 }
-SearchPane.version = '2.1.2';
+SearchPane.version = '3.0.0';
 SearchPane.classes = {
     bordered: 'dtsp-bordered',
     buttonGroup: 'dtsp-buttonGroup',
@@ -3080,7 +3080,7 @@ class SearchPanes {
         }
     }
 }
-SearchPanes.version = '2.3.5';
+SearchPanes.version = '3.0.0';
 SearchPanes.classes = {
     clear: 'dtsp-clear',
     clearAll: 'dtsp-clearAll',

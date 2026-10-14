@@ -1,11 +1,11 @@
-/*! SearchPanes 2.1.2 for DataTables
+/*! SearchPanes 3.0.0 for DataTables
  * Copyright (c) SpryMedia Ltd - https://datatables.net/license/plus
  */
 
 (function(factory){
 	if (typeof define === 'function' && define.amd) {
 		// AMD
-		define(['2.3.5'], function (dt) {
+		define(['3.0.0'], function (dt) {
 			return factory(window, document, dt);
 		});
 	}
@@ -13,7 +13,7 @@
 		// CommonJS
 		var cjsRequires = function (root) {
 			if (! root.DataTable) {
-				require('2.3.5')(root);
+				require('3.0.0')(root);
 			}
 		};
 
@@ -1635,7 +1635,7 @@ class SearchPane {
         this.s.updating = updating;
     }
 }
-SearchPane.version = '2.1.2';
+SearchPane.version = '3.0.0';
 SearchPane.classes = {
     bordered: 'dtsp-bordered',
     buttonGroup: 'dtsp-buttonGroup',
@@ -3121,7 +3121,7 @@ class SearchPanes {
         }
     }
 }
-SearchPanes.version = '2.3.5';
+SearchPanes.version = '3.0.0';
 SearchPanes.classes = {
     clear: 'dtsp-clear',
     clearAll: 'dtsp-clearAll',
