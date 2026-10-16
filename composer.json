@@ -2,8 +2,7 @@
     "name": "datatables.net/datatables.net-searchpanes",
     "description": "SearchPanes for DataTables",
     "support": {
-        "forum": "https://datatables.net/forums",
-        "source": "https://github.com/DataTables/Dist-DataTables-SearchPanes"
+        "forum": "https://datatables.net/forums"
     },
     "homepage": "http://www.datatables.net/",
     "authors": [

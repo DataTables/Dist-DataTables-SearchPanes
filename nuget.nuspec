@@ -4,7 +4,6 @@
         <version>2.3.5</version>
         <id>datatables.net-searchpanes</id>
         <description>This is SearchPanes for DataTables</description>
-        <repository type="git" url="https://github.com/DataTables/SearchPanes"/>
         <authors>SpryMedia Ltd</authors>
         <projectUrl>http://datatables.net</projectUrl>
         <license type="file">License.txt</license>
