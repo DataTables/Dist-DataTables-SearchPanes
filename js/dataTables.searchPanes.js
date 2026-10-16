@@ -5,7 +5,7 @@
 (function(factory){
 	if (typeof define === 'function' && define.amd) {
 		// AMD
-		define(['3.0.0'], function (dt) {
+		define(['datatables.net'], function (dt) {
 			return factory(window, document, dt);
 		});
 	}
@@ -13,7 +13,7 @@
 		// CommonJS
 		var cjsRequires = function (root) {
 			if (! root.DataTable) {
-				require('3.0.0')(root);
+				require('datatables.net')(root);
 			}
 		};
 
@@ -59,7 +59,7 @@ class SearchPane {
     constructor(hostCtx, opts, index, panesContainer, panes = null) {
         var _a;
         let table = new DataTable.Api(hostCtx);
-        DataTable.plus('2026-10-14');
+        DataTable.plus('2026-10-16');
         this.classes = util.object.assignDeep({}, SearchPane.classes);
         // Get options from user
         this.c = util.object.assignDeep({}, SearchPane.defaults, opts, panes || {});
@@ -2238,7 +2238,7 @@ class SearchPanes {
         if (!DataTable.select) {
             throw new Error('SearchPanes requires the Select extension for DataTables');
         }
-        DataTable.plus('2026-10-14');
+        DataTable.plus('2026-10-16');
         let table = new DataTable.Api(hostCtx);
         this.classes = util.object.assignDeep({}, SearchPanes.classes);
         this.c = util.object.assignDeep({}, SearchPanes.defaults, opts);
@@ -3121,7 +3121,7 @@ class SearchPanes {
         }
     }
 }
-SearchPanes.version = '3.0.0';
+SearchPanes.version = SearchPane.version;
 SearchPanes.classes = {
     clear: 'dtsp-clear',
     clearAll: 'dtsp-clearAll',

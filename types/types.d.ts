@@ -228,7 +228,7 @@ declare class SearchPane {
         clear: boolean;
         collapse: boolean;
         combiner: string;
-        container(dt: Api): any;
+        container(dt: Api): HTMLDivElement;
         controls: boolean;
         dtOpts: {};
         emptyMessage: null;
@@ -629,7 +629,7 @@ declare class SearchPaneViewTotal extends SearchPaneST {
      * @returns string - the message that is to be shown for the count of each
      * entry
      */
-    protected _getMessage(row: any): any;
+    protected _getMessage(row: any): string;
     /**
      * Overrides the blank method in SearchPane to return the number of times a
      * given value is currently being displayed
