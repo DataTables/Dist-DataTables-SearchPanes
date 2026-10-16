@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <version>2.3.5</version>
+        <version>3.0.0</version>
         <id>datatables.net-searchpanes</id>
         <description>This is SearchPanes for DataTables</description>
         <authors>SpryMedia Ltd</authors>
@@ -9,7 +9,7 @@
         <license type="file">License.txt</license>
         <tags>SearchPanes  search  filtering  Datatables table</tags>
         <dependencies>
-            <dependency id="datatables.net" version="^3"/>
+            <dependency id="datatables.net" version="[3.1.0, 4.0.0)"/>
         </dependencies>
         <contentFiles>
             <files include="**/*" buildAction="Content"/>
