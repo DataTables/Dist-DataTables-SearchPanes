@@ -1,4 +1,4 @@
-import DataTables, { Options, Dom, Api, Context, Order } from 'datatables.net';
+import DataTables, { Options, Config, Dom, Api, Context, Order } from 'datatables.net';
 export { default } from 'datatables.net';
 
 interface IClasses$1 {
@@ -70,7 +70,7 @@ interface IDefaults$1 {
     dtOpts: {
         [keys: string]: any;
     };
-    emptyMessage: string;
+    emptyMessage: string | null;
     hideCount: boolean;
     i18n: {
         aria: {
@@ -117,8 +117,11 @@ interface IIndexes {
     index: number;
 }
 interface IOption {
+    className?: string;
+    filter?: string;
     label: string;
-    values: (rowData: any, rowIdx: string) => boolean;
+    order?: string;
+    value: string | ((rowData: any, rowIdx: string) => boolean);
 }
 interface IOrthogonal {
     display: string;
@@ -159,9 +162,29 @@ interface IRowDataST extends IRowData {
     filterMap: Map<number, any>;
     totalOptions: number;
 }
+interface SPColumnOptions {
+    className?: string;
+    collapse?: boolean;
+    combiner?: 'or' | 'and';
+    controls?: boolean;
+    info?: boolean;
+    dtOpts?: Config;
+    emptyMessage?: string;
+    header?: string;
+    hideCount?: boolean;
+    initCollapsed?: boolean;
+    name?: string;
+    options?: Array<IOption>;
+    orderable?: boolean;
+    orthogonal?: IOrthogonal;
+    preSelect?: string[];
+    show?: boolean;
+    threshold?: number;
+    viewCount?: boolean;
+}
 interface IS$1 {
     colExists: boolean;
-    colOpts: any;
+    colOpts: SPColumnOptions;
     customPaneSettings: IConfigPaneItem | null;
     deselectTimeout?: ReturnType<typeof setTimeout>;
     displayed: boolean;
@@ -224,47 +247,7 @@ declare class SearchPane {
         title: string;
         topRow: string;
     };
-    static defaults: {
-        clear: boolean;
-        collapse: boolean;
-        combiner: string;
-        container(dt: Api): HTMLDivElement;
-        controls: boolean;
-        dtOpts: {};
-        emptyMessage: null;
-        hideCount: boolean;
-        i18n: {
-            aria: {
-                clearPane: string;
-                clearSearch: string;
-                collapse: string;
-                orderByCount: string;
-                orderByLabel: string;
-            };
-            clearPane: string;
-            count: string;
-            emptyMessage: string;
-            searchTitle: string;
-        };
-        initCollapsed: boolean;
-        layout: string;
-        name: undefined;
-        orderable: boolean;
-        orthogonal: {
-            display: string;
-            filter: string;
-            hideCount: boolean;
-            search: string;
-            show: undefined;
-            sort: string;
-            threshold: number;
-            type: string;
-            viewCount: boolean;
-        };
-        preSelect: never[];
-        threshold: number;
-        viewCount: boolean;
-    };
+    static defaults: IDefaults$1;
     classes: IClasses$1;
     dom: IDOM$1;
     c: IDefaults$1;
@@ -949,6 +932,12 @@ declare module 'datatables.net' {
          * SearchPanes extension options
          */
         searchPanes?: boolean | string[] | IConfig | IConfig[];
+    }
+    interface ColumnOptions {
+        /**
+         * SearchPanes extension options
+         */
+        searchPanes?: SPColumnOptions;
     }
     interface Defaults {
         /**

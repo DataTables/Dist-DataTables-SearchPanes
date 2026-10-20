@@ -18,7 +18,7 @@ class SearchPane {
     constructor(hostCtx, opts, index, panesContainer, panes = null) {
         var _a;
         let table = new DataTable.Api(hostCtx);
-        DataTable.plus('2026-10-16');
+        DataTable.plus('2026-10-20');
         this.classes = util.object.assignDeep({}, SearchPane.classes);
         // Get options from user
         this.c = util.object.assignDeep({}, SearchPane.defaults, opts, panes || {});
@@ -29,7 +29,7 @@ class SearchPane {
         let rowLength = table.columns().eq(0).toArray().length;
         this.s = {
             colExists: index < rowLength,
-            colOpts: undefined,
+            colOpts: {},
             customPaneSettings: panes,
             displayed: false,
             dt: table,
@@ -143,6 +143,7 @@ class SearchPane {
         let tableNode = this.s.dt.table(0).node();
         // Custom search function for table
         this.s.searchFunction = (settings, searchData, dataIndex) => {
+            var _a;
             // If no data has been selected then show all
             if (this.s.selections.length === 0) {
                 return true;
@@ -154,7 +155,7 @@ class SearchPane {
             if (this.s.colExists) {
                 // Get the current filtered data
                 filter = searchData[this.s.index];
-                if (this.s.colOpts.orthogonal.filter !== 'filter') {
+                if (((_a = this.s.colOpts.orthogonal) === null || _a === void 0 ? void 0 : _a.filter) !== 'filter') {
                     // get the filter value from the map
                     filter = this.s.rowData.filterMap.get(dataIndex);
                     if (filter instanceof DataTable.Api) {
@@ -350,8 +351,7 @@ class SearchPane {
             def = this.c.emptyMessage;
         }
         // Override per column
-        if (this.s.colOpts.emptyMessage !== false &&
-            this.s.colOpts.emptyMessage !== null) {
+        if (this.s.colOpts.emptyMessage) {
             def = this.s.colOpts.emptyMessage;
         }
         return this.s.dt.i18n('searchPanes.emptyMessage', def);
@@ -631,10 +631,9 @@ class SearchPane {
             // maintained
             this.s.dt.state.save();
         });
-        this.s.dtPane.select.style(this.s.colOpts.dtOpts &&
-            this.s.colOpts.dtOpts.select &&
-            this.s.colOpts.dtOpts.select.style
-            ? this.s.colOpts.dtOpts.select.style
+        let colDtOpts = this.s.colOpts.dtOpts;
+        this.s.dtPane.select.style(colDtOpts && colDtOpts.select && colDtOpts.select.style
+            ? colDtOpts.select.style
             : this.c.dtOpts &&
                 this.c.dtOpts.select &&
                 this.c.dtOpts.select.style
@@ -680,7 +679,8 @@ class SearchPane {
             ((this.s.colOpts.show === undefined &&
                 this.s.colOpts.threshold === null
                 ? uniqueRatio > this.c.threshold
-                : uniqueRatio > this.s.colOpts.threshold) ||
+                : this.s.colOpts.threshold &&
+                    uniqueRatio > this.s.colOpts.threshold) ||
                 (this.s.colOpts.show !== true && binLength <= 1))) {
             this.dom.container.classAdd(this.classes.hidden);
             this.s.displayed = false;
@@ -773,7 +773,9 @@ class SearchPane {
             let comparisonObj = {
                 className: comp.className,
                 display: insert,
-                filter: typeof comp.value === 'function' ? comp.value : [],
+                filter: typeof comp.value === 'function'
+                    ? comp.value
+                    : [],
                 sort: comp.order !== undefined ? comp.order : insert,
                 total: 0,
                 type: insert
@@ -788,7 +790,7 @@ class SearchPane {
                     }
                 }
                 // Update the comparisonObj
-                if (typeof comparisonObj.filter !== 'function') {
+                if (typeof comparisonObj.filter !== 'function' && comp.filter) {
                     comparisonObj.filter.push(comp.filter);
                 }
             }
@@ -924,6 +926,7 @@ class SearchPane {
      * @param bins The bins object that is to be populated with the row counts
      */
     _populatePaneArray(rowIdx, arrayFilter, settings, bins = this.s.rowData.bins) {
+        var _a, _b, _c, _d;
         // Retrieve the rendered data from the cell using the fastData function
         // rather than the cell().render API method for optimisation
         let fastData = settings.fastData;
@@ -934,7 +937,7 @@ class SearchPane {
             this.s.rowData.totalOptions++;
         }
         else {
-            let filter = fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.search);
+            let filter = fastData(rowIdx, this.s.index, ((_a = this.s.colOpts.orthogonal) === null || _a === void 0 ? void 0 : _a.search) || '');
             // Null and empty string are to be considered the same value
             if (filter === null) {
                 filter = '';
@@ -944,7 +947,7 @@ class SearchPane {
             }
             this.s.rowData.filterMap.set(rowIdx, filter);
             if (!bins[filter]) {
-                this._addOption(filter, fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.display), fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.sort), fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.type), arrayFilter, bins);
+                this._addOption(filter, fastData(rowIdx, this.s.index, ((_b = this.s.colOpts.orthogonal) === null || _b === void 0 ? void 0 : _b.display) || ''), fastData(rowIdx, this.s.index, ((_c = this.s.colOpts.orthogonal) === null || _c === void 0 ? void 0 : _c.sort) || ''), fastData(rowIdx, this.s.index, ((_d = this.s.colOpts.orthogonal) === null || _d === void 0 ? void 0 : _d.type) || ''), arrayFilter, bins);
                 this.s.rowData.totalOptions++;
             }
             else {
@@ -1151,11 +1154,12 @@ class SearchPane {
                 let uniqueRatio = this._uniqueRatio(binLength, this.s.dt.rows()[0].length);
                 // Don't show the pane if there isn't enough variance in the
                 //  data, or there is only 1 entry for that pane
+                let colOptsThreshold = this.s.colOpts.threshold;
                 if (this.s.displayed === false &&
                     ((this.s.colOpts.show === undefined &&
-                        this.s.colOpts.threshold === null
+                        colOptsThreshold === null
                         ? uniqueRatio > this.c.threshold
-                        : uniqueRatio > this.s.colOpts.threshold) ||
+                        : colOptsThreshold && uniqueRatio > colOptsThreshold) ||
                         (this.s.colOpts.show !== true && binLength <= 1))) {
                     this.dom.container.classAdd(this.classes.hidden);
                     this.s.displayed = false;
@@ -1556,7 +1560,8 @@ class SearchPane {
             this.dom.searchButton.appendTo(this.dom.searchLabelCont);
         }
         if (!(this.c.dtOpts.searching === false ||
-            this.s.colOpts.dtOpts.searching === false ||
+            (this.s.colOpts.dtOpts &&
+                this.s.colOpts.dtOpts.searching === false) ||
             (this.s.customPaneSettings &&
                 this.s.customPaneSettings.dtOpts &&
                 this.s.customPaneSettings.dtOpts.searching !== undefined &&
@@ -1641,7 +1646,7 @@ SearchPane.defaults = {
     },
     controls: true,
     dtOpts: {},
-    emptyMessage: null,
+    emptyMessage: '',
     hideCount: false,
     i18n: {
         aria: {
@@ -1653,19 +1658,20 @@ SearchPane.defaults = {
         },
         clearPane: '&times;',
         count: '{total}',
+        countFiltered: '',
         emptyMessage: '<em>Empty</em>',
         searchTitle: 'Search: {name}'
     },
     initCollapsed: false,
     layout: 'auto',
-    name: undefined,
+    name: '',
     orderable: true,
     orthogonal: {
         display: 'display',
         filter: 'filter',
         hideCount: false,
         search: 'filter',
-        show: undefined,
+        show: false,
         sort: 'sort',
         threshold: 0.6,
         type: 'type',
@@ -1753,8 +1759,9 @@ class SearchPaneST extends SearchPane {
             ((this.s.colOpts.show === undefined &&
                 this.s.colOpts.threshold === null
                 ? uniqueRatio > this.c.threshold
-                : uniqueRatio > this.s.colOpts.threshold) ||
-                (this.s.colOpts.show !== true && binLength <= 1))) {
+                : this.s.colOpts.threshold &&
+                    uniqueRatio > this.s.colOpts.threshold) ||
+                binLength <= 1)) {
             this.dom.container.classAdd(this.classes.hidden);
             this.s.displayed = false;
             return;
@@ -1896,9 +1903,10 @@ class SearchPaneST extends SearchPane {
      * @param bins The bins object that is to be incremented
      */
     _updateShown(rowIdx, settings, bins = this.s.rowData.binsShown) {
+        var _a;
         let orth = typeof this.s.colOpts.orthogonal === 'string'
             ? this.s.colOpts.orthogonal
-            : this.s.colOpts.orthogonal.search;
+            : (_a = this.s.colOpts.orthogonal) === null || _a === void 0 ? void 0 : _a.search;
         let filter = settings.fastData(rowIdx, this.s.index, orth);
         let add = (f) => {
             if (!bins[f]) {
@@ -2068,7 +2076,9 @@ class SearchPaneCascade extends SearchPaneST {
             let comparisonObj = {
                 className: comp.className,
                 display: insert,
-                filter: typeof comp.value === 'function' ? comp.value : [],
+                filter: typeof comp.value === 'function'
+                    ? comp.value
+                    : [],
                 shown: 0,
                 sort: insert,
                 total: 0,
@@ -2089,7 +2099,7 @@ class SearchPaneCascade extends SearchPaneST {
                     }
                 }
                 // Update the comparisonObj
-                if (typeof comparisonObj.filter !== 'function') {
+                if (comp.filter && typeof comparisonObj.filter !== 'function') {
                     comparisonObj.filter.push(comp.filter);
                 }
             }
@@ -2197,7 +2207,7 @@ class SearchPanes {
         if (!DataTable.select) {
             throw new Error('SearchPanes requires the Select extension for DataTables');
         }
-        DataTable.plus('2026-10-16');
+        DataTable.plus('2026-10-20');
         let table = new DataTable.Api(hostCtx);
         this.classes = util.object.assignDeep({}, SearchPanes.classes);
         this.c = util.object.assignDeep({}, SearchPanes.defaults, opts);
