@@ -623,7 +623,7 @@ declare class SearchPaneViewTotal extends SearchPaneST {
     protected _getShown(filter: any): number;
 }
 
-type DeepPartial<T> = T extends object ? {
+type DeepPartial<T> = T extends (...args: any[]) => any ? T : T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
 } : T;
 interface IClasses {
@@ -646,7 +646,7 @@ interface IDefaults {
     collapse: boolean;
     columns: number[];
     container: (dt: any) => any;
-    filterChanged?: (count: number) => any;
+    filterChanged?: (this: Api, count: number) => void;
     i18n: {
         clearMessage: string;
         clearPane: string;
