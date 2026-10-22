@@ -18,7 +18,7 @@ class SearchPane {
     constructor(hostCtx, opts, index, panesContainer, panes = null) {
         var _a;
         let table = new DataTable.Api(hostCtx);
-        DataTable.plus('2026-10-20');
+        DataTable.plus('2026-10-22');
         this.classes = util.object.assignDeep({}, SearchPane.classes);
         // Get options from user
         this.c = util.object.assignDeep({}, SearchPane.defaults, opts, panes || {});
@@ -826,6 +826,7 @@ class SearchPane {
         let langOpts = this.s.dt.settings()[0].language;
         langOpts.url = '';
         return {
+            data: [],
             columnDefs: [
                 {
                     className: 'dtsp-nameColumn',
@@ -2205,7 +2206,7 @@ class SearchPanes {
         if (!DataTable.select) {
             throw new Error('SearchPanes requires the Select extension for DataTables');
         }
-        DataTable.plus('2026-10-20');
+        DataTable.plus('2026-10-22');
         let table = new DataTable.Api(hostCtx);
         this.classes = util.object.assignDeep({}, SearchPanes.classes);
         this.c = util.object.assignDeep({}, SearchPanes.defaults, opts);
