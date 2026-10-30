@@ -1,4 +1,4 @@
-/*! SearchPanes 3.0.0 for DataTables
+/*! SearchPanes 3.0.1 for DataTables
  * Copyright (c) SpryMedia Ltd - https://datatables.net/license/plus
  */
 
@@ -18,7 +18,7 @@ class SearchPane {
     constructor(hostCtx, opts, index, panesContainer, panes = null) {
         var _a;
         let table = new DataTable.Api(hostCtx);
-        DataTable.plus('2026-10-22');
+        DataTable.plus('2026-10-30');
         this.classes = util.object.assignDeep({}, SearchPane.classes);
         // Get options from user
         this.c = util.object.assignDeep({}, SearchPane.defaults, opts, panes || {});
@@ -1598,7 +1598,7 @@ class SearchPane {
         this.s.updating = updating;
     }
 }
-SearchPane.version = '3.0.0';
+SearchPane.version = '3.0.1';
 SearchPane.classes = {
     bordered: 'dtsp-bordered',
     buttonGroup: 'dtsp-buttonGroup',
@@ -2206,7 +2206,7 @@ class SearchPanes {
         if (!DataTable.select) {
             throw new Error('SearchPanes requires the Select extension for DataTables');
         }
-        DataTable.plus('2026-10-22');
+        DataTable.plus('2026-10-30');
         let table = new DataTable.Api(hostCtx);
         this.classes = util.object.assignDeep({}, SearchPanes.classes);
         this.c = util.object.assignDeep({}, SearchPanes.defaults, opts);
