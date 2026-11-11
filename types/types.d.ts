@@ -176,7 +176,7 @@ interface SPColumnOptions {
     name?: string;
     options?: Array<IOption>;
     orderable?: boolean;
-    orthogonal?: IOrthogonal;
+    orthogonal?: Partial<IOrthogonal>;
     preSelect?: string[];
     show?: boolean;
     threshold?: number;
@@ -667,6 +667,7 @@ interface IDefaults {
     order: string[];
     panes: IConfigPaneItem[];
     preSelect: ISelectItem[];
+    threshold: number;
     viewCount: boolean;
     viewTotal: boolean;
 }

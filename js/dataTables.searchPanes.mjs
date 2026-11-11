@@ -18,7 +18,7 @@ class SearchPane {
     constructor(hostCtx, opts, index, panesContainer, panes = null) {
         var _a;
         let table = new DataTable.Api(hostCtx);
-        DataTable.plus('2026-11-04');
+        DataTable.plus('2026-11-11');
         this.classes = util.object.assignDeep({}, SearchPane.classes);
         // Get options from user
         this.c = util.object.assignDeep({}, SearchPane.defaults, opts, panes || {});
@@ -2206,7 +2206,7 @@ class SearchPanes {
         if (!DataTable.select) {
             throw new Error('SearchPanes requires the Select extension for DataTables');
         }
-        DataTable.plus('2026-11-04');
+        DataTable.plus('2026-11-11');
         let table = new DataTable.Api(hostCtx);
         this.classes = util.object.assignDeep({}, SearchPanes.classes);
         this.c = util.object.assignDeep({}, SearchPanes.defaults, opts);
@@ -3134,6 +3134,7 @@ SearchPanes.defaults = {
     order: [],
     panes: [],
     preSelect: [],
+    threshold: SearchPane.defaults.threshold,
     viewCount: true,
     viewTotal: false
 };
