@@ -18,7 +18,7 @@ class SearchPane {
     constructor(hostCtx, opts, index, panesContainer, panes = null) {
         var _a;
         let table = new DataTable.Api(hostCtx);
-        DataTable.plus('2026-11-11');
+        DataTable.plus('2026-11-20');
         this.classes = util.object.assignDeep({}, SearchPane.classes);
         // Get options from user
         this.c = util.object.assignDeep({}, SearchPane.defaults, opts, panes || {});
@@ -2206,7 +2206,7 @@ class SearchPanes {
         if (!DataTable.select) {
             throw new Error('SearchPanes requires the Select extension for DataTables');
         }
-        DataTable.plus('2026-11-11');
+        DataTable.plus('2026-11-20');
         let table = new DataTable.Api(hostCtx);
         this.classes = util.object.assignDeep({}, SearchPanes.classes);
         this.c = util.object.assignDeep({}, SearchPanes.defaults, opts);
@@ -3542,10 +3542,10 @@ DataTable.ext.buttons.searchPanes = {
             this.processing(true);
             setTimeout(() => {
                 _buttonSourced(dt, node, config);
-                this.popover(config._panes.getNode(), {
+                this.popover(config._panes.getNode(), util.object.assign({
                     align: 'container',
                     span: 'container'
-                });
+                }, config.popoverOptions));
                 config._panes.rebuild(undefined, true);
                 // Tables were hidden in the popover, need to be resized
                 new DataTable.Api(Dom.s(config._panes.getNode()).find('table.dataTable')).columns.adjust();

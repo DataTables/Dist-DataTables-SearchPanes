@@ -1007,6 +1007,12 @@ declare module 'datatables.net' {
              */
             delayInit?: boolean;
             /**
+             * Options for the popover that SearchPanes is displayed in. See
+             * the https://datatables.net/ref/core/api/button().popover()
+             * documentation for a full list of options.
+             */
+            popoverOptions?: any;
+            /**
              * Button text
              */
             text?: string;
